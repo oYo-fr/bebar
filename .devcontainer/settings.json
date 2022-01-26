@@ -1,0 +1,6 @@
+{
+    "coverage-gutters.coverageFileNames": [
+        "**/coverage.info"
+    ],
+    "coverage-gutters.lcovname": "coverage.info"
+}

@@ -1,0 +1,12 @@
+version: '3'
+services:
+    appservice:
+        container_name: typescript-project
+        build:
+            context: .
+            dockerfile: .
+            network: host
+        volumes:
+            - ./../:/home/:cached
+        network_mode: host
+        command: /bin/sh -c "while sleep 10; do :; done"

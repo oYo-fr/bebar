@@ -1,0 +1,117 @@
+# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    env:
+      GIST_ID: d5057d855994a2ab855fe47788858e52
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x, 14.x, 12.x ]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm ci
+    - run: npm run build --if-present
+    - run: npm test
+    - run: npm run typedoc
+    - run: npm run eslint
+
+    # Only run the coverage once
+    - if: ${{ matrix.node-version == '16.x' }}
+      name: Get Coverage for badge
+      run: |
+        # var SUMMARY = [
+        #   '',
+        #   '=============================== Coverage summary ===============================',
+        #   'Statements   : 32.5% ( 39/120 )',
+        #   'Branches     : 38.89% ( 21/54 )',
+        #   'Functions    : 21.74% ( 5/23 )',
+        #   'Lines        : 31.93% ( 38/119 )',
+        #   '================================================================================',
+        #   ''
+        # ];
+        # SUMMARY = SUMMARY.split('\n')[5]; // 'Lines        : 31.93% ( 38/119 )'
+        # SUMMARY = SUMMARY.split(':')[1].split('(')[0].trim(); // '31.93%'
+        SUMMARY="$(npm test -- --coverageReporters='text-summary' | tail -2 | head -1)"
+        TOKENS=($SUMMARY)
+        # process.env.COVERAGE = '31.93%';
+        echo "COVERAGE=$(echo ${TOKENS[2]})" >> $GITHUB_ENV
+
+        # var REF = 'refs/pull/27/merge.json';
+        REF=${{ github.ref }}
+        # console.log('github.ref: ' + REF);
+        echo "github.ref: $REF"
+        # var PATHS = REF.split('/');
+        IFS='/' read -ra PATHS <<< "$REF"
+        # var BRANCH_NAME = PATHS[1] + PATHS[2];
+        BRANCH_NAME="${PATHS[1]}_${PATHS[2]}"
+        # console.log(BRANCH_NAME); // 'pull_27'
+        echo $BRANCH_NAME
+        # process.env.BRANCH = 'pull_27';
+        echo "BRANCH=$(echo ${BRANCH_NAME})" >> $GITHUB_ENV
+    - if: ${{ matrix.node-version == '16.x' }}
+      name: Create the Badge
+      uses: schneegans/dynamic-badges-action@v1.0.0
+      with:
+        auth: ${{ secrets.GIST_SECRET }}
+        gistID: ${{ env.GIST_ID }}
+        filename: typescript-template__${{ env.BRANCH }}.json
+        label: Test Coverage
+        message: ${{ env.COVERAGE }}
+        color: green
+        namedLogo: jest
+    - if: ${{ github.ref != 'refs/heads/main' && matrix.node-version == '16.x' && matrix.os == 'ubuntu-latest' }}
+      uses: romeovs/lcov-reporter-action@v0.2.16
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        lcov-file: ./coverage/lcov.info
+    - if: ${{ github.ref != 'refs/heads/main' && matrix.node-version == '16.x' && matrix.os == 'ubuntu-latest' }}
+      name: Update the Badge URL in the pull request body
+      run: |
+        BODY=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/{{ github.repository }}/pulls/${{ github.event.pull_request.number }} | jq .body | sed -En "s/protocol__pull_##.json/protocol__pull_${{ github.event.pull_request.number }}.json/p")
+        JSON="{\"body\":$(echo $BODY | jq -sR .)}"
+        curl \
+          -X POST \
+          -H "Authorization: token ${{ secrets.GIST_SECRET }}" \
+          -H "Content-Type: application/json" \
+          -d $JSON \
+          https://api.github.com/repos/{{ github.repository }}/pulls/${{ github.event.pull_request.number }}
+    - if: ${{ matrix.node-version == '16.x' }}
+      uses: EndBug/add-and-commit@v7
+      with:
+        add: 'src/**'
+        message: 'ESLint on src/'
+    - if: ${{ matrix.node-version == '16.x' }}
+      uses: EndBug/add-and-commit@v7
+      with:
+        add: 'test/**'
+        message: 'ESLint on test/'
+    - if: ${{ matrix.node-version == '16.x' }}
+      uses: EndBug/add-and-commit@v7
+      with:
+        add: 'docs/**'
+        message: 'Updating documentation'
+    - if: ${{ matrix.node-version == '16.x' }}
+      name: Deploy documentation
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs

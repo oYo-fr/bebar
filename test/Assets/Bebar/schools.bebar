@@ -1,0 +1,15 @@
+data:
+  -
+    file: ./Assets/Datasets/schools.yaml
+partials:
+  -
+    file: ./Assets/Partials/school.hbs
+helpers:
+  -
+    file: ./Assets/Helpers/*.js
+templates:
+  -
+    file: ./Assets/Templates/list_of_schools.hbs
+    output: ./Assets/TestOutputs/scools.md
+    prettify:
+      parser: markdown

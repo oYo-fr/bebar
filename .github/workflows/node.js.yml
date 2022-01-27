@@ -104,14 +104,31 @@ jobs:
       with:
         add: 'test/**'
         message: 'ESLint on test/'
-    - if: ${{ matrix.node-version == '16.x' }}
+    - if: ${{ github.ref == 'refs/heads/main' && matrix.node-version == '16.x' }}
       uses: EndBug/add-and-commit@v7
       with:
-        add: 'docs/**'
+        add: 'docs/api/**'
         message: 'Updating documentation'
-    - if: ${{ matrix.node-version == '16.x' }}
+    - if: ${{ github.ref == 'refs/heads/main' && matrix.node-version == '16.x' }}
       name: Deploy documentation
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./docs
+        publish_dir: ./api/docs
+    - if: ${{ github.ref == 'refs/heads/main' && matrix.node-version == '16.x' }}
+      name:  'Automated Version Bump'
+      uses:  'phips28/gh-action-bump-version@master'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        default: prerelease
+        rc-wording:     'RELEASE,alpha'
+        patch-wording:  'patch,fixes'
+        major-wording:  'MAJOR,cut-major'
+        minor-wording:  'add,Adds,new,Project initialization'
+        commit-message: 'CI: bumps version to {{version}} [skip ci]'
+    - if: ${{ github.ref == 'refs/heads/main' && matrix.node-version == '16.x' }}
+      name: Publish to npm
+      uses: JS-DevTools/npm-publish@v1
+      with:
+        token: ${{ secrets.NPM_TOKEN }}

@@ -1,7 +1,7 @@
 version: '3'
 services:
     appservice:
-        container_name: typescript-project
+        container_name: bebar
         build:
             context: .
             dockerfile: .

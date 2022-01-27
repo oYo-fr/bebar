@@ -7,7 +7,7 @@
       ".devcontainer/": true,
       ".vscode/": true,
       "node_modules/": true,
-      "dist/": false
+      "dist/": true
   },
   "coverage-gutters.coverageFileNames": [
     "coverage/lcov.info",

@@ -1,5 +1,5 @@
 {
-	"name": "typescript-project",
+	"name": "bebar",
 	"dockerComposeFile": ["docker-compose.yml"],
 	"service": "appservice",
 	"extensions": [
@@ -19,5 +19,6 @@
 		"christian-kohler.npm-intellisense",
 		"kavod-io.vscode-jest-test-adapter"
 	],
-	"workspaceFolder": "/home"
+	"workspaceFolder": "/home",
+	"postAttachCommand": "npm install && npm run build"
 }

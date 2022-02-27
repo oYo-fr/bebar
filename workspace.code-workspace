@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"coverage-gutters.coverageFileNames": [
+			"coverage/lcov.info",
+			"coverage/clover.xml"
+		],
+		"workbench.colorTheme": "Tomorrow Night Blue"
+	}
+}

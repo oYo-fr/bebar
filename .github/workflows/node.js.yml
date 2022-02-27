@@ -123,7 +123,7 @@ jobs:
       with:
         default: prerelease
         rc-wording:     'RELEASE,alpha'
-        patch-wording:  'patch,fixes'
+        patch-wording:  'patch,fixes,fix'
         major-wording:  'MAJOR,cut-major'
         minor-wording:  'add,Adds,new,Project initialization'
         commit-message: 'CI: bumps version to {{version}} [skip ci]'

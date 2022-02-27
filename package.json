@@ -8,7 +8,7 @@
   "type": "module",
   "module": "dist/bebar.esm.js",
   "bin": {
-    "bebar": "bin/bebar.js"
+    "bebar": "bin/bebar.sh"
   },
   "files": [
     "dist"

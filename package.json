@@ -13,7 +13,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "npm run node-build && npm run copy-package-json && npm run copy-readme-files",
+    "build": "npm run node-build && npm run copy-package-json && npm run copy-readme-files && npm run copy-bin",
     "node-build": "tsdx build",
     "watch": "tsdx watch",
     "test": "npx jest --clearCache && jest --coverage",
@@ -23,6 +23,7 @@
     "eslint": "eslint --fix 'src/**/*{.ts,.tsx}' && eslint --fix 'test/**/*{.ts,.tsx}'",
     "copy-package-json": "copyfiles package.json ./dist/",
     "copy-readme-files": "copyfiles *.md ./dist/",
+    "copy-bin": "copyfiles ./bin/* ./dist/",
     "test-command-line": "node dist/index -f ./Assets/Bebar/schools.bebar -w ./../test",
     "lint": "tsdx lint",
     "build-run-test": "npm run build && npm run test && npm run test-command-line"

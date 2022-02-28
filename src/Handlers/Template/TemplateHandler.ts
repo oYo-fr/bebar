@@ -87,10 +87,12 @@ export class TemplateHandler {
         if (factory.handler) {
           await factory.handler.load();
           this.datasetHandlers.push(factory.handler as DatasetHandler);
-          this.templateData = {
-            ...this.templateData,
-            ...factory.handler?.content,
-          };
+          if (factory.handler) {
+            this.templateData = {
+              ...this.templateData,
+              ...factory.handler.content,
+            };
+          }
         }
       };
       this.bebarData = {

@@ -5,7 +5,7 @@ import {Dataset} from '../../../src/Models/Dataset';
 import {MockAxios} from '../../Utils/MockAxios';
 
 describe('JSFileDatasetHandler', () => {
-  test('canHandle method should return true', () => {
+  it('canHandle method should return true', () => {
     expect(JSFileDatasetHandler.canHandle(
         new Dataset({file: 'myfile.JS'}))).toBeTruthy();
 
@@ -16,7 +16,7 @@ describe('JSFileDatasetHandler', () => {
         new Dataset({parseAs: 'javascript'}))).toBeTruthy();
   });
 
-  test('canHandle method should return false', () => {
+  it('canHandle method should return false', () => {
     expect(JSFileDatasetHandler.canHandle(
         new Dataset({file: 'myfile.jpg'}))).toBeFalsy();
 
@@ -24,7 +24,7 @@ describe('JSFileDatasetHandler', () => {
         new Dataset({url: 'http://localhost/myfile.jpg'}))).toBeFalsy();
   });
 
-  test('getData method should return data', async () => {
+  it('getData method should return data', async () => {
     const handler = new JSFileDatasetHandler(
         new Dataset({
           name: 'schools',
@@ -37,7 +37,7 @@ describe('JSFileDatasetHandler', () => {
     expect(data['schools'].length).toBe(10);
   });
 
-  test('promise getData shoud return data', async () => {
+  it('promise getData shoud return data', async () => {
     const handler = new JSFileDatasetHandler(
         new Dataset({
           name: 'schools',
@@ -50,7 +50,7 @@ describe('JSFileDatasetHandler', () => {
     expect(data['schools'].length).toBe(10);
   });
 
-  test('getData method should throw', async () => {
+  it('getData method should throw', async () => {
     const handler = new JSFileDatasetHandler(
         new Dataset({
           name: 'schools',
@@ -67,7 +67,7 @@ describe('JSFileDatasetHandler', () => {
     }
   });
 
-  test('getData method should return data from HTTP', async () => {
+  it('getData method should return data from HTTP', async () => {
     await MockAxios.mockUrl(
         '/schools.js',
         './test/Assets/Datasets/schools.js');

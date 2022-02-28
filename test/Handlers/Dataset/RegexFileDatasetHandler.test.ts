@@ -7,7 +7,7 @@ import {MockAxios} from '../../Utils/MockAxios';
 describe('RegexFileDatasetHandler', () => {
   const regex = /<li>(?<id>\d*).\s(?<name>[^\<]*)<\/li>/gm;
 
-  test('canHandle method should return true', () => {
+  it('canHandle method should return true', () => {
     expect(RegexFileDatasetHandler.canHandle(
         new Dataset({
           file: 'myfile.txt',
@@ -20,7 +20,7 @@ describe('RegexFileDatasetHandler', () => {
         .toBeTruthy();
   });
 
-  test('canHandle method should return false', () => {
+  it('canHandle method should return false', () => {
     expect(RegexFileDatasetHandler.canHandle(
         new Dataset({
           file: 'myfile.txt',
@@ -49,7 +49,7 @@ describe('RegexFileDatasetHandler', () => {
         .toBeFalsy();
   });
 
-  test('getData method should return data', async () => {
+  it('getData method should return data', async () => {
     const handler = new RegexFileDatasetHandler(
         new Dataset({
           name: 'schools',
@@ -65,7 +65,7 @@ describe('RegexFileDatasetHandler', () => {
     expect(data['schools'].length).toBe(10);
   });
 
-  test('getData method should throw', async () => {
+  it('getData method should throw', async () => {
     const handler = new RegexFileDatasetHandler(
         new Dataset({
           name: 'schools',
@@ -85,7 +85,7 @@ describe('RegexFileDatasetHandler', () => {
     }
   });
 
-  test('getData method should return data from HTTP', async () => {
+  it('getData method should return data from HTTP', async () => {
     await MockAxios.mockUrl(
         '/schools.html',
         './test/Assets/Datasets/schools.html');

@@ -5,7 +5,7 @@ import {Dataset} from '../../../src/Models/Dataset';
 import {MockAxios} from '../../Utils/MockAxios';
 
 describe('YamlFileDatasetHandler', () => {
-  test('canHandle method should return true', () => {
+  it('canHandle method should return true', () => {
     expect(YamlFileDatasetHandler.canHandle(
         new Dataset({file: 'myfile.yml'})))
         .toBeTruthy();
@@ -23,7 +23,7 @@ describe('YamlFileDatasetHandler', () => {
         .toBeTruthy();
   });
 
-  test('canHandle method should return false', () => {
+  it('canHandle method should return false', () => {
     expect(YamlFileDatasetHandler.canHandle(
         new Dataset({file: 'myfile.jpg'})))
         .toBeFalsy();
@@ -36,7 +36,7 @@ describe('YamlFileDatasetHandler', () => {
     expect(YamlFileDatasetHandler.canHandle(undefined)).toBeFalsy();
   });
 
-  test('getData method should return data', async () => {
+  it('getData method should return data', async () => {
     const handler = new YamlFileDatasetHandler(
         new Dataset({
           name: 'schools',
@@ -52,7 +52,7 @@ describe('YamlFileDatasetHandler', () => {
     expect(data['schools'].length).toBe(10);
   });
 
-  test('getData method should read utf-16', async () => {
+  it('getData method should read utf-16', async () => {
     const handler = new YamlFileDatasetHandler(
         new Dataset({
           name: 'schools',
@@ -66,7 +66,7 @@ describe('YamlFileDatasetHandler', () => {
     expect(data['schools'].length).toBe(10);
   });
 
-  test('getData method should throw', async () => {
+  it('getData method should throw', async () => {
     const handler = new YamlFileDatasetHandler(
         new Dataset({
           name: 'schools',
@@ -83,7 +83,7 @@ describe('YamlFileDatasetHandler', () => {
     }
   });
 
-  test('getData method should return data from HTTP', async () => {
+  it('getData method should return data from HTTP', async () => {
     await MockAxios.mockUrl(
         '/schools.yaml',
         './test/Assets/Datasets/schools.yaml');

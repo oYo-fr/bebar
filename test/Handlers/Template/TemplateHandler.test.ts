@@ -5,7 +5,7 @@ import {Template} from '../../../src/Models/Template';
 import {MockAxios} from '../../Utils/MockAxios';
 
 describe('TemplateHandler', () => {
-  test('load method should not crash', async () => {
+  it('load method should not crash', async () => {
     const handler = new TemplateHandler(
         new Template({
           file: './test/Assets/Templates/list_of_schools.hbs',
@@ -13,7 +13,7 @@ describe('TemplateHandler', () => {
     await handler.load();
   });
 
-  test('load method should not crash loading direct content', async () => {
+  it('load method should not crash loading direct content', async () => {
     const handler = new TemplateHandler(
         new Template({
           content: `{{#each schools}}
@@ -23,7 +23,7 @@ describe('TemplateHandler', () => {
     await handler.load();
   });
 
-  test('load from HTTP method should not crash', async () => {
+  it('load from HTTP method should not crash', async () => {
     await MockAxios.mockUrl(
         '/list_of_schools.hbs',
         './test/Assets/Templates/list_of_schools.hbs');
@@ -33,7 +33,7 @@ describe('TemplateHandler', () => {
     await handler.load();
   });
 
-  test('load method with data should not crash', async () => {
+  it('load method with data should not crash', async () => {
     const handler = new TemplateHandler(
         new Template({
           content: `{{#each schools as |school|}}
@@ -93,7 +93,7 @@ describe('TemplateHandler', () => {
     },
   ];
 
-  test('should produce multiple outputs', async () => {
+  it('should produce multiple outputs', async () => {
     const handler = new TemplateHandler(
         new Template({
           content: '{{member.name}} ({{band.name}}) - {{member.wikipedia}}',
@@ -121,7 +121,7 @@ describe('TemplateHandler', () => {
     expect(handler.outputs[0].content).toBe('Freddie Mercury (Queen) - https://www.wikiwand.com/en/Freddie_Mercury');
   });
 
-  test('should produce multiple outputs (named iteravion value)', async () => {
+  it('should produce multiple outputs (named iteravion value)', async () => {
     const handler = new TemplateHandler(
         new Template({
           content:
@@ -151,7 +151,7 @@ describe('TemplateHandler', () => {
     expect(handler.outputs[0].content).toBe('Freddie Mercury (Queen) - https://www.wikiwand.com/en/Freddie_Mercury');
   });
 
-  test('should produce multiple outputs (with nested arrays)', async () => {
+  it('should produce multiple outputs (with nested arrays)', async () => {
     const handler = new TemplateHandler(
         new Template({
           content: '{{breed.name}}',
@@ -181,7 +181,7 @@ describe('TemplateHandler', () => {
     expect(handler.outputs[0].content).toBe('Border terrier');
   });
 
-  test('should produce a prettified output', async () => {
+  it('should produce a prettified output', async () => {
     const templateData: ITemplate = {
       file: './test/Assets/Templates/bands.hbs',
       data: [
@@ -207,7 +207,7 @@ describe('TemplateHandler', () => {
       handlerWithPrettify.outputs[0].content).toBeTruthy();
   });
 
-  test('should produce an output event with broken prettifier', async () => {
+  it('should produce an output event with broken prettifier', async () => {
     const templateData: ITemplate = {
       file: './test/Assets/Templates/bands.hbs',
       data: [

@@ -14,7 +14,7 @@ import {CSVFileDatasetHandler}
 import {Dataset} from '../../src/Models/Dataset';
 
 describe('DatasetFactory', () => {
-  test('should throw a UnableToHandleObjectException', () => {
+  it('should throw a UnableToHandleObjectException', () => {
     const factory: DatasetFactory = new DatasetFactory(new Dataset({
       name: 'sample',
       file: 'myfile.jpg',
@@ -28,7 +28,7 @@ describe('DatasetFactory', () => {
     }
   });
 
-  test('Handler should be YAML', () => {
+  it('Handler should be YAML', () => {
     const factory: DatasetFactory = new DatasetFactory(new Dataset({
       name: '',
       file: './test/Assets/Datasets/schools.yaml',
@@ -37,7 +37,7 @@ describe('DatasetFactory', () => {
     expect(factory.handler).toBeInstanceOf(YamlFileDatasetHandler);
   });
 
-  test('Handler should be JS', () => {
+  it('Handler should be JS', () => {
     const factory: DatasetFactory = new DatasetFactory(new Dataset({
       name: '',
       file: './test/Assets/Datasets/schools.js',
@@ -46,7 +46,7 @@ describe('DatasetFactory', () => {
     expect(factory.handler).toBeInstanceOf(JSFileDatasetHandler);
   });
 
-  test('Handler should be JSON', () => {
+  it('Handler should be JSON', () => {
     const factory: DatasetFactory = new DatasetFactory(new Dataset({
       name: '',
       file: './test/Assets/Datasets/schools.json',
@@ -55,7 +55,7 @@ describe('DatasetFactory', () => {
     expect(factory.handler).toBeInstanceOf(JSonFileDatasetHandler);
   });
 
-  test('Handler should be DIRECT', () => {
+  it('Handler should be DIRECT', () => {
     const factory: DatasetFactory = new DatasetFactory(new Dataset({
       name: 'test',
       content: { },
@@ -64,7 +64,7 @@ describe('DatasetFactory', () => {
     expect(factory.handler).toBeInstanceOf(DirectDatasetHandler);
   });
 
-  test('Handler should be CSV', () => {
+  it('Handler should be CSV', () => {
     const factory: DatasetFactory = new DatasetFactory(new Dataset({
       name: '',
       file: './test/Assets/Datasets/schools.csv',
@@ -73,7 +73,7 @@ describe('DatasetFactory', () => {
     expect(factory.handler).toBeInstanceOf(CSVFileDatasetHandler);
   });
 
-  test('should switch handler if needed', () => {
+  it('should switch handler if needed', () => {
     const dataset = new Dataset({name: 'sample', file: 'myfile.json'});
     const factory: DatasetFactory = new DatasetFactory(dataset);
     factory.load();

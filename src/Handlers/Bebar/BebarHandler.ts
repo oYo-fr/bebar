@@ -40,10 +40,12 @@ export class BebarHandler {
         if (factory.handler) {
           await factory.handler.load();
           this.datasetHandlers.push(factory.handler as DatasetHandler);
-          this.allData = {
-            ...this.allData,
-            ...factory.handler?.content,
-          };
+          if (factory.handler) {
+            this.allData = {
+              ...this.allData,
+              ...factory.handler.content,
+            };
+          }
         }
       };
     }

@@ -3,19 +3,19 @@ import {MultipleFilesFileDatasetHandler}
 import {Dataset} from '../../../src/Models/Dataset';
 
 describe('MultipleFilesFileDatasetHandler', () => {
-  test('canHandle method should return true', () => {
+  it('canHandle method should return true', () => {
     expect(MultipleFilesFileDatasetHandler.canHandle(
         new Dataset({file: './test/Assets/Datasets/*.js'})))
         .toBeTruthy();
   });
 
-  test('canHandle method should return false', () => {
+  it('canHandle method should return false', () => {
     expect(MultipleFilesFileDatasetHandler.canHandle(
         new Dataset({file: './test/Assets/Datasets/*.json'})))
         .toBeFalsy();
   });
 
-  test('getData method should return data',
+  it('getData method should return data',
       async () => {
         const handler = new MultipleFilesFileDatasetHandler(
             new Dataset({file: './test/Assets/Datasets/*.js'}));

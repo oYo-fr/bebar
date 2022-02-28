@@ -7,7 +7,7 @@
   "typings": "dist/index.d.ts",
   "module": "dist/bebar.esm.js",
   "bin": {
-    "bebar": "bin/bebar.sh"
+    "bebar": "bin/bebar"
   },
   "files": [
     "dist"

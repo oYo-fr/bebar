@@ -1,7 +1,7 @@
 import {Converter} from '../../src/Utils/Converter';
 
 describe('Converter', () => {
-  test('calling converters with no data should not crash', async () => {
+  it('calling converters with no data should not crash', async () => {
     expect(Converter.toBebar(undefined)).toBeUndefined();
     expect(Converter.toDataset(undefined)).toBeUndefined();
     expect(Converter.toDatasets(undefined)).toBeUndefined();

@@ -3,7 +3,7 @@ import {DirectDatasetHandler}
 import {Dataset} from '../../../src/Models/Dataset';
 
 describe('DirectDatasetHandler', () => {
-  test('canHandle method should return true', () => {
+  it('canHandle method should return true', () => {
     expect(DirectDatasetHandler.canHandle(
         new Dataset({
           name: 'schools',
@@ -16,7 +16,7 @@ describe('DirectDatasetHandler', () => {
         }))).toBeTruthy();
   });
 
-  test('canHandle method should return false', () => {
+  it('canHandle method should return false', () => {
     expect(DirectDatasetHandler.canHandle(
         new Dataset({file: 'myfile.jpg'}))).toBeFalsy();
 
@@ -36,7 +36,7 @@ describe('DirectDatasetHandler', () => {
         }))).toBeFalsy();
   });
 
-  test('getData method should return data', async () => {
+  it('getData method should return data', async () => {
     const data = [
       {
         id: 1,

@@ -5,7 +5,7 @@ import {Dataset} from '../../../src/Models/Dataset';
 import {MockAxios} from '../../Utils/MockAxios';
 
 describe('JSonFileDatasetHandler', () => {
-  test('handler should return true on provided object', () => {
+  it('handler should return true on provided object', () => {
     expect(JSonFileDatasetHandler.canHandle(
         new Dataset({file: 'myfile.jSoN'}))).toBeTruthy();
 
@@ -13,7 +13,7 @@ describe('JSonFileDatasetHandler', () => {
         new Dataset({parseAs: 'JSon'}))).toBeTruthy();
   });
 
-  test('handler should return false on provided object', () => {
+  it('handler should return false on provided object', () => {
     expect(JSonFileDatasetHandler.canHandle(
         new Dataset({file: 'myfile.jpg'}))).toBeFalsy();
 
@@ -21,7 +21,7 @@ describe('JSonFileDatasetHandler', () => {
         new Dataset({url: 'http://localhost/myfile.jpg'}))).toBeFalsy();
   });
 
-  test('JSonFileDatasetHandler getData method should return data', async () => {
+  it('JSonFileDatasetHandler getData method should return data', async () => {
     const handler = new JSonFileDatasetHandler(
         new Dataset({
           name: 'schools',
@@ -34,7 +34,7 @@ describe('JSonFileDatasetHandler', () => {
     expect(data['schools'].length).toBe(10);
   });
 
-  test('JSonFileDatasetHandler getData method should throw', async () => {
+  it('JSonFileDatasetHandler getData method should throw', async () => {
     const handler = new JSonFileDatasetHandler(
         new Dataset({
           name: 'schools',
@@ -51,7 +51,7 @@ describe('JSonFileDatasetHandler', () => {
     }
   });
 
-  test('getData method should return data from HTTP', async () => {
+  it('getData method should return data from HTTP', async () => {
     await MockAxios.mockUrl(
         '/schools.json',
         './test/Assets/Datasets/schools.json');

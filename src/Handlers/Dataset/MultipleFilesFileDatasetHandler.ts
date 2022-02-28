@@ -39,7 +39,9 @@ export class MultipleFilesFileDatasetHandler
     this.content = {};
     for (let i = 0; i < handlers.length; i++) {
       const handler = handlers[i];
-      await handler?.load();
+      if (handler) {
+        await handler.load();
+      }
     }
     // await Promise.all(handlers.map((h: { load: () => any; }) => h.load()));
     handlers.forEach(async (h: any) => {

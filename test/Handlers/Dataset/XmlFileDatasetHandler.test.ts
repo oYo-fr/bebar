@@ -5,7 +5,7 @@ import {Dataset} from '../../../src/Models/Dataset';
 import {MockAxios} from '../../Utils/MockAxios';
 
 describe('XmlFileDatasetHandler', () => {
-  test('canHandle method should return true', () => {
+  it('canHandle method should return true', () => {
     expect(XmlFileDatasetHandler.canHandle(
         new Dataset({file: 'myfile.xml'})))
         .toBeTruthy();
@@ -15,7 +15,7 @@ describe('XmlFileDatasetHandler', () => {
         .toBeTruthy();
   });
 
-  test('canHandle method should return false', () => {
+  it('canHandle method should return false', () => {
     expect(XmlFileDatasetHandler.canHandle(
         new Dataset({file: 'myfile.jpg'})))
         .toBeFalsy();
@@ -28,7 +28,7 @@ describe('XmlFileDatasetHandler', () => {
     expect(XmlFileDatasetHandler.canHandle(undefined)).toBeFalsy();
   });
 
-  test('getData method should return data', async () => {
+  it('getData method should return data', async () => {
     const handler = new XmlFileDatasetHandler(
         new Dataset({
           name: 'schools',
@@ -40,7 +40,7 @@ describe('XmlFileDatasetHandler', () => {
     expect(data['schools'].root.row.length).toBe(10);
   });
 
-  test('getData method should throw', async () => {
+  it('getData method should throw', async () => {
     const handler = new XmlFileDatasetHandler(
         new Dataset({
           name: 'schools',
@@ -56,7 +56,7 @@ describe('XmlFileDatasetHandler', () => {
     }
   });
 
-  test('getData method should return data from HTTP', async () => {
+  it('getData method should return data from HTTP', async () => {
     await MockAxios.mockUrl(
         '/schools.xml',
         './test/Assets/Datasets/schools.xml');

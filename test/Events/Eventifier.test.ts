@@ -12,13 +12,13 @@ class DummyClass {
    * Sample test function to make sure it still works
    * @return {boolean} returns true
    */
-  public test(): boolean {
+  public it(): boolean {
     return true;
   }
 }
 
 describe('Eventifier', () => {
-  test('Should add events any class', () => {
+  it('Should add events any class', () => {
     const dummy = new DummyClass();
     expect(dummy.name).toBe('foo');
     expect(dummy.value).toBe(10);
@@ -48,10 +48,10 @@ describe('Eventifier', () => {
     eventRaised = false;
     dummy.name = 'foo';
     expect(eventRaised).toBeFalsy(); // we asked the evt to be raised only once
-    expect(dummy.test()).toBeTruthy();
+    expect(dummy.it()).toBeTruthy();
   });
 
-  test('Should not crash on undecorated classes', () => {
+  it('Should not crash on undecorated classes', () => {
     const dummy = new DummyClass();
     Eventifier.off(dummy, () => { });
     try {

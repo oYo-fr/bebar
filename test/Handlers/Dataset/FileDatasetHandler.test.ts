@@ -9,7 +9,7 @@ class DummyFileDatasetHandler extends FileDatasetHandler {
 }
 
 describe('FileDatasetHandler', () => {
-  test('should give have a default name', () => {
+  it('should give have a default name', () => {
     const handler = new DummyFileDatasetHandler(
         new Dataset({file: './test/Assets/Datasets/schools.csv'}));
     expect(handler.dataset.name).toBe('schools');

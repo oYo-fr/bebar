@@ -3,7 +3,7 @@ import {BebarHandler}
 import {Bebar} from '../../../src/Models/Bebar';
 
 describe('BebarHandler', () => {
-  test('load method should not crash', async () => {
+  it('load method should not crash', async () => {
     const handler = new BebarHandler(new Bebar({
       data: [{file: './test/Assets/Datasets/*.yaml'}],
       partials: [{file: './test/Assets/Partials/*.hbs'}],

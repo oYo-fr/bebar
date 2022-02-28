@@ -5,7 +5,7 @@ import {Dataset} from '../../../src/Models/Dataset';
 import {MockAxios} from '../../Utils/MockAxios';
 
 describe('CSVFileDatasetHandler', () => {
-  test('canHandle method should return true', () => {
+  it('canHandle method should return true', () => {
     expect(CSVFileDatasetHandler.canHandle(
         new Dataset({file: 'myfile.CSV'}))).toBeTruthy();
 
@@ -16,7 +16,7 @@ describe('CSVFileDatasetHandler', () => {
         new Dataset({parseAs: 'CsV'}))).toBeTruthy();
   });
 
-  test('canHandle method should return false', () => {
+  it('canHandle method should return false', () => {
     expect(CSVFileDatasetHandler.canHandle(
         new Dataset({file: 'myfile.jpg'}))).toBeFalsy();
 
@@ -24,7 +24,7 @@ describe('CSVFileDatasetHandler', () => {
         new Dataset({url: 'http://localhost/myfile.jpg'}))).toBeFalsy();
   });
 
-  test('getData method should return data', async () => {
+  it('getData method should return data', async () => {
     const handler = new CSVFileDatasetHandler(new Dataset({
       name: 'schools',
       file: './test/Assets/Datasets/schools.csv',
@@ -38,7 +38,7 @@ describe('CSVFileDatasetHandler', () => {
     expect(data['schools'].length).toBe(10);
   });
 
-  test('getData method should throw', async () => {
+  it('getData method should throw', async () => {
     const handler = new CSVFileDatasetHandler(new Dataset({
       name: 'schools',
       file: './test/Assets/Datasets/missing_file.CSV',
@@ -56,7 +56,7 @@ describe('CSVFileDatasetHandler', () => {
     }
   });
 
-  test('getData method should return data from HTTP', async () => {
+  it('getData method should return data from HTTP', async () => {
     await MockAxios.mockUrl(
         '/schools.csv',
         './test/Assets/Datasets/schools.csv');

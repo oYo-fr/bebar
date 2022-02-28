@@ -24,6 +24,25 @@ Additionnaly, you _can_ also indicate:
 - Where to find helpers which are javascript functions to help you transform your data (to display human-readable dates, currency amounts, various conversions, ...)
 - Prettify options so your final output looks beter!
 
+## How to use Bebar
+
+### Install
+
+``` bash
+npm install -g bebar
+```
+
+### Run
+
+``` bash
+bebar
+```
+
+### Command line arguments
+
+- `-f, --filename` [optional] The filename of you bebar file(s). The path can include a wildcard. If ommited, will default to *.bebar.
+- `-w, --workdir` [optional] The working directory to use when running the bebar files. If you use relative path in your bebar files, they will be combined with this parameter. Defaults to the current directory.
+
 ## A basic example
 
 ### The data (schools.json)

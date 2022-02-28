@@ -6,11 +6,8 @@ import clear from 'clear';
 import figlet from 'figlet';
 import {program} from 'commander';
 
-import pjson from './package.json';
-// import fs from 'fs';
-// import util from 'util';
-// const readFile = util.promisify(fs.readFile);
-// const pjson = JSON.parse(await readFile('./package.json', 'utf-8'));
+// @ts-ignore
+import pjson from './../package.json';
 
 process.stdout.write('test');
 console.warn('test');

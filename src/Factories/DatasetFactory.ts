@@ -1,5 +1,8 @@
 import {DatasetHandler} from '../Handlers/Dataset/DatasetHandler';
-import {AllDatasetHandlerTypes} from '../Handlers/Dataset/DatasetHandlerTypes';
+import {AllDatasetHandlerTypes}
+  from '../Handlers/Dataset/AllDatasetHandlerTypes';
+import {FileDatasetHandlerTypes}
+  from '../Handlers/Dataset/FileDatasetHandlerTypes';
 import {Dataset} from '../Models/Dataset';
 import {Factory} from './Factory';
 
@@ -12,11 +15,12 @@ export class DatasetFactory extends Factory<Dataset, DatasetHandler> {
   /**
    * Constructor
    * @param {any} source Source data object with no type (yet)
-   * @param {Array<any>} types The types of handlers to test against
+   * @param {Array<any>} allTypes Indicates if all dataset handler types should
+   *  be tested or only file dataset handler types
    */
   constructor(
     public dataset: Dataset,
-    types: Array<any> = AllDatasetHandlerTypes) {
-    super(types, dataset);
+    allTypes: boolean = true) {
+    super(allTypes ? AllDatasetHandlerTypes : FileDatasetHandlerTypes, dataset);
   }
 };

@@ -1,5 +1,5 @@
 import {FileDatasetHandler} from './FileDatasetHandler';
-import YAML from 'yaml';
+const YAML = require('yaml');
 
 /**
  * Dataset that can handle Yaml files

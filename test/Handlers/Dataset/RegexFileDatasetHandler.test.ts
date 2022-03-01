@@ -1,4 +1,4 @@
-import {DatasetException} from '../../../src/Exceptions/DatasetException';
+import {BebarException} from '../../../src/Exceptions/BebarException';
 import {RegexFileDatasetHandler}
   from '../../../src/Handlers/Dataset/RegexFileDatasetHandler';
 import {Dataset} from '../../../src/Models/Dataset';
@@ -79,9 +79,8 @@ describe('RegexFileDatasetHandler', () => {
       await handler.load();
       expect(false).toBeTruthy(); // We should never reach this point
     } catch (e) {
-      expect(e).toBeInstanceOf(DatasetException);
-      expect((e as DatasetException).inner).toBeDefined();
-      expect((e as DatasetException).sender).toBe(handler);
+      expect((e as BebarException).inner).toBeDefined();
+      expect((e as BebarException).sender).toBe(handler);
     }
   });
 

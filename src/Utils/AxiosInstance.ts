@@ -12,8 +12,8 @@ export class AxiosInstance {
   private constructor() { }
 
   /**
-   * Gets the unique instance of settings
-   * @return {AxiosInstance} The instance of axio
+   * Gets the unique instance of Axios
+   * @return {AxiosInstance} The instance of axios
    */
   public static getInstance(): AxiosInstance {
     if (!AxiosInstance.instance) {

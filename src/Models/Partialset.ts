@@ -1,9 +1,8 @@
-import {Converter} from '../Utils/Converter';
 import {Settings} from '../Utils/Settings';
 import {IPartialset} from './Interfaces/IPartialset';
 
 import path from 'path';
-import glob from 'glob';
+const glob = require('glob');
 
 /**
  * Represents a place where handlebar partials can be found.
@@ -35,7 +34,14 @@ export class Partialset implements IPartialset {
    * @param {IPartialset | undefined} plainObject A plain object containing
    */
   constructor(plainObject: IPartialset | undefined) {
-    if (plainObject) Converter.toPartialset(plainObject, this);
+    if (plainObject) {
+      this.name = plainObject.name;
+      this.file = plainObject.file;
+      this.encoding = plainObject.encoding;
+      this.url = plainObject.url;
+      this.httpOptions = plainObject.httpOptions;
+      this.content = plainObject.content;
+    }
     this.setDefaults();
   }
 
@@ -66,6 +72,6 @@ export class Partialset implements IPartialset {
    */
   private multipleFiles(p: string): boolean {
     return glob.sync(path.resolve(
-        Settings.getInstance().workingDirectory, p)).length > 1;
+        Settings.workingDirectory, p)).length > 1;
   }
 };

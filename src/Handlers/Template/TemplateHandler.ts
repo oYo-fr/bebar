@@ -10,6 +10,13 @@ import Handlebars from 'handlebars';
 import {AxiosInstance} from '../../Utils/AxiosInstance';
 const axios = AxiosInstance.getInstance().axios;
 import prettier from 'prettier';
+import {Logger} from '../../Logging/Logger';
+import {TemplateLoadingException}
+  from './../../Exceptions/TemplateLoadingException';
+import {TemplateRegisteringException}
+  from './../../Exceptions/TemplateRegisteringException';
+import {TemplateExecutionException}
+  from './../../Exceptions/TemplateExecutionException';
 
 /**
  * A template handler is reponsible for reading and returning data
@@ -50,18 +57,32 @@ export class TemplateHandler {
     if (this.template.content) {
       await this.registerHandlebarTemplate(this.template.content);
     } else if (this.template.file) {
-      const filepath = path.resolve(
-          Settings.getInstance().workingDirectory,
-          this.template.file);
-      const fileContent =
+      try {
+        Logger.info(this, `Loading template from ${this.template.file}`, '📰');
+        const filepath = path.resolve(
+            Settings.workingDirectory,
+            this.template.file);
+        const fileContent =
         fs.readFileSync(filepath, this.template.encoding as BufferEncoding);
-      await this.registerHandlebarTemplate(fileContent);
+        await this.registerHandlebarTemplate(fileContent);
+      } catch (e) {
+        const ex = new TemplateLoadingException(this, e);
+        Logger.error(this, 'Failed loading partial file', ex);
+        throw ex;
+      }
     } else if (this.template.url) {
-      const response = await axios.request({
-        url: this.template.url,
-        ...this.template.httpOptions,
-      });
-      await this.registerHandlebarTemplate(response.data);
+      Logger.info(this, `Loading template from ${this.template.url}`, '📰');
+      try {
+        const response = await axios.request({
+          url: this.template.url,
+          ...this.template.httpOptions,
+        });
+        await this.registerHandlebarTemplate(response.data);
+      } catch (e) {
+        const ex = new TemplateLoadingException(this, e);
+        Logger.error(this, 'Failed loading partial file', ex);
+        throw ex;
+      }
     }
   }
 
@@ -71,7 +92,13 @@ export class TemplateHandler {
    *  functions
    */
   private async registerHandlebarTemplate(sourceCode: string) {
-    this.compiledTemplate = await Handlebars.compile(sourceCode);
+    try {
+      this.compiledTemplate = await Handlebars.compile(sourceCode);
+    } catch (e) {
+      const ex = new TemplateRegisteringException(this, e);
+      Logger.error(this, 'Failed loading partial file', ex);
+      throw ex;
+    }
   }
 
   /**
@@ -202,14 +229,20 @@ export class TemplateHandler {
    * @param {string} output The name of the file that should be produced
    */
   private async produceOutput(data: any, output: string | undefined) {
-    let processedOutputFilename = output;
-    if (output) {
-      const outputNameTemplate = await Handlebars.compile(output);
-      processedOutputFilename = await outputNameTemplate(data);
+    try {
+      let processedOutputFilename = output;
+      if (output) {
+        const outputNameTemplate = await Handlebars.compile(output);
+        processedOutputFilename = await outputNameTemplate(data);
+      }
+      this.outputs.push(new Output({
+        content: await this.compiledTemplate(data),
+        file: processedOutputFilename,
+      }));
+    } catch (e) {
+      const ex = new TemplateExecutionException(this, e);
+      Logger.error(this, 'Failed loading partial file', ex);
+      throw ex;
     }
-    this.outputs.push(new Output({
-      content: await this.compiledTemplate(data),
-      file: processedOutputFilename,
-    }));
   }
 };

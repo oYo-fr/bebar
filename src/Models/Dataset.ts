@@ -1,7 +1,6 @@
-import {Converter} from '../Utils/Converter';
 import {IDataset} from './Interfaces/IDataset';
 import path from 'path';
-import glob from 'glob';
+const glob = require('glob');
 
 /**
  * Generic Dataset class
@@ -45,7 +44,17 @@ export class Dataset implements IDataset {
    *  required properties
    */
   constructor(plainObject: IDataset | undefined) {
-    if (plainObject) Converter.toDataset(plainObject, this);
+    if (plainObject) {
+      this.name = plainObject.name;
+      this.file = plainObject.file;
+      this.encoding = plainObject.encoding;
+      this.options = plainObject.options;
+      this.content = plainObject.content;
+      this.context = plainObject.context;
+      this.parseAs = plainObject.parseAs;
+      this.url = plainObject.url;
+      this.httpOptions = plainObject.httpOptions;
+    }
     this.setDefaults();
   }
 

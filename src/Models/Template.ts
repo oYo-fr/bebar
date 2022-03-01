@@ -1,7 +1,8 @@
 import {Dataset} from './Dataset';
 import {Iterator} from './Iterator';
 import {ITemplate} from './Interfaces/ITemplate';
-import {Converter} from '../Utils/Converter';
+import {IIterator} from '../Models/Interfaces/IIterator';
+import {IDataset} from '../Models/Interfaces/IDataset';
 
 /**
  * Generic Template class
@@ -49,7 +50,18 @@ export class Template implements ITemplate {
    * @param {ITemplate | undefined} plainObject A plain object containing
    */
   constructor(plainObject: ITemplate | undefined) {
-    if (plainObject) Converter.toTemplate(plainObject, this);
+    if (plainObject) {
+      this.file = plainObject.file;
+      this.encoding = plainObject.encoding;
+      this.url = plainObject.url;
+      this.httpOptions = plainObject.httpOptions;
+      this.content = plainObject.content;
+      this.data = this.toDatasets(plainObject.data);
+      this.output = plainObject.output;
+      this.iterators = this.toIterators(plainObject.iterators);
+      this.iterationValueName = plainObject.iterationValueName;
+      this.prettify = plainObject.prettify;
+    }
     this.setDefaults();
   }
 
@@ -58,5 +70,27 @@ export class Template implements ITemplate {
    */
   public setDefaults() {
     this.encoding = (this.file && !this.encoding) ? 'utf-8' : this.encoding;
+  }
+
+  /**
+   * Transforms a plain object into an array of instances of Dataset
+   * @param {IDataset[] | undefined} obj The object to transform
+   * @return {Dataset[] | undefined} An array of Dataset object instances
+   */
+  private toDatasets(obj: IDataset[] | undefined): Dataset[] | undefined {
+    if (!obj) return obj;
+    return obj.map((o: IDataset) => new Dataset(o));
+  }
+
+  /**
+   * Transforms a plain object into an array of instances of Iterator
+   * @param {IIterator[] | undefined} obj The object to transform
+   * @return {Iterator[] | undefined} An array of IteratorIterator object
+   *  instances
+   */
+  private toIterators(obj: IIterator[] | undefined):
+   Iterator[] | undefined {
+    if (!obj) return obj;
+    return obj.map((o: IIterator) => new Iterator(o));
   }
 };

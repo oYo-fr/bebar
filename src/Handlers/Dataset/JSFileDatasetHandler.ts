@@ -1,5 +1,7 @@
 import {FileDatasetHandler} from './FileDatasetHandler';
 import {Dataset} from '../../Models/Dataset';
+import {Settings} from '../../Utils/Settings';
+const nodeEval = require('node-eval');
 
 /**
  * Dataset that can handle JS files
@@ -34,12 +36,13 @@ export class JSFileDatasetHandler
       data: string,
       options?: any,
       context?: any): Promise<any> {
-    let result = await eval(data);
+    const param = {
+      ...context,
+      options: options,
+    };
+    let result = nodeEval(data, Settings.workingDirectory, param);
     try {
-      result = await result({
-        ...context,
-        options: options,
-      });
+      result = await result(param);
     } catch {}
     return result;
   }

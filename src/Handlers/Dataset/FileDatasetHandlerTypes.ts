@@ -1,8 +1,3 @@
-
-import {DirectDatasetHandler}
-  from './DirectDatasetHandler';
-import {MultipleFilesFileDatasetHandler}
-  from './MultipleFilesFileDatasetHandler';
 import {JSonFileDatasetHandler}
   from './JSonFileDatasetHandler';
 import {YamlFileDatasetHandler}
@@ -23,10 +18,4 @@ export const FileDatasetHandlerTypes = [
   XmlFileDatasetHandler,
   JSFileDatasetHandler,
   RegexFileDatasetHandler,
-];
-
-export const AllDatasetHandlerTypes = [
-  DirectDatasetHandler,
-  MultipleFilesFileDatasetHandler,
-  ...FileDatasetHandlerTypes,
 ];

@@ -1,4 +1,3 @@
-import {Converter} from '../Utils/Converter';
 import {IOutput} from './Interfaces/IOutput';
 
 /**
@@ -15,6 +14,9 @@ export class Output implements IOutput {
    * @param {IOutput | undefined} plainObject A plain object containing
    */
   constructor(plainObject: IOutput | undefined) {
-    if (plainObject) Converter.toOutput(plainObject, this);
+    if (plainObject) {
+      this.content = plainObject.content;
+      this.file = plainObject.file;
+    }
   }
 };

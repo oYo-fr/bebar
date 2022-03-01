@@ -7,5 +7,5 @@ import {BebarException} from './BebarException';
  * contains a property with a `.jpeg` extension, there is a good chance that
  * no handlers will be able to read data from such a file.
  */
-export class DatasetException extends BebarException {
+export class DatasetLoadingException extends BebarException {
 };

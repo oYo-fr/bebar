@@ -2,7 +2,11 @@
   "name": "bebar",
   "author": "Yoann Diguet",
   "license": "Apache",
+<<<<<<< Updated upstream
   "version": "0.2.9",
+=======
+  "version": "0.2.6",
+>>>>>>> Stashed changes
   "main": "./dist/index.js",
   "typings": "dist/index.d.ts",
   "module": "dist/bebar.esm.js",
@@ -26,8 +30,7 @@
     "copy-bin": "copyfiles ./bin/* ./dist/",
     "test-command-line": "node dist/index -f ./Assets/Bebar/schools.bebar -w ./test",
     "lint": "tsdx lint",
-    "build-run-test": "npm run build && npm run test && npm run test-command-line",
-    "pre-commit": "rm -rf ./node_modules && rm -rf ./dis && npm install && npm run build && npm run test && npm run test-command-line"
+    "build-run-test": "npm run build && npm run test && npm run test-command-line"
   },
   "jest": {
     "preset": "ts-jest",

@@ -1,4 +1,3 @@
-import {Converter} from '../Utils/Converter';
 import {IIterator} from './Interfaces/IIterator';
 
 /**
@@ -17,6 +16,9 @@ export class Iterator implements IIterator {
    * @param {IIterator | undefined} plainObject A plain object containing
    */
   constructor(plainObject: IIterator | undefined) {
-    if (plainObject) Converter.toIterator(plainObject, this);
+    if (plainObject) {
+      this.variable = plainObject.variable;
+      this.array = plainObject.array;
+    }
   }
 };

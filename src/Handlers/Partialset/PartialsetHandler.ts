@@ -1,6 +1,6 @@
 import {Partialset} from '../../Models/Partialset';
 import {Settings} from '../../Utils/Settings';
-import glob from 'glob';
+const glob = require('glob');
 import path from 'path';
 import fs from 'fs';
 import util from 'util';
@@ -8,6 +8,11 @@ const readFile = util.promisify(fs.readFile);
 import Handlebars from 'handlebars';
 import {AxiosInstance} from '../../Utils/AxiosInstance';
 const axios = AxiosInstance.getInstance().axios;
+import {PartialLoadingException}
+  from './../../Exceptions/PartialLoadingException';
+import {PartialParsingException}
+  from './../../Exceptions/PartialParsingException';
+import {Logger} from '../../Logging/Logger';
 
 /**
  * A partialset handler is reponsible for reading and returning data
@@ -42,22 +47,36 @@ export class PartialsetHandler {
           this.partialset.content);
     } else if (this.partialset.file) {
       const partialFiles = glob.sync(path.resolve(
-          Settings.getInstance().workingDirectory, this.partialset.file));
+          Settings.workingDirectory, this.partialset.file));
       for (let i = 0; i< partialFiles.length; i++) {
         const pFile = partialFiles[i];
-        if (partialFiles.length > 1) {
-          name = path.parse(pFile).name;
+        Logger.info(this, `Loading partial from ${pFile}`, '📃');
+        try {
+          if (partialFiles.length > 1) {
+            name = path.parse(pFile).name;
+          }
+          const fileContent =
+            await readFile(pFile, this.partialset.encoding as BufferEncoding);
+          await this.registerHandlebarPartial(name, fileContent);
+        } catch (e) {
+          const ex = new PartialLoadingException(this, e);
+          Logger.error(this, 'Failed loading partial file', ex);
+          throw ex;
         }
-        const fileContent =
-          await readFile(pFile, this.partialset.encoding as BufferEncoding);
-        await this.registerHandlebarPartial(name, fileContent);
       }
     } else if (this.partialset.url) {
-      const response = await axios.request({
-        url: this.partialset.url,
-        ...this.partialset.httpOptions,
-      });
-      await this.registerHandlebarPartial(name, response.data);
+      try {
+        Logger.info(this, `Loading partial from ${this.partialset.url}`, '📃');
+        const response = await axios.request({
+          url: this.partialset.url,
+          ...this.partialset.httpOptions,
+        });
+        await this.registerHandlebarPartial(name, response.data);
+      } catch (e) {
+        const ex = new PartialLoadingException(this, e);
+        Logger.error(this, 'Failed loading partial file', ex);
+        throw ex;
+      }
     }
   }
 
@@ -68,7 +87,13 @@ export class PartialsetHandler {
    *  functions
    */
   private async registerHandlebarPartial(name: string, sourceCode: string) {
-    await Handlebars.registerPartial(name, sourceCode);
-    this.registeredPartials.push(name);
+    try {
+      await Handlebars.registerPartial(name, sourceCode);
+      this.registeredPartials.push(name);
+    } catch (e) {
+      const ex = new PartialParsingException(this, e);
+      Logger.error(this, 'Failed parsing partial file', ex);
+      throw ex;
+    }
   }
 };

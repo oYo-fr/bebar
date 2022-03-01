@@ -1,4 +1,3 @@
-import {Converter} from '../Utils/Converter';
 import {IHelperset} from './Interfaces/IHelperset';
 
 /**
@@ -26,7 +25,12 @@ export class Helperset implements IHelperset {
    * @param {IHelperset | undefined} plainObject A plain object containing
    */
   constructor(plainObject: IHelperset | undefined) {
-    if (plainObject) Converter.toHelperset(plainObject, this);
+    if (plainObject) {
+      this.file = plainObject.file;
+      this.encoding = plainObject.encoding;
+      this.url = plainObject.url;
+      this.httpOptions = plainObject.httpOptions;
+    }
     this.setDefaults();
   }
 

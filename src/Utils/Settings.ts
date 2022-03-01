@@ -1,24 +1,14 @@
+import {LogLevel} from '../Logging/LogLevel';
+
 /**
  * Singleton class to hold settings
  */
 export class Settings {
-  private static instance: Settings;
-  public workingDirectory: string = '.';
+  public static workingDirectory: string = '.';
+  public static verbosity: LogLevel | undefined = undefined;
 
   /**
    * Constructor
    */
   private constructor() { }
-
-  /**
-   * Gets the unique instance of settings
-   * @return {Settings} The instance of settings
-   */
-  public static getInstance(): Settings {
-    if (!Settings.instance) {
-      Settings.instance = new Settings();
-    }
-
-    return Settings.instance;
-  }
 }

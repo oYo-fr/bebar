@@ -1,9 +1,8 @@
 import {DatasetHandler} from './DatasetHandler';
 import {Dataset} from '../../Models/Dataset';
 import {DatasetFactory} from '../../Factories/DatasetFactory';
-import {FileDatasetHandlerTypes} from './DatasetHandlerTypes';
 import {Settings} from '../../Utils/Settings';
-import glob from 'glob';
+const glob = require('glob');
 import path from 'path';
 
 /**
@@ -19,7 +18,7 @@ export class MultipleFilesFileDatasetHandler
   static canHandle(dataset: Dataset): boolean {
     return (glob.sync(
         path.resolve(
-            Settings.getInstance().workingDirectory,
+            Settings.workingDirectory,
             dataset.file!))).length > 1;
   }
 
@@ -31,7 +30,7 @@ export class MultipleFilesFileDatasetHandler
     const handlerFiles = glob.sync(path.resolve('.', this.dataset.file!));
     const handlers = handlerFiles.map((f: string) => {
       const factory = new DatasetFactory(
-          new Dataset({file: f}), FileDatasetHandlerTypes);
+          new Dataset({file: f}), false);
       factory.load();
       return factory.handler;
     })
@@ -44,16 +43,16 @@ export class MultipleFilesFileDatasetHandler
       }
     }
     // await Promise.all(handlers.map((h: { load: () => any; }) => h.load()));
-    handlers.forEach(async (h: any) => {
-      if (h) {
-        const handler = (h as any);
+    for (let i = 0; i < handlers.length; i++) {
+      const handler = handlers[i];
+      if (handler) {
         const handlerContent = handler.content;
         this.content = {
           ...this.content,
           ...handlerContent,
         };
       }
-    });
+    };
     return this.content;
   }
 };

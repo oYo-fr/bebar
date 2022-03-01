@@ -11,7 +11,7 @@
     "sourceMap": true,
     "types": ["jest", "node"],
     "resolveJsonModule": true,
-    "rootDir": "src",
+    "rootDir": "./src",
     "declaration": true,
     "lib": ["dom", "esnext"],
     "moduleResolution": "node",
@@ -19,8 +19,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "jsx": "react",
+    "noUnusedParameters": true
   },
   "exclude": [
       "node_modules",

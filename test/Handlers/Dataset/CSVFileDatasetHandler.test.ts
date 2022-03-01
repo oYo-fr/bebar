@@ -1,4 +1,4 @@
-import {DatasetException} from '../../../src/Exceptions/DatasetException';
+import {BebarException} from '../../../src/Exceptions/BebarException';
 import {CSVFileDatasetHandler}
   from '../../../src/Handlers/Dataset/CSVFileDatasetHandler';
 import {Dataset} from '../../../src/Models/Dataset';
@@ -50,9 +50,8 @@ describe('CSVFileDatasetHandler', () => {
       await handler.load();
       expect(false).toBeTruthy(); // We should never reach this point
     } catch (e) {
-      expect(e).toBeInstanceOf(DatasetException);
-      expect((e as DatasetException).inner).toBeDefined();
-      expect((e as DatasetException).sender).toBe(handler);
+      expect((e as BebarException).inner).toBeDefined();
+      expect((e as BebarException).sender).toBe(handler);
     }
   });
 

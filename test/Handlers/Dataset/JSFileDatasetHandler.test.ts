@@ -1,4 +1,5 @@
-import {DatasetException} from '../../../src/Exceptions/DatasetException';
+import {DatasetLoadingException}
+  from '../../../src/Exceptions/DatasetLoadingException';
 import {JSFileDatasetHandler}
   from '../../../src/Handlers/Dataset/JSFileDatasetHandler';
 import {Dataset} from '../../../src/Models/Dataset';
@@ -61,9 +62,9 @@ describe('JSFileDatasetHandler', () => {
       await handler.load();
       expect(false).toBeTruthy(); // We should never reach this point
     } catch (e) {
-      expect(e).toBeInstanceOf(DatasetException);
-      expect((e as DatasetException).inner).toBeDefined();
-      expect((e as DatasetException).sender).toBe(handler);
+      expect(e).toBeInstanceOf(DatasetLoadingException);
+      expect((e as DatasetLoadingException).inner).toBeDefined();
+      expect((e as DatasetLoadingException).sender).toBe(handler);
     }
   });
 

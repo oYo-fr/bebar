@@ -4,16 +4,13 @@ import {App} from './App';
 import chalk from 'chalk';
 import clear from 'clear';
 import figlet from 'figlet';
-import {program} from 'commander';
+const program = require('commander');
 
 // @ts-ignore
 import pjson from './../package.json';
-
-process.stdout.write('test');
-console.warn('test');
-clear();
-console.log(chalk.blue(figlet.textSync('bebar', {horizontalLayout: 'full'})));
-console.log(pjson.version);
+import {Settings} from './Utils/Settings';
+import {LogLevel} from './Logging/LogLevel';
+import {Logger} from './Logging/Logger';
 
 program
     .storeOptionsAsProperties(false)
@@ -28,9 +25,22 @@ program
         './*.bebar',
     )
     .option('-w, --workdir <workdir>', 'Working directory', '.')
-    .action(async (options: { filename: any; workdir: any }) => {
-      console.log('Parsing files: ' + options.filename);
-      console.log('Working directory: ' + options.workdir);
+    .option('-v, --verbosity <verbosity>', 'Log verbosity', 'INFO')
+    .action(async (options: {
+        filename: string,
+        workdir: string,
+        verbosity: keyof typeof LogLevel }) => {
+      try {
+        Settings.verbosity = LogLevel[options.verbosity];
+      } catch { }
+      if (Settings.verbosity) {
+        clear();
+        console.log(chalk.blue(
+            figlet.textSync('bebar', {horizontalLayout: 'full'})));
+      }
+      Logger.info(undefined, `Bebar version: ${pjson.version}`);
+      Logger.info(undefined, `Working directory: ${options.workdir}`);
+      Logger.info(undefined, `File name pattern: ${options.filename}`);
       const app = new App();
       await app.run(options.workdir, options.filename);
     })

@@ -2,7 +2,7 @@
   "name": "bebar",
   "author": "Yoann Diguet",
   "license": "Apache",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "main": "./dist/index.js",
   "typings": "dist/index.d.ts",
   "module": "dist/bebar.esm.js",

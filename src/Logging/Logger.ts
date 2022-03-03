@@ -74,6 +74,9 @@ export class Logger {
   private static showLog(log: Log) : Log {
     if (Settings.verbosity && log.level >= Settings.verbosity) {
       console.log(log.message);
+      if (log.error) {
+        console.log(log.error);
+      }
     }
     return log;
   }

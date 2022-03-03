@@ -30,7 +30,7 @@ export class App {
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      Logger.info(this, `Loading bebar file ${file}`, '🧔‍♂️');
+      Logger.info(this, `Loading bebar file ${file}`, '🚀');
       const bebarFileContent = await readFile(
           path.resolve(workdir, file),
           'utf-8',

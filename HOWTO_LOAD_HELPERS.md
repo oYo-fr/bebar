@@ -47,7 +47,22 @@ helpers:
     httpOptions:
       method: get
       timeout: 1000
+```
 
+### Shortcuts
+
+You can also write:
+
+``` yaml
+helpers:
+  - ./folder_1/*.*
+  - ./folder_2/*.*
+```
+
+Or if you have only one folder/file to load:
+
+``` yaml
+helpers: ./folder/*.*
 ```
 
 ## Content of a helper file

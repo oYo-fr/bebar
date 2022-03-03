@@ -5,7 +5,7 @@ const glob = require('glob');
 /**
  * Generic Dataset class
  */
-export class Dataset implements IDataset {
+export class Dataset {
   /** Name that will be used within mustache */
   public name?: string | undefined;
 

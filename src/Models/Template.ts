@@ -7,7 +7,7 @@ import {IDataset} from '../Models/Interfaces/IDataset';
 /**
  * Generic Template class
  */
-export class Template implements ITemplate {
+export class Template {
   /** The file that contains the actual template */
   public file?: string | undefined;
 
@@ -74,12 +74,16 @@ export class Template implements ITemplate {
 
   /**
    * Transforms a plain object into an array of instances of Dataset
-   * @param {IDataset[] | undefined} obj The object to transform
+   * @param {any | undefined} obj The object to transform
    * @return {Dataset[] | undefined} An array of Dataset object instances
    */
-  private toDatasets(obj: IDataset[] | undefined): Dataset[] | undefined {
+  private toDatasets(obj: any | undefined):
+    Dataset[] | undefined {
     if (!obj) return obj;
-    return obj.map((o: IDataset) => new Dataset(o));
+    if (typeof(obj) === 'string') return [new Dataset({file: obj})];
+    return obj.map((o: any) => typeof(o) === 'string' ?
+      new Dataset({file: o}) :
+      new Dataset(o as IDataset));
   }
 
   /**

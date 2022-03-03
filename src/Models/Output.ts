@@ -3,7 +3,7 @@ import {IOutput} from './Interfaces/IOutput';
 /**
  * Represents a produced file output
  */
-export class Output implements IOutput {
+export class Output {
   /** The resulting file content */
   public content: string = '';
 

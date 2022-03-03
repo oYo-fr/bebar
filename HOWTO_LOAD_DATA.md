@@ -68,6 +68,22 @@ data:
   - file: ./folder/*.* # will load all the files in folder. You will use the name of the file (without extension) in your templates to access the data
 ```
 
+### Shortcuts
+
+You can also write:
+
+``` yaml
+data:
+  - ./folder_1/*.*
+  - ./folder_2/*.*
+```
+
+Or if you have only one folder/file to load:
+
+``` yaml
+data: ./folder/*.*
+```
+
 > Be carreful with name clashes here, which could occur if you have for examples the files ```schools.json``` and ```schools.csv``` in the folder.
 
 ``` yaml

@@ -47,13 +47,13 @@ partials:
 > Be carreful with name clashes here, especialy if you load two folders with multiple files having the same names.
 
 ``` yaml
-helpers:
+partials:
   -
     file: ./Partials/school.hbs # will load all helpers.js file in directory Helpers
 ```
 
 ``` yaml
-helpers:
+partials:
   -
     url: http://www.schools.org/schools.hbs # will load the content from the provided url
     httpOptions:
@@ -63,11 +63,27 @@ helpers:
 ```
 
 ``` yaml
-helpers:
+partials:
   -
     name: school
     content: {{school.id}}. {{school.name}}
 
+```
+
+### Shortcuts
+
+You can also write:
+
+``` yaml
+partials:
+  - ./folder_1/*.*
+  - ./folder_2/*.*
+```
+
+Or if you have only one folder/file to load:
+
+``` yaml
+partials: ./folder/*.*
 ```
 
 ## Content of a partial file

@@ -8,7 +8,7 @@ const glob = require('glob');
  * Represents a place where handlebar partials can be found.
  * A partial set can point to a single file, or a file pattern.
  */
-export class Partialset implements IPartialset {
+export class Partialset {
   /** Name that will be used within mustache
    *  templates */
   public name?: string | undefined;

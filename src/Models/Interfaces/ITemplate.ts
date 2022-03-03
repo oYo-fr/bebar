@@ -7,7 +7,7 @@ export interface ITemplate {
   url?: string | undefined;
   httpOptions?: any | undefined;
   content?: string | undefined;
-  data?: IDataset[] | undefined;
+  data?: IDataset[] | string[] | string | undefined;
   output?: string | undefined;
   iterators?: IIterator[] | undefined;
   iterationValueName?: string | undefined;

@@ -50,7 +50,7 @@ export class PartialsetHandler {
           Settings.workingDirectory, this.partialset.file));
       for (let i = 0; i< partialFiles.length; i++) {
         const pFile = partialFiles[i];
-        Logger.info(this, `Loading partial from ${pFile}`, '📃');
+        Logger.info(this, `Loading partial from ${pFile}`, '🧩');
         try {
           if (partialFiles.length > 1) {
             name = path.parse(pFile).name;
@@ -66,7 +66,7 @@ export class PartialsetHandler {
       }
     } else if (this.partialset.url) {
       try {
-        Logger.info(this, `Loading partial from ${this.partialset.url}`, '📃');
+        Logger.info(this, `Loading partial from ${this.partialset.url}`, '🧩');
         const response = await axios.request({
           url: this.partialset.url,
           ...this.partialset.httpOptions,

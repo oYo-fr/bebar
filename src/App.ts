@@ -48,7 +48,7 @@ export class App {
     for (let i = 0; i < this.handlers.length; i++) {
       const bebarhandler = this.handlers[i];
       for (let j = 0; j < bebarhandler.templateHandlers.length; j++) {
-        const templateHandler = bebarhandler.templateHandlers[i];
+        const templateHandler = bebarhandler.templateHandlers[j];
         for (let o = 0; o < templateHandler.outputs.length; o++) {
           const output = templateHandler.outputs[o];
           if (output.file) {

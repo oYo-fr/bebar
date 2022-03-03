@@ -4,7 +4,7 @@ import {IHelperset} from './Interfaces/IHelperset';
  * Represents a place where handlebar helpers can be found.
  * A helper set can point to a single file, or a file pattern.
  */
-export class Helperset implements IHelperset {
+export class Helperset {
   /** The file that contains the helper functions */
   public file?: string | undefined;
 

@@ -11,7 +11,7 @@ import {Helperset} from './Helperset';
 /**
  * Top class that contains everything a bebar file can handle
  */
-export class Bebar implements IBebar {
+export class Bebar {
   /** The list of data that will be available for all templates */
   public data: Dataset[] | undefined = [];
 
@@ -40,34 +40,44 @@ export class Bebar implements IBebar {
 
   /**
    * Transforms a plain object into an array of instances of Dataset
-   * @param {IDataset[] | undefined} obj The object to transform
+   * @param {any | undefined} obj The object to transform
    * @return {Dataset[] | undefined} An array of Dataset object instances
    */
-  private toDatasets(obj: IDataset[] | undefined): Dataset[] | undefined {
+  private toDatasets(obj: any | undefined):
+    Dataset[] | undefined {
     if (!obj) return obj;
-    return obj.map((o: IDataset) => new Dataset(o));
+    if (typeof(obj) === 'string') return [new Dataset({file: obj})];
+    return obj.map((o: any) => typeof(o) === 'string' ?
+      new Dataset({file: o}) :
+      new Dataset(o as IDataset));
   }
 
   /**
    * Transforms a plain object into an array of instances of Partialset
-   * @param {IPartialset[] | undefined} obj The object to transform
+   * @param {any | undefined} obj The object to transform
    * @return {Partialset[] | undefined} An array of Dataset object instances
    */
-  private toPartialsets(obj: IPartialset[] | undefined):
+  private toPartialsets(obj: any | undefined):
     Partialset[] | undefined {
     if (!obj) return obj;
-    return obj.map((o: IPartialset) => new Partialset(o));
+    if (typeof(obj) === 'string') return [new Partialset({file: obj})];
+    return obj.map((o: any) => typeof(o) === 'string' ?
+      new Partialset({file: o}) :
+      new Partialset(o as IPartialset));
   }
 
   /**
    * Transforms a plain object into an array of instances of Helperset
-   * @param {IHelperset[] | undefined} obj The object to transform
+   * @param {any | undefined} obj The object to transform
    * @return {Helperset[] | undefined} An array of Helperset object instances
    */
-  private toHelpersets(obj: IHelperset[] | undefined):
+  private toHelpersets(obj: any | undefined):
    Helperset[] | undefined {
     if (!obj) return obj;
-    return obj.map((o: IHelperset) => new Helperset(o));
+    if (typeof(obj) === 'string') return [new Helperset({file: obj})];
+    return obj.map((o: any) => typeof(o) === 'string' ?
+      new Helperset({file: o}) :
+      new Helperset(o as IHelperset));
   }
 
   /**

@@ -14,4 +14,28 @@ describe('BebarHandler', () => {
     expect(handler.templateHandlers[0].outputs.length > 0).toBeTruthy();
     expect(handler.templateHandlers[0].outputs[0].content === '').toBeFalsy();
   });
+
+  it('load method should not crash with direct arrays', async () => {
+    const handler = new BebarHandler(new Bebar({
+      data: ['./test/Assets/Datasets/*.yaml'],
+      partials: ['./test/Assets/Partials/*.hbs'],
+      helpers: ['./test/Assets/Helpers/*.js'],
+      templates: [{file: './test/Assets/Templates/list_of_schools.hbs'}],
+    }));
+    await handler.load();
+    expect(handler.templateHandlers[0].outputs.length > 0).toBeTruthy();
+    expect(handler.templateHandlers[0].outputs[0].content === '').toBeFalsy();
+  });
+
+  it('load method should not crash with direct properties', async () => {
+    const handler = new BebarHandler(new Bebar({
+      data: './test/Assets/Datasets/*.yaml',
+      partials: './test/Assets/Partials/*.hbs',
+      helpers: './test/Assets/Helpers/*.js',
+      templates: [{file: './test/Assets/Templates/list_of_schools.hbs'}],
+    }));
+    await handler.load();
+    expect(handler.templateHandlers[0].outputs.length > 0).toBeTruthy();
+    expect(handler.templateHandlers[0].outputs[0].content === '').toBeFalsy();
+  });
 });

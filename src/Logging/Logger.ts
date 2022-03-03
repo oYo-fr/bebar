@@ -73,7 +73,11 @@ export class Logger {
    */
   private static showLog(log: Log) : Log {
     if (Settings.verbosity && log.level >= Settings.verbosity) {
-      console.log(log.message);
+      let msg = log.message;
+      if (log.symbol) {
+        msg = `${log.symbol} ${msg}`;
+      }
+      console.log(msg);
       if (log.error) {
         console.log(log.error);
       }

@@ -67,7 +67,7 @@ export class TemplateHandler {
         await this.registerHandlebarTemplate(fileContent);
       } catch (e) {
         const ex = new TemplateLoadingException(this, e);
-        Logger.error(this, 'Failed loading partial file', ex);
+        Logger.error(this, 'Failed loading template file', ex);
         throw ex;
       }
     } else if (this.template.url) {
@@ -80,7 +80,7 @@ export class TemplateHandler {
         await this.registerHandlebarTemplate(response.data);
       } catch (e) {
         const ex = new TemplateLoadingException(this, e);
-        Logger.error(this, 'Failed loading partial file', ex);
+        Logger.error(this, 'Failed loading template file', ex);
         throw ex;
       }
     }
@@ -96,7 +96,7 @@ export class TemplateHandler {
       this.compiledTemplate = await Handlebars.compile(sourceCode);
     } catch (e) {
       const ex = new TemplateRegisteringException(this, e);
-      Logger.error(this, 'Failed loading partial file', ex);
+      Logger.error(this, 'Failed registering template', ex);
       throw ex;
     }
   }
@@ -241,7 +241,7 @@ export class TemplateHandler {
       }));
     } catch (e) {
       const ex = new TemplateExecutionException(this, e);
-      Logger.error(this, 'Failed loading partial file', ex);
+      Logger.error(this, 'Failed producing output content', ex);
       throw ex;
     }
   }

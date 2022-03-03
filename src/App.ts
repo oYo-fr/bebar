@@ -59,7 +59,7 @@ export class App {
               await writeFile(p, output.content);
             } catch (e) {
               const ex = new OutputWritingException(this, e);
-              Logger.error(this, 'Failed loading partial file', ex);
+              Logger.error(this, 'Failed writing output file', ex);
               throw ex;
             }
           }

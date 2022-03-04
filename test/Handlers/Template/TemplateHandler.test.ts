@@ -3,13 +3,14 @@ import {TemplateHandler}
 import {ITemplate} from '../../../src/Models/Interfaces/ITemplate';
 import {Template} from '../../../src/Models/Template';
 import {MockAxios} from '../../Utils/MockAxios';
+import Handlebars from 'handlebars';
 
 describe('TemplateHandler', () => {
   it('load method should not crash', async () => {
     const handler = new TemplateHandler(
         new Template({
           file: './test/Assets/Templates/list_of_schools.hbs',
-        }));
+        }), Handlebars.create());
     await handler.load();
   });
 
@@ -19,7 +20,7 @@ describe('TemplateHandler', () => {
           content: `{{#each schools}}
           {{>school school=.}}
           {{/each}}`,
-        }));
+        }), Handlebars.create());
     await handler.load();
   });
 
@@ -29,7 +30,7 @@ describe('TemplateHandler', () => {
         './test/Assets/Templates/list_of_schools.hbs');
     const handler = new TemplateHandler(new Template({
       url: '/list_of_schools.hbs',
-    }));
+    }), Handlebars.create());
     await handler.load();
   });
 
@@ -45,7 +46,7 @@ describe('TemplateHandler', () => {
               file: './test/Assets/Datasets/schools.yaml',
             },
           ],
-        }));
+        }), Handlebars.create());
     await handler.load();
     expect(handler.outputs[0].content === '').toBeFalsy();
   });
@@ -114,7 +115,7 @@ describe('TemplateHandler', () => {
               array: 'members',
             },
           ],
-        }));
+        }), Handlebars.create());
     await handler.load();
     expect(handler.outputs.length).toBe(8);
     expect(handler.outputs[0].file).toBe('Queen/Freddie Mercury.txt');
@@ -144,7 +145,7 @@ describe('TemplateHandler', () => {
             },
           ],
           iterationValueName: 'cur',
-        }));
+        }), Handlebars.create());
     await handler.load();
     expect(handler.outputs.length).toBe(8);
     expect(handler.outputs[0].file).toBe('Queen/Freddie Mercury.txt');
@@ -174,7 +175,7 @@ describe('TemplateHandler', () => {
               variable: 'breed',
             },
           ],
-        }));
+        }), Handlebars.create());
     await handler.load();
     expect(handler.outputs.length).toBe(4);
     expect(handler.outputs[0].file).toBe('Border terrier.txt');
@@ -193,14 +194,14 @@ describe('TemplateHandler', () => {
       output: 'bands.md',
     };
     const handlerWithoutPrettify = new TemplateHandler(
-        new Template(templateData));
+        new Template(templateData), Handlebars.create());
     const handlerWithPrettify = new TemplateHandler(
         new Template({
           ...templateData,
           prettify: {
             parser: 'markdown',
           },
-        }));
+        }), Handlebars.create());
     await handlerWithoutPrettify.load();
     await handlerWithPrettify.load();
     expect(handlerWithoutPrettify.outputs[0].content !==
@@ -224,7 +225,7 @@ describe('TemplateHandler', () => {
           prettify: {
             parser: 'unknown',
           },
-        }));
+        }), Handlebars.create());
     await handler.load();
     expect(handler.outputs[0].content).toBeDefined();
   });

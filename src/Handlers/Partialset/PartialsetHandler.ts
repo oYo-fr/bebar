@@ -5,7 +5,6 @@ import path from 'path';
 import fs from 'fs';
 import util from 'util';
 const readFile = util.promisify(fs.readFile);
-import Handlebars from 'handlebars';
 import {AxiosInstance} from '../../Utils/AxiosInstance';
 const axios = AxiosInstance.getInstance().axios;
 import {PartialLoadingException}
@@ -25,9 +24,11 @@ export class PartialsetHandler {
    * Constructor.
    * @param {Partialset} Partialset Object that describes where to get the
    *  partials from
+   * @param {any} handlebars Handlebars reference
    */
   constructor(
     public partialset: Partialset,
+    public handlebars: any,
     public content: any = undefined) {
   }
 
@@ -88,7 +89,7 @@ export class PartialsetHandler {
    */
   private async registerHandlebarPartial(name: string, sourceCode: string) {
     try {
-      await Handlebars.registerPartial(name, sourceCode);
+      await this.handlebars.registerPartial(name, sourceCode);
       this.registeredPartials.push(name);
     } catch (e) {
       const ex = new PartialParsingException(this, e);

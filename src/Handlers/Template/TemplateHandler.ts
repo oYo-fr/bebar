@@ -3,10 +3,11 @@ import {Template} from '../../Models/Template';
 import {Output} from '../../Models/Output';
 import {Iterator} from '../../Models/Iterator';
 import {DatasetHandler} from '../Dataset/DatasetHandler';
+import {HelpersetHandler} from '../Helper/HelpersetHandler';
+import {PartialsetHandler} from '../Partialset/PartialsetHandler';
 import {Settings} from '../../Utils/Settings';
 import path from 'path';
 import fs from 'fs';
-import Handlebars from 'handlebars';
 import {AxiosInstance} from '../../Utils/AxiosInstance';
 const axios = AxiosInstance.getInstance().axios;
 import prettier from 'prettier';
@@ -25,17 +26,21 @@ import {TemplateExecutionException}
 export class TemplateHandler {
   public compiledTemplate: any;
   private datasetHandlers: DatasetHandler[] = [];
+  public partialsetHandlers: PartialsetHandler[] = [];
+  public helpersetHandlers: HelpersetHandler[] = [];
   private templateData: any = {};
   public outputs: Output[] = [];
+  public bebarData: any = {};
 
   /**
    * Constructor.
    * @param {Template} Template Object that describes where to get the
    *  partials from
+   * @param {any} handlebars Handlebars reference
    */
   constructor(
     public template: Template,
-    public bebarData: any = {}) {
+    public handlebars: any) {
   }
 
   /**
@@ -47,7 +52,7 @@ export class TemplateHandler {
     await this.handleTemplate();
     await this.handleData();
     await this.handleIterators();
-    await this.handlePretifier();
+    await this.handlePrettifier();
   }
 
   /**
@@ -84,6 +89,27 @@ export class TemplateHandler {
         throw ex;
       }
     }
+
+    if (this.template.helpers) {
+      for (let i = 0; i < this.template.helpers.length; i++) {
+        const helper = this.template.helpers[i];
+        const helperHandler = new HelpersetHandler(
+            helper,
+            this.handlebars);
+        await helperHandler.load();
+        this.helpersetHandlers.push(helperHandler);
+      }
+    }
+    if (this.template.partials) {
+      for (let i = 0; i < this.template.partials.length; i++) {
+        const partial = this.template.partials[i];
+        const partialHandler = new PartialsetHandler(
+            partial,
+            this.handlebars);
+        await partialHandler.load();
+        this.partialsetHandlers.push(partialHandler);
+      }
+    }
   }
 
   /**
@@ -93,7 +119,7 @@ export class TemplateHandler {
    */
   private async registerHandlebarTemplate(sourceCode: string) {
     try {
-      this.compiledTemplate = await Handlebars.compile(sourceCode);
+      this.compiledTemplate = await this.handlebars.compile(sourceCode);
     } catch (e) {
       const ex = new TemplateRegisteringException(this, e);
       Logger.error(this, 'Failed registering template', ex);
@@ -150,7 +176,7 @@ export class TemplateHandler {
   /**
    * Pretifier management function
    */
-  private async handlePretifier() {
+  private async handlePrettifier() {
     return new Promise((resolve) => {
       const exceptions: Array<any> = [];
       if (this.template.prettify) {
@@ -232,7 +258,7 @@ export class TemplateHandler {
     try {
       let processedOutputFilename = output;
       if (output) {
-        const outputNameTemplate = await Handlebars.compile(output);
+        const outputNameTemplate = await this.handlebars.compile(output);
         processedOutputFilename = await outputNameTemplate(data);
       }
       this.outputs.push(new Output({

@@ -60,28 +60,33 @@ export class BebarHandler {
       };
     }
     if (this.bebar.helpers) {
+      for (let i = 0; i < this.bebar.helpers.length; i++) {
+        const helper = this.bebar.helpers[i];
+        const helperHandler = new HelpersetHandler(helper);
+        await helperHandler.load();
+        this.helpersetHandlers.push(helperHandler);
+      }
       for (let i = 0; i < this.templateHandlers.length; i++) {
         const templateHandler = this.templateHandlers[i];
-        for (let i = 0; i < this.bebar.helpers.length; i++) {
-          const helper = this.bebar.helpers[i];
-          const helperHandler = new HelpersetHandler(
-              helper,
-              templateHandler.handlebars);
-          await helperHandler.load();
-          this.helpersetHandlers.push(helperHandler);
+        for (let j = 0; j < this.helpersetHandlers.length; j++) {
+          const helperHandler = this.helpersetHandlers[j];
+          helperHandler.registerHelpers(templateHandler.handlebars);
         }
       }
     }
     if (this.bebar.partials) {
+      for (let i = 0; i < this.bebar.partials.length; i++) {
+        const partial = this.bebar.partials[i];
+        const partialHandler = new PartialsetHandler(partial);
+        await partialHandler.load();
+        this.partialsetHandlers.push(partialHandler);
+      }
+
       for (let i = 0; i < this.templateHandlers.length; i++) {
         const templateHandler = this.templateHandlers[i];
-        for (let i = 0; i < this.bebar.partials.length; i++) {
-          const partial = this.bebar.partials[i];
-          const partialHandler = new PartialsetHandler(
-              partial,
-              templateHandler.handlebars);
-          await partialHandler.load();
-          this.partialsetHandlers.push(partialHandler);
+        for (let j = 0; j < this.partialsetHandlers.length; j++) {
+          const partialsetHandler = this.partialsetHandlers[j];
+          partialsetHandler.registerPartials(templateHandler.handlebars);
         }
       }
     }

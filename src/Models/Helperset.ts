@@ -20,6 +20,7 @@ export class Helperset {
    *  specify method (GET, POST, ...), headers, ...
    * */
   public httpOptions?: any | undefined;
+
   /**
    * Constructor.
    * @param {IHelperset | undefined} plainObject A plain object containing

@@ -9,26 +9,26 @@ import {AxiosInstance} from '../../Utils/AxiosInstance';
 const axios = AxiosInstance.getInstance().axios;
 import {PartialLoadingException}
   from './../../Exceptions/PartialLoadingException';
-import {PartialParsingException}
-  from './../../Exceptions/PartialParsingException';
+import {PartialRegisteringException}
+  from '../../Exceptions/PartialRegisteringException';
 import {Logger} from '../../Logging/Logger';
+import {Partial} from './Partial';
 
 /**
  * A partialset handler is reponsible for reading and returning data
  * and emitting events when necessary
  */
 export class PartialsetHandler {
-  public registeredPartials: string[] = [];
+  public partials: Partial[] = [];
 
   /**
    * Constructor.
    * @param {Partialset} Partialset Object that describes where to get the
    *  partials from
-   * @param {any} handlebars Handlebars reference
+   * @param {any} content The content of the partial
    */
   constructor(
     public partialset: Partialset,
-    public handlebars: any,
     public content: any = undefined) {
   }
 
@@ -43,7 +43,7 @@ export class PartialsetHandler {
       '' :
     this.partialset.name;
     if (name !== '' && this.partialset.content) {
-      await this.registerHandlebarPartial(
+      await this.saveHandlebarPartial(
           name,
           this.partialset.content);
     } else if (this.partialset.file) {
@@ -58,7 +58,7 @@ export class PartialsetHandler {
           }
           const fileContent =
             await readFile(pFile, this.partialset.encoding as BufferEncoding);
-          await this.registerHandlebarPartial(name, fileContent);
+          await this.saveHandlebarPartial(name, fileContent);
         } catch (e) {
           const ex = new PartialLoadingException(this, e);
           Logger.error(this, 'Failed loading partial file', ex);
@@ -72,7 +72,7 @@ export class PartialsetHandler {
           url: this.partialset.url,
           ...this.partialset.httpOptions,
         });
-        await this.registerHandlebarPartial(name, response.data);
+        await this.saveHandlebarPartial(name, response.data);
       } catch (e) {
         const ex = new PartialLoadingException(this, e);
         Logger.error(this, 'Failed loading partial file', ex);
@@ -87,14 +87,30 @@ export class PartialsetHandler {
    * @param {string} sourceCode The source code containing partial
    *  functions
    */
-  private async registerHandlebarPartial(name: string, sourceCode: string) {
+  private async saveHandlebarPartial(name: string, sourceCode: string) {
     try {
-      await this.handlebars.registerPartial(name, sourceCode);
-      this.registeredPartials.push(name);
+      this.partials.push(new Partial(name, sourceCode));
     } catch (e) {
-      const ex = new PartialParsingException(this, e);
+      const ex = new PartialRegisteringException(this, e);
       Logger.error(this, 'Failed parsing partial file', ex);
       throw ex;
+    }
+  }
+
+  /**
+   * Registers partial functions to handlebars
+   * @param {any} handlebars The handlebars instance to register the partial to
+   */
+  public async registerPartials(handlebars: any) {
+    for (let i = 0; i < this.partials.length; i++) {
+      const partial = this.partials[i];
+      try {
+        await handlebars.registerPartial(partial.name, partial.code);
+      } catch (e) {
+        const ex = new PartialRegisteringException(this, e);
+        Logger.error(this, 'Failed registering partial', ex);
+        throw ex;
+      }
     }
   }
 };

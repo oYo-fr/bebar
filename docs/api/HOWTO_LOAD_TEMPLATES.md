@@ -34,6 +34,18 @@ There are two levels at which you can define data. At the root of your bebar fil
 
 [Full explanations & examples here](HOWTO_LOAD_DATA.md)
 
+- ```partials [Optional]``` The partials which are specific only to this template.
+
+There are two levels at which you can define partials. At the root of your bebar file, which means that partials loaded here will be available for all templates, or at the template level, which means you will only be able to use partials loaded here within the specified template.
+
+[Full explanations & examples here](HOWTO_LOAD_PARTIALS.md)
+
+- ```helpers [Optional]``` The helpers which are specific only to this template.
+
+There are two levels at which you can define helpers. At the root of your bebar file, which means that helpers loaded here will be available for all templates, or at the template level, which means you will only be able to use helpers loaded here within the specified template.
+
+[Full explanations & examples here](HOWTO_LOAD_HELPERS.md)
+
 - ```output``` That is the path to the file that will be generated.
 
 This can be a mustache template! In this case, you can use your data to name your resulting file.

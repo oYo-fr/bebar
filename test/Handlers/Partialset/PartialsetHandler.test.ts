@@ -2,12 +2,13 @@ import {PartialsetHandler}
   from '../../../src/Handlers/Partialset/PartialsetHandler';
 import {Partialset} from '../../../src/Models/Partialset';
 import {MockAxios} from '../../Utils/MockAxios';
+import Handlebars from 'handlebars';
 
 describe('PartialsetHandler', () => {
   it('load method should not crash (name is undefined)', async () => {
     const handler = new PartialsetHandler(new Partialset({
       file: './test/Assets/Partials/school.hbs',
-    }));
+    }), Handlebars.create());
     await handler.load();
   });
 
@@ -15,28 +16,28 @@ describe('PartialsetHandler', () => {
     const handler = new PartialsetHandler(new Partialset({
       name: 'school',
       file: './test/Assets/Partials/school.hbs',
-    }));
+    }), Handlebars.create());
     await handler.load();
   });
 
   it('load method should not crash (name is null)', async () => {
     const handler = new PartialsetHandler(new Partialset({
       file: './test/Assets/Partials/school.hbs',
-    }));
+    }), Handlebars.create());
     await handler.load();
   });
 
   it('load method should not crash (multiple files)', async () => {
     const handler = new PartialsetHandler(new Partialset({
       file: './test/Assets/Partials/*.hbs',
-    }));
+    }), Handlebars.create());
     await handler.load();
   });
 
   it('load method should not crash loading multiple files', async () => {
     const handler = new PartialsetHandler(new Partialset({
       file: './test/Assets/Partials/*.hbs',
-    }));
+    }), Handlebars.create());
     await handler.load();
   });
 
@@ -44,7 +45,7 @@ describe('PartialsetHandler', () => {
     const handler = new PartialsetHandler(new Partialset({
       name: 'school',
       content: '{{school.id}}. {{school.name}}',
-    }));
+    }), Handlebars.create());
     await handler.load();
   });
 
@@ -55,7 +56,7 @@ describe('PartialsetHandler', () => {
     const handler = new PartialsetHandler(new Partialset({
       name: 'school',
       url: `/school.hbs`,
-    }));
+    }), Handlebars.create());
     await handler.load();
   });
 });

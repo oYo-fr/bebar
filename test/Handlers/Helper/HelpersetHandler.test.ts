@@ -2,19 +2,20 @@ import {HelpersetHandler}
   from '../../../src/Handlers/Helper/HelpersetHandler';
 import {Helperset} from '../../../src/Models/Helperset';
 import {MockAxios} from '../../Utils/MockAxios';
+import Handlebars from 'handlebars';
 
 describe('HelpersetHandler', () => {
   it('load method should not crash', async () => {
     const handler = new HelpersetHandler(new Helperset({
       file: './test/Assets/Helpers/stringHelpers.js',
-    }));
+    }), Handlebars.create());
     await handler.load();
   });
 
   it('load method should not crash loading multiple files', async () => {
     const handler = new HelpersetHandler(new Helperset({
       file: './test/Assets/Helpers/*.js',
-    }));
+    }), Handlebars.create());
     await handler.load();
   });
 
@@ -24,7 +25,7 @@ describe('HelpersetHandler', () => {
         './test/Assets/Helpers/stringHelpers.js');
     const handler = new HelpersetHandler(new Helperset({
       url: '/stringHelpers.js',
-    }));
+    }), Handlebars.create());
     await handler.load();
   });
 });

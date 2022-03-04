@@ -2,11 +2,9 @@ data:
   -
     file: ./Assets/Datasets/schools.yaml
 partials:
-  -
-    file: ./Assets/Partials/school.hbs
+  - ./Assets/Partials/school.hbs
 helpers:
-  -
-    file: ./Assets/Helpers/*.js
+  - ./Assets/Helpers/*.js
 templates:
   -
     file: ./Assets/Templates/list_of_schools.hbs

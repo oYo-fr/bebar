@@ -12,7 +12,6 @@ import path from 'path';
 import fs from 'fs';
 import util from 'util';
 const readFile = util.promisify(fs.readFile);
-import Handlebars from 'handlebars';
 import {AxiosInstance} from '../../Utils/AxiosInstance';
 const axios = AxiosInstance.getInstance().axios;
 const nodeEval = require('node-eval');
@@ -28,9 +27,11 @@ export class HelpersetHandler {
    * Constructor.
    * @param {Helperset} Helperset Object that describes where to get the
    *  helpers from
+   * @param {any} handlebars Handlebars reference
    */
   constructor(
     public helperset: Helperset,
+    public handlebars: any,
     public content: any = undefined) {
   }
 
@@ -80,7 +81,7 @@ export class HelpersetHandler {
         const key = Object.keys(hResult)[i];
         try {
           Logger.info(this, `\t- ${key}`);
-          await Handlebars.registerHelper(key, hResult[key]);
+          await this.handlebars.registerHelper(key, hResult[key]);
           this.registeredHelpers.push(key);
         } catch (e) {
           const ex = new HelperRegisteringException(this, e);

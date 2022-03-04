@@ -122,10 +122,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         default: prerelease
-        rc-wording:     'RELEASE,alpha'
-        patch-wording:  'patch,fixes,fix'
-        major-wording:  'MAJOR,cut-major'
-        minor-wording:  'add,Adds,new,Project initialization'
         commit-message: 'CI: bumps version to {{version}} [skip ci]'
     - if: ${{ github.ref == 'refs/heads/main' && matrix.node-version == '16.x' }}
       name: Publish to npm

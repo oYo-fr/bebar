@@ -23,6 +23,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
@@ -124,7 +126,14 @@ jobs:
         default: prerelease
         commit-message: 'CI: bumps version to {{version}} [skip ci]'
     - if: ${{ github.ref == 'refs/heads/main' && matrix.node-version == '16.x' }}
+      name: Create github release
+      uses: justincy/github-action-npm-release@v1.2.0
+      id: release
+    - if: ${{ github.ref == 'refs/heads/main' && matrix.node-version == '16.x' }}
       name: Publish to npm
       uses: JS-DevTools/npm-publish@v1
       with:
         token: ${{ secrets.NPM_TOKEN }}
+    - name: Print release output
+      if: ${{ steps.release.outputs.released == 'true' }}
+      run: echo Release ID ${{ steps.release.outputs.release_id }}

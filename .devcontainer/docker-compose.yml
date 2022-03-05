@@ -1,7 +1,7 @@
 version: '3'
 services:
     appservice:
-        container_name: bebar
+        container_name: bebar_dev
         build:
             context: .
             dockerfile: .

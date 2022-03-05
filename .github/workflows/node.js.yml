@@ -23,6 +23,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: docker login
+      env:
+        DOCKERHUB_USER: ${{secrets.DOCKERHUB_USER}}
+        DOCKERHUB_TOKEN: ${{secrets.DOCKERHUB_TOKEN}}
+        TAG: ${{steps.set_var.outputs.TAG}}
+      run: |
+        echo $TAG
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
@@ -128,19 +135,29 @@ jobs:
       uses: JS-DevTools/npm-publish@v1
       with:
         token: ${{ secrets.NPM_TOKEN }}
-    - name: Get version
-      id: get_version
-      run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+    - if: ${{ github.ref == 'refs/heads/main' && matrix.node-version == '16.x' }}
+      run: |
+        echo "${{fromJson(steps.set_var.outputs.packageJson).version}}"
+    - id: set_var
+      run: |
+        content=`cat package.json`
+        # the following lines are only required for multi line json
+        content="${content//'%'/'%25'}"
+        content="${content//$'\n'/'%0A'}"
+        content="${content//$'\r'/'%0D'}"
+        # end of optional handling for multi line json
+        echo "::set-output name=packageJson::$content"
+    - run: |
+        echo Publish to docker $TAG
     - if: ${{ github.ref == 'refs/heads/main' && matrix.node-version == '16.x' }}
       name: docker login
       env:
         DOCKERHUB_USER: ${{secrets.DOCKERHUB_USER}}
         DOCKERHUB_TOKEN: ${{secrets.DOCKERHUB_TOKEN}}
-        TAG: ${{steps.get_version.outputs.VERSION}}
       run: |
+        TAG="${{fromJson(steps.set_var.outputs.packageJson).version}}"
         echo Publish to docker latest and $TAG
-        docker login -u $DOCKERHUB_USER -p $DOCKER_PASSWORD
-        docker login -u $DOCKERHUB_TOKEN -p $DOCKER_PASSWORD
+        docker login -u $DOCKERHUB_USER -p $DOCKERHUB_TOKEN
         docker build . --file Dockerfile --tag yoannd/bebar:$TAG --build-arg VERSION=$TAG
         docker build . --file Dockerfile --tag yoannd/bebar:latest --build-arg VERSION=$TAG
         docker push yoannd/bebar:$TAG

@@ -155,7 +155,7 @@ jobs:
         TAG="${{fromJson(steps.set_var.outputs.packageJson).version}}"
         echo Publish to docker latest and $TAG
         docker login -u $DOCKERHUB_USER -p $DOCKERHUB_TOKEN
-        docker build . --file Dockerfile --tag yoannd/bebar:$TAG --build-arg VERSION=$TAG
-        docker build . --file Dockerfile --tag yoannd/bebar:latest --build-arg VERSION=$TAG
+        docker build . --file Dockerfile --tag yoannd/bebar:$TAG
+        docker build . --file Dockerfile --tag yoannd/bebar:latest
         docker push yoannd/bebar:$TAG
         docker push yoannd/bebar:latest

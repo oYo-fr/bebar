@@ -51,11 +51,11 @@ export class PartialsetHandler {
           Settings.workingDirectory, this.partialset.file));
       for (let i = 0; i< partialFiles.length; i++) {
         const pFile = partialFiles[i];
-        Logger.info(this, `Loading partial from ${pFile}`, '🧩');
+        if (partialFiles.length > 1 || name === '') {
+          name = path.parse(pFile).name;
+        }
+        Logger.info(this, `Loading partial ${name} from ${pFile}`, '🧩');
         try {
-          if (partialFiles.length > 1 || name === '') {
-            name = path.parse(pFile).name;
-          }
           const fileContent =
             await readFile(pFile, this.partialset.encoding as BufferEncoding);
           await this.saveHandlebarPartial(name, fileContent);

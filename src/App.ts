@@ -53,7 +53,7 @@ export class App {
           const output = templateHandler.outputs[o];
           if (output.file) {
             const p = path.resolve(workdir, output.file);
-            Logger.info(this, `Writing result file ${p}`, '🖊️');
+            Logger.info(this, `Writing result file ${p}`, '🖊️ ');
             try {
               fs.mkdirSync(path.dirname(p), {recursive: true});
               await writeFile(p, output.content);

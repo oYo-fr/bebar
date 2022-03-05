@@ -36,6 +36,14 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
+    - if: ${{ github.ref == 'refs/heads/main' && matrix.node-version == '16.x' }}
+      name:  'Automated Version Bump'
+      uses:  'phips28/gh-action-bump-version@master'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        default: prerelease
+        commit-message: 'CI: bumps version to {{version}} [skip ci]'
     - run: npm run build --if-present
     - run: npm test
     - run: npm run typedoc
@@ -122,14 +130,6 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./api/docs
-    - if: ${{ github.ref == 'refs/heads/main' && matrix.node-version == '16.x' }}
-      name:  'Automated Version Bump'
-      uses:  'phips28/gh-action-bump-version@master'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        default: prerelease
-        commit-message: 'CI: bumps version to {{version}} [skip ci]'
     - if: ${{ github.ref == 'refs/heads/main' && matrix.node-version == '16.x' }}
       name: Publish to npm
       uses: JS-DevTools/npm-publish@v1

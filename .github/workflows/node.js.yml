@@ -34,9 +34,6 @@ jobs:
     - run: npm run typedoc
     - run: npm run eslint
 
-    - name: Set env
-      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-
     # Only run the coverage once
     - if: ${{ matrix.node-version == '16.x' }}
       name: Get Coverage for badge
@@ -131,14 +128,17 @@ jobs:
       uses: JS-DevTools/npm-publish@v1
       with:
         token: ${{ secrets.NPM_TOKEN }}
+    - name: Get version
+      id: get_version
+      run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
     - if: ${{ github.ref == 'refs/heads/main' && matrix.node-version == '16.x' }}
       name: docker login
       env:
         DOCKERHUB_USER: ${{secrets.DOCKERHUB_USER}}
         DOCKERHUB_TOKEN: ${{secrets.DOCKERHUB_TOKEN}}
-        TAG: ${{env.RELEASE_VERSION}}
+        TAG: ${{steps.get_version.outputs.VERSION}}
       run: |
-        echo Publish to docker latest & $TAG
+        echo Publish to docker latest and $TAG
         docker login -u $DOCKERHUB_USER -p $DOCKER_PASSWORD
         docker login -u $DOCKERHUB_TOKEN -p $DOCKER_PASSWORD
         docker build . --file Dockerfile --tag yoannd/bebar:$TAG --build-arg VERSION=$TAG

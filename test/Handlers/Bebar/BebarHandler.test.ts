@@ -42,14 +42,18 @@ describe('BebarHandler', () => {
   it('load method should not crash with direct properties and one file',
       async () => {
         const handler = new BebarHandler(new Bebar({
-          data: './test/Assets/Datasets/schools.yaml',
-          partials: './test/Assets/Partials/school.hbs',
+          data: './test/Assets/Datasets/*.yaml',
+          partials: './test/Assets/Partials/school_*.hbs',
           helpers: './test/Assets/Helpers/stringHelpers.js',
-          templates: [{file: './test/Assets/Templates/list_of_schools.hbs'}],
+          templates: [
+            {file: './test/Assets/Templates/list_of_schools_html_list.hbs'}],
         }));
         await handler.load();
         expect(handler.templateHandlers[0].outputs.length > 0).toBeTruthy();
         expect(handler.templateHandlers[0].outputs[0].content === '')
             .toBeFalsy();
+        expect(
+            handler.templateHandlers[0].outputs[0].content.includes('Harvard'))
+            .toBeTruthy();
       });
 });

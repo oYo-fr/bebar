@@ -1,8 +1,4 @@
-import {Settings} from '../Utils/Settings';
 import {IPartialset} from './Interfaces/IPartialset';
-
-import path from 'path';
-const glob = require('glob');
 
 /**
  * Represents a place where handlebar partials can be found.
@@ -49,11 +45,6 @@ export class Partialset {
    * Sets default values where it's needed
    */
   public setDefaults() {
-    this.name = (!this.name || this.name === '') &&
-        this.file &&
-        this.file !== '' &&
-        !this.multipleFiles(this.file) ?
-        path.parse(this.file).name : this.name;
     this.encoding = (this.file && !this.encoding) ? 'utf-8' : this.encoding;
     if (this.url != null && this.url != undefined &&
         (this.httpOptions === null || this.httpOptions === undefined)) {
@@ -61,17 +52,5 @@ export class Partialset {
         method: 'GET',
       };
     }
-  }
-
-  /**
-   * Tells if the given path contains a wildcard and if the result of this
-   * is multiple files
-   * @param {sring} p The path to check
-   * @return {boolean} True if the path contains a wildcard and gives multiple
-   *  files
-   */
-  private multipleFiles(p: string): boolean {
-    return glob.sync(path.resolve(
-        Settings.workingDirectory, p)).length > 1;
   }
 };

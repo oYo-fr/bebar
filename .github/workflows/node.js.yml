@@ -135,9 +135,6 @@ jobs:
       uses: JS-DevTools/npm-publish@v1
       with:
         token: ${{ secrets.NPM_TOKEN }}
-    - if: ${{ github.ref == 'refs/heads/main' && matrix.node-version == '16.x' }}
-      run: |
-        echo "${{fromJson(steps.set_var.outputs.packageJson).version}}"
     - id: set_var
       run: |
         content=`cat package.json`

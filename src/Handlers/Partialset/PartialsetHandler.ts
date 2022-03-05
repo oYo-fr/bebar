@@ -41,7 +41,7 @@ export class PartialsetHandler {
     let name = this.partialset.name === null ||
       this.partialset.name === undefined ?
       '' :
-    this.partialset.name;
+      this.partialset.name;
     if (name !== '' && this.partialset.content) {
       await this.saveHandlebarPartial(
           name,
@@ -53,7 +53,7 @@ export class PartialsetHandler {
         const pFile = partialFiles[i];
         Logger.info(this, `Loading partial from ${pFile}`, '🧩');
         try {
-          if (partialFiles.length > 1) {
+          if (partialFiles.length > 1 || name === '') {
             name = path.parse(pFile).name;
           }
           const fileContent =

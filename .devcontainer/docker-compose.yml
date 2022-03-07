@@ -1,10 +1,10 @@
 version: '3'
 services:
     appservice:
-        container_name: bebar_dev
+        container_name: bebar
         build:
             context: .
-            dockerfile: .
+            dockerfile: Dockerfile
             network: host
         volumes:
             - ./../:/home/:cached

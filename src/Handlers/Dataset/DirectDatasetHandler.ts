@@ -13,7 +13,7 @@ export class DirectDatasetHandler extends DatasetHandler {
    * @return {boolean} True if this handler can handle the provided object
    */
   static canHandle(dataset: Dataset): boolean {
-    return dataset && dataset.name && dataset.name != '' && dataset.content;
+    return dataset && dataset.content;
   }
 
   /**
@@ -23,10 +23,14 @@ export class DirectDatasetHandler extends DatasetHandler {
   async load(): Promise<any> {
     const instance = this;
     return new Promise((resolve) => {
-      const datasetName = this.dataset.name as string;
-      this.content = {
-        [datasetName]: instance.dataset.content,
-      };
+      if (!this.dataset.name) {
+        this.content = instance.dataset.content;
+      } else {
+        const datasetName = this.dataset.name as string;
+        this.content = {
+          [datasetName]: instance.dataset.content,
+        };
+      }
       resolve(this.content);
     });
   }

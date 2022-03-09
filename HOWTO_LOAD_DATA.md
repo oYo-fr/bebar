@@ -217,13 +217,20 @@ data:
 
 For simple data or for any settings you would like to pass to your templates, you can use direct content within bebar files.
 
-Example:
+Examples:
 
 ``` yaml
 data:
   -
-    name: dummy
+    name: dummy # You will be able to access your data using {{dummy.foo}}
     content:
+      foo: bar # Or anything you want
+```
+
+``` yaml
+data:
+  -
+    content: # You will be able to access your data using {{foo}}
       foo: bar # Or anything you want
 ```
 

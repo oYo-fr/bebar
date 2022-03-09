@@ -28,7 +28,7 @@ describe('DirectDatasetHandler', () => {
               name: 'Harvard University',
             },
           ],
-        }))).toBeFalsy();
+        }))).toBeTruthy();
 
     expect(DirectDatasetHandler.canHandle(
         new Dataset({
@@ -52,5 +52,22 @@ describe('DirectDatasetHandler', () => {
     expect(dataFromHandler['schools']).toBe(handler.content['schools']);
     expect(handler.content['schools']).toBe(data);
     expect(dataFromHandler['schools'].length).toBe(1);
+  });
+
+  it('getData method should return data (without name)', async () => {
+    const data = [
+      {
+        id: 1,
+        name: 'Harvard University',
+      },
+    ];
+    const handler = new DirectDatasetHandler(new Dataset({
+      content: data,
+    }));
+    const dataFromHandler = await handler.load();
+    expect(dataFromHandler).toBeDefined();
+    expect(dataFromHandler).toBe(handler.content);
+    expect(handler.content).toBe(data);
+    expect(dataFromHandler.length).toBe(1);
   });
 });

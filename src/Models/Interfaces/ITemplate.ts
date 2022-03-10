@@ -9,11 +9,11 @@ export interface ITemplate {
   url?: string | undefined;
   httpOptions?: any | undefined;
   content?: string | undefined;
-  data?: IDataset[] | string[] | string | undefined;
+  data?: (IDataset | string)[] | string | undefined;
   output?: string | undefined;
-  iterators?: IIterator[] | undefined;
+  iterators?: (IIterator | string)[] | string | undefined;
   iterationValueName?: string | undefined;
   prettify?: any | undefined;
-  partials?: IPartialset[] | string[] | string | undefined;
-  helpers?: IHelperset[] | string[] | string | undefined;
+  partials?: (IPartialset | string)[] | string | undefined;
+  helpers?: (IHelperset | string)[] | string | undefined;
 }

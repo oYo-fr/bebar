@@ -4,8 +4,8 @@ import {IPartialset} from './IPartialset';
 import {ITemplate} from './ITemplate';
 
 export interface IBebar {
-  data?: IDataset[] | string[] | string | undefined;
-  partials?: IPartialset[] | string[] | string | undefined;
-  helpers?: IHelperset[] | string[] | string | undefined;
+  data?: (IDataset | string)[] | string | undefined;
+  partials?: (IPartialset | string)[] | string | undefined;
+  helpers?: (IHelperset | string)[] | string | undefined;
   templates?: ITemplate[] | undefined;
 }

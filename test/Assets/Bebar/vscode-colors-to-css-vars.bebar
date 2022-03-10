@@ -62,16 +62,16 @@ templates:
 #        url: https://raw.githubusercontent.com/microsoft/vscode/main/extensions/theme-defaults/themes/hc_black.json
 #        name: theme
 #        parseAs: raw
-#  -
-#    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
-#    output: ./Assets/TestOutputs/vs-code-hc_light.css
-#    prettify:
-#      parser: css
-#    data:
-#      -
-#        url: https://raw.githubusercontent.com/microsoft/vscode/main/extensions/theme-defaults/themes/hc_light.json
-#        name: theme
-#        parseAs: raw
+  -
+    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
+    output: ./Assets/TestOutputs/vs-code-hc_light.css
+    prettify:
+      parser: css
+    data:
+      -
+        url: https://raw.githubusercontent.com/microsoft/vscode/main/extensions/theme-defaults/themes/hc_light.json
+        name: theme
+        parseAs: raw
 #  -
 #    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
 #    output: ./Assets/TestOutputs/vs-code-light_plus.css

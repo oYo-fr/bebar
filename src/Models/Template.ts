@@ -1,12 +1,9 @@
 import {Dataset} from './Dataset';
 import {Iterator} from './Iterator';
 import {ITemplate} from './Interfaces/ITemplate';
-import {IIterator} from '../Models/Interfaces/IIterator';
-import {IDataset} from '../Models/Interfaces/IDataset';
-import {IPartialset} from '../Models/Interfaces/IPartialset';
-import {IHelperset} from '../Models/Interfaces/IHelperset';
 import {Partialset} from './Partialset';
 import {Helperset} from './Helperset';
+import {Converter} from '../Utils/Converter';
 
 /**
  * Generic Template class
@@ -66,13 +63,13 @@ export class Template {
       this.url = plainObject.url;
       this.httpOptions = plainObject.httpOptions;
       this.content = plainObject.content;
-      this.data = this.toDatasets(plainObject.data);
+      this.data = Converter.toDatasets(plainObject.data);
       this.output = plainObject.output;
-      this.iterators = this.toIterators(plainObject.iterators);
+      this.iterators = Converter.toIterators(plainObject.iterators);
       this.iterationValueName = plainObject.iterationValueName;
       this.prettify = plainObject.prettify;
-      this.partials = this.toPartialsets(plainObject.partials);
-      this.helpers = this.toHelpersets(plainObject.helpers);
+      this.partials = Converter.toPartialsets(plainObject.partials);
+      this.helpers = Converter.toHelpersets(plainObject.helpers);
     }
     this.setDefaults();
   }
@@ -82,59 +79,5 @@ export class Template {
    */
   public setDefaults() {
     this.encoding = (this.file && !this.encoding) ? 'utf-8' : this.encoding;
-  }
-
-  /**
-   * Transforms a plain object into an array of instances of Dataset
-   * @param {any | undefined} obj The object to transform
-   * @return {Dataset[] | undefined} An array of Dataset object instances
-   */
-  private toDatasets(obj: any | undefined):
-    Dataset[] | undefined {
-    if (!obj) return obj;
-    if (typeof(obj) === 'string') return [new Dataset({file: obj})];
-    return obj.map((o: any) => typeof(o) === 'string' ?
-      new Dataset({file: o}) :
-      new Dataset(o as IDataset));
-  }
-
-  /**
-   * Transforms a plain object into an array of instances of Partialset
-   * @param {any | undefined} obj The object to transform
-   * @return {Partialset[] | undefined} An array of Dataset object instances
-   */
-  private toPartialsets(obj: any | undefined):
-   Partialset[] | undefined {
-    if (!obj) return obj;
-    if (typeof(obj) === 'string') return [new Partialset({file: obj})];
-    return obj.map((o: any) => typeof(o) === 'string' ?
-     new Partialset({file: o}) :
-     new Partialset(o as IPartialset));
-  }
-
-  /**
-  * Transforms a plain object into an array of instances of Helperset
-  * @param {any | undefined} obj The object to transform
-  * @return {Helperset[] | undefined} An array of Helperset object instances
-  */
-  private toHelpersets(obj: any | undefined):
-  Helperset[] | undefined {
-    if (!obj) return obj;
-    if (typeof(obj) === 'string') return [new Helperset({file: obj})];
-    return obj.map((o: any) => typeof(o) === 'string' ?
-     new Helperset({file: o}) :
-     new Helperset(o as IHelperset));
-  }
-
-  /**
-   * Transforms a plain object into an array of instances of Iterator
-   * @param {IIterator[] | undefined} obj The object to transform
-   * @return {Iterator[] | undefined} An array of IteratorIterator object
-   *  instances
-   */
-  private toIterators(obj: IIterator[] | undefined):
-   Iterator[] | undefined {
-    if (!obj) return obj;
-    return obj.map((o: IIterator) => new Iterator(o));
   }
 };

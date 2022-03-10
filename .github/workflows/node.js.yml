@@ -23,13 +23,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: docker login
-      env:
-        DOCKERHUB_USER: ${{secrets.DOCKERHUB_USER}}
-        DOCKERHUB_TOKEN: ${{secrets.DOCKERHUB_TOKEN}}
-        TAG: ${{steps.set_var.outputs.TAG}}
-      run: |
-        echo $TAG
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
@@ -46,7 +39,8 @@ jobs:
         commit-message: 'CI: bumps version to {{version}} [skip ci]'
     - run: npm run build --if-present
     - run: npm test
-    - run: npm run typedoc
+    - if: ${{ github.ref == 'refs/heads/main' && matrix.node-version == '16.x' }}
+      run: npm run typedoc
     - run: npm run eslint
 
     # Only run the coverage once

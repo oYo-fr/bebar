@@ -11,7 +11,7 @@
     "sourceMap": true,
     "types": ["jest", "node"],
     "resolveJsonModule": true,
-    "rootDir": "./src",
+    "rootDir": "src",
     "declaration": true,
     "lib": ["dom", "esnext"],
     "moduleResolution": "node",
@@ -31,7 +31,7 @@
       ".devcontainer"
   ],
   "typedocOptions": {
-      "entryPoints": ["src/index.ts"],
+      "entryPoints": ["src/index.ts", "src/program.ts"],
       "out": "docs/api"
   }
 }

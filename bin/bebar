@@ -1,2 +1,3 @@
 #!/usr/bin/env node
-require('./Program');
+process.env.runAsProgram = 'TRUE';
+require('../dist/index.js');

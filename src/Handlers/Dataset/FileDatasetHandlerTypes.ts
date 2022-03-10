@@ -10,8 +10,11 @@ import {RegexFileDatasetHandler}
   from './RegexFileDatasetHandler';
 import {XmlFileDatasetHandler}
   from './XmlFileDatasetHandler';
+import {RawFileDatasetHandler}
+  from './RawFileDatasetHandler';
 
 export const FileDatasetHandlerTypes = [
+  RawFileDatasetHandler,
   JSonFileDatasetHandler,
   YamlFileDatasetHandler,
   CSVFileDatasetHandler,

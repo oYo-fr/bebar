@@ -16,6 +16,7 @@ export class MultipleFilesFileDatasetHandler
    * @return {boolean} True if this handler can handle the provided object
    */
   static canHandle(dataset: Dataset): boolean {
+    if (!dataset || !dataset.file) return false;
     return (glob.sync(
         path.resolve(
             Settings.workingDirectory,

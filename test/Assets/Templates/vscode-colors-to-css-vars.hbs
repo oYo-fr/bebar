@@ -1,0 +1,7 @@
+:root {
+{{#with (jsonToObject theme)}}
+{{#each colors}}
+  {{formatCssVar @key}}: {{this}};
+{{/each}}
+{{/with}}
+}

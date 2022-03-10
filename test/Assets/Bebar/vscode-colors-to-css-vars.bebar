@@ -1,0 +1,154 @@
+helpers:
+  - ./Assets/Helpers/vscode-colors-to-css-vars-helpers.js
+
+templates:
+  -
+    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
+    output: ./Assets/TestOutputs/vs-code-monokai-color-theme.css
+    prettify:
+      parser: css
+    data:
+      -
+        url: https://raw.githubusercontent.com/microsoft/vscode/main/extensions/theme-monokai/themes/monokai-color-theme.json
+        name: theme
+        parseAs: raw
+  -
+    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
+    output: ./Assets/TestOutputs/vs-code-abyss-color-theme.css
+    prettify:
+      parser: css
+    data:
+      -
+        url: https://raw.githubusercontent.com/microsoft/vscode/main/extensions/theme-abyss/themes/abyss-color-theme.json
+        name: theme
+        parseAs: raw
+#  -
+#    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
+#    output: ./Assets/TestOutputs/vs-code-light_vs.css
+#    prettify:
+#      parser: css
+#    data:
+#      -
+#        url: https://raw.githubusercontent.com/microsoft/vscode/main/extensions/theme-defaults/themes/light_vs.json
+#        name: theme
+#        parseAs: raw
+#  -
+#    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
+#    output: ./Assets/TestOutputs/vs-code-dark_plus.css
+#    prettify:
+#      parser: css
+#    data:
+#      -
+#        url: https://raw.githubusercontent.com/microsoft/vscode/main/extensions/theme-defaults/themes/dark_plus.json
+#        name: theme
+#        parseAs: raw
+#  -
+#    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
+#    output: ./Assets/TestOutputs/vs-code-dark_vs.css
+#    prettify:
+#      parser: css
+#    data:
+#      -
+#        url: https://raw.githubusercontent.com/microsoft/vscode/main/extensions/theme-defaults/themes/dark_vs.json
+#        name: theme
+#        parseAs: raw
+#  -
+#    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
+#    output: ./Assets/TestOutputs/vs-code-hc_black.css
+#    prettify:
+#      parser: css
+#    data:
+#      -
+#        url: https://raw.githubusercontent.com/microsoft/vscode/main/extensions/theme-defaults/themes/hc_black.json
+#        name: theme
+#        parseAs: raw
+#  -
+#    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
+#    output: ./Assets/TestOutputs/vs-code-hc_light.css
+#    prettify:
+#      parser: css
+#    data:
+#      -
+#        url: https://raw.githubusercontent.com/microsoft/vscode/main/extensions/theme-defaults/themes/hc_light.json
+#        name: theme
+#        parseAs: raw
+#  -
+#    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
+#    output: ./Assets/TestOutputs/vs-code-light_plus.css
+#    prettify:
+#      parser: css
+#    data:
+#      -
+#        url: https://raw.githubusercontent.com/microsoft/vscode/main/extensions/theme-defaults/themes/light_plus.json
+#        name: theme
+#        parseAs: raw
+  -
+    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
+    output: ./Assets/TestOutputs/vs-code-kimbie-dark-color-theme.css
+    prettify:
+      parser: css
+    data:
+      -
+        url: https://raw.githubusercontent.com/microsoft/vscode/main/extensions/theme-kimbie-dark/themes/kimbie-dark-color-theme.json
+        name: theme
+        parseAs: raw
+#  -
+#    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
+#    output: ./Assets/TestOutputs/vs-code-dimmed-monokai-color-theme.css
+#    prettify:
+#      parser: css
+#    data:
+#      -
+#        url: https://raw.githubusercontent.com/microsoft/vscode/main/extensions/theme-monokai-dimmed/themes/dimmed-monokai-color-theme.json
+#        name: theme
+#        parseAs: raw
+#  -
+#    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
+#    output: ./Assets/TestOutputs/vs-code-quietlight-color-theme.css
+#    prettify:
+#      parser: css
+#    data:
+#      -
+#        url: https://raw.githubusercontent.com/microsoft/vscode/main/extensions/theme-quietlight/themes/quietlight-color-theme.json
+#        name: theme
+#        parseAs: raw
+#  -
+#    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
+#    output: ./Assets/TestOutputs/vs-code-Red-color-theme.css
+#    prettify:
+#      parser: css
+#    data:
+#      -
+#        url: https://raw.githubusercontent.com/microsoft/vscode/main/extensions/theme-red/themes/Red-color-theme.json
+#        name: theme
+#        parseAs: raw
+  -
+    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
+    output: ./Assets/TestOutputs/vs-code-solarized-dark-color-theme.css
+    prettify:
+      parser: css
+    data:
+      -
+        url: https://raw.githubusercontent.com/microsoft/vscode/main/extensions/theme-solarized-dark/themes/solarized-dark-color-theme.json
+        name: theme
+        parseAs: raw
+  -
+    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
+    output: ./Assets/TestOutputs/vs-code-solarized-light-color-theme.css
+    prettify:
+      parser: css
+    data:
+      -
+        url: https://raw.githubusercontent.com/microsoft/vscode/main/extensions/theme-solarized-light/themes/solarized-light-color-theme.json
+        name: theme
+        parseAs: raw
+  -
+    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
+    output: ./Assets/TestOutputs/vs-code-tomorrow-night-blue-color-theme.css
+    prettify:
+      parser: css
+    data:
+      -
+        url: https://raw.githubusercontent.com/microsoft/vscode/main/extensions/theme-tomorrow-night-blue/themes/tomorrow-night-blue-color-theme.json
+        name: theme
+        parseAs: raw

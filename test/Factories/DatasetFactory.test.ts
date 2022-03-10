@@ -12,6 +12,8 @@ import {DirectDatasetHandler}
 import {CSVFileDatasetHandler}
   from '../../src/Handlers/Dataset/CSVFileDatasetHandler';
 import {Dataset} from '../../src/Models/Dataset';
+import {RawFileDatasetHandler}
+  from '../../src/Handlers/Dataset/RawFileDatasetHandler';
 
 describe('DatasetFactory', () => {
   it('should throw a UnableToHandleObjectException', () => {
@@ -71,6 +73,16 @@ describe('DatasetFactory', () => {
     }));
     factory.load();
     expect(factory.handler).toBeInstanceOf(CSVFileDatasetHandler);
+  });
+
+  it('Handler should be RAW', () => {
+    const factory: DatasetFactory = new DatasetFactory(new Dataset({
+      name: 'test',
+      file: './test/Assets/Datasets/schools.csv',
+      parseAs: 'raw',
+    }));
+    factory.load();
+    expect(factory.handler).toBeInstanceOf(RawFileDatasetHandler);
   });
 
   it('should switch handler if needed', () => {

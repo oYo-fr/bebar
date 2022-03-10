@@ -4,6 +4,6 @@ module.exports = {
     return JSON.parse(json.replace(regex, ''));
   },
   formatCssVar: function(property) {
-    return '--' + property.replace(/\./, '--');
+    return '--vscode-' + property.replace(/\./, '-');
   },
 };

@@ -3,7 +3,7 @@
   "author": "Yoann Diguet",
   "license": "Apache",
   "version": "0.20.0",
-  "main": "./dist/index.js",
+  "main": "./dist/program.js",
   "typings": "dist/index.d.ts",
   "module": "dist/bebar.esm.js",
   "bin": {

@@ -48,6 +48,7 @@ export * from './Exceptions/TemplateLoadingException';
 export * from './Exceptions/TemplateRegisteringException';
 export * from './Exceptions/UnableToHandleObjectException';
 export * from './Utils/Converter';
+export * from './Utils/InterfaceConverter';
 
 if (process.env.runAsProgram == 'TRUE') {
   program

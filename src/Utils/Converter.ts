@@ -16,74 +16,87 @@ import {IIterator} from './../Models/Interfaces/IIterator';
 export class Converter {
   /**
    * Transforms a plain object into an array of instances of Dataset
-   * @param {(IDataset | string)[] | string | undefined} obj The object to
-   *  transform
+   * @param {(IDataset | string)[] | IDataset | string | undefined} obj
+   *  The object to transform
    * @return {Dataset[] | undefined} An array of Dataset object instances
    */
-  public static toDatasets(obj: (IDataset | string)[] | string | undefined):
+  public static toDatasets(
+      obj: (IDataset | string)[] | IDataset | string | undefined):
     Dataset[] | undefined {
     if (!obj) return undefined;
     if (typeof(obj) === 'string') return [new Dataset({file: obj})];
-    return obj.map((o: any) => typeof(o) === 'string' ?
+    return Array.isArray(obj) ?
+      obj.map((o: any) => typeof(o) === 'string' ?
       new Dataset({file: o}) :
-      new Dataset(o as IDataset));
+      new Dataset(o)) :
+      [new Dataset(obj)];
   }
 
   /**
    * Transforms a plain object into an array of instances of Partialset
-   * @param {(IPartialset | string)[] | string | undefined} obj The object to
-   *  transform
+   * @param {(IPartialset | string)[] | IPartialset | string | undefined}
+   *  obj The object to transform
    * @return {Partialset[] | undefined} An array of Dataset object instances
    */
   public static toPartialsets(
-      obj: (IPartialset | string)[] | string | undefined):
+      obj: (IPartialset | string)[] | IPartialset | string | undefined):
     Partialset[] | undefined {
     if (!obj) return undefined;
     if (typeof(obj) === 'string') return [new Partialset({file: obj})];
-    return obj.map((o: any) => typeof(o) === 'string' ?
+    return Array.isArray(obj) ?
+      obj.map((o: any) => typeof(o) === 'string' ?
       new Partialset({file: o}) :
-      new Partialset(o as IPartialset));
+      new Partialset(o)) :
+      [new Partialset(obj)];
   }
 
   /**
    * Transforms a plain object into an array of instances of Helperset
-   * @param {(IHelperset | string)[] | string | undefined} obj The object to
-   *  transform
+   * @param {(IHelperset | string)[] | IHelperset | string | undefined} obj
+   *  The object to transform
    * @return {Helperset[] | undefined} An array of Helperset object instances
    */
-  public static toHelpersets(obj: (IHelperset | string)[] | string | undefined):
+  public static toHelpersets(
+      obj: (IHelperset | string)[] | IHelperset | string | undefined):
     Helperset[] | undefined {
     if (!obj) return undefined;
     if (typeof(obj) === 'string') return [new Helperset({file: obj})];
-    return obj.map((o: any) => typeof(o) === 'string' ?
+    return Array.isArray(obj) ?
+      obj.map((o: any) => typeof(o) === 'string' ?
       new Helperset({file: o}) :
-      new Helperset(o as IHelperset));
+      new Helperset(o)) :
+      [new Helperset(obj)];
   }
 
   /**
    * Transforms a plain object into an array of instances of Helperset
-   * @param {ITemplate[] | undefined} obj The object to transform
+   * @param {ITemplate[] | ITemplate | undefined} obj The object to transform
    * @return {Helperset[] | undefined} An array of Helperset object instances
    */
-  public static toTemplates(obj: ITemplate[] | undefined):
+  public static toTemplates(obj: ITemplate[] | ITemplate | undefined):
     Template[] | undefined {
     if (!obj) return obj;
-    return obj.map((o: ITemplate) => new Template(o));
+    return Array.isArray(obj) ?
+      obj.map((o: ITemplate) => new Template(o)) :
+      [new Template(obj)];
   }
 
   /**
    * Transforms a plain object into an array of instances of Iterator
-   * @param {(IIterator | string)[] | string | undefined} obj The object to
-   *  transform
+   * @param {(IIterator | string)[] | IIterator | string | undefined} obj
+   *  The object to transform
    * @return {Iterator[] | undefined} An array of IteratorIterator object
    *  instances
    */
-  public static toIterators(obj: (IIterator | string)[] | string | undefined):
+  public static toIterators(
+      obj: (IIterator | string)[] | IIterator | string | undefined):
    Iterator[] | undefined {
     if (!obj) return undefined;
     if (typeof(obj) === 'string') return [new Iterator({variable: obj})];
-    return obj.map((o: any) => typeof(o) === 'string' ?
-     new Iterator({variable: o}) :
-     new Iterator(o as IIterator));
+    return Array.isArray(obj) ?
+      obj.map((o: any) => typeof(o) === 'string' ?
+      new Iterator({variable: o}) :
+      new Iterator(o)) :
+      [new Iterator(obj)];
   }
 }

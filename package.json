@@ -3,7 +3,7 @@
   "author": "Yoann Diguet",
   "license": "Apache",
   "version": "0.21.0",
-  "main": "./dist/program.js",
+  "main": "./dist/index.js",
   "typings": "dist/index.d.ts",
   "module": "dist/bebar.esm.js",
   "bin": {
@@ -24,10 +24,11 @@
     "copy-package-json": "copyfiles package.json ./dist/",
     "copy-readme-files": "copyfiles *.md ./dist/",
     "copy-bin": "copyfiles ./bin/* ./dist/",
-    "test-command-line": "node dist/index -f ./Assets/Bebar/schools.bebar -w ./test",
+    "test-command-line": "runAsProgram=TRUE node dist/index -f ./Assets/Bebar/schools.bebar -w ./test",
     "lint": "tsdx lint",
     "build-run-test": "npm run build && npm run test && npm run test-command-line",
-    "pre-commit": "rm -rf ./node_modules && rm -rf ./dis && npm install && npm run build && npm run test && npm run test-command-line"
+    "pre-commit": "rm -rf ./node_modules && rm -rf ./dis && npm install && npm run build && npm run test && npm run test-command-line",
+    "sample-vscode-colors": "runAsProgram=TRUE node dist/index -f ./Assets/Bebar/vscode-colors-to-css-vars.bebar -w ./test"
   },
   "jest": {
     "preset": "ts-jest",

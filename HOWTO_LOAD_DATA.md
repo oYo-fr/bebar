@@ -234,6 +234,20 @@ data:
       foo: bar # Or anything you want
 ```
 
+## Raw file content
+
+This one simply loads the content of a file (or url...) and put it's content in a variable.
+
+Examples:
+
+``` yaml
+data:
+  -
+    name: dummy # You will be able to access your raw file data using {{dummy}}
+    file: my_file.txt
+    parseAs: raw
+```
+
 ## Regex on content
 
 ```parseAs``` option value: ```regex```

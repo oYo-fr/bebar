@@ -6,4 +6,10 @@ describe('App', () => {
     await app.run('./test/', 'Assets/Bebar/schools.bebar');
     expect(app.bebarController.handlers.length).toBe(1);
   });
+
+  it('should parse another bebar file correctly', async () => {
+    const app = new App();
+    await app.run('./test/', 'Assets/Bebar/vscode-colors-to-css-vars.bebar');
+    expect(app.bebarController.handlers.length).toBe(1);
+  });
 });

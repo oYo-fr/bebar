@@ -28,7 +28,7 @@ export abstract class FileDatasetHandler extends DatasetHandler {
   async loadWithParser(parser: ParserFunction): Promise<any> {
     try {
       const content = this.dataset.file ?
-      await this.readFromFile() :
+        await this.readFromFile() :
         await this.readFromUrl();
       const datasetName = this.dataset.name as string;
 
@@ -39,8 +39,8 @@ export abstract class FileDatasetHandler extends DatasetHandler {
       };
       this.content = {
         [datasetName]: typeof(content) === 'string' ?
-        await parser(content, options, context) :
-        content,
+          await parser(content, options, context) :
+          content,
       };
     } catch (e) {
       const ex = new DatasetLoadingException(this, e);

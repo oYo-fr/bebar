@@ -15,9 +15,12 @@ import {RegexFileDatasetHandler}
   from './RegexFileDatasetHandler';
 import {XmlFileDatasetHandler}
   from './XmlFileDatasetHandler';
+import {RawFileDatasetHandler}
+  from './RawFileDatasetHandler';
 
 export const AllDatasetHandlerTypes = [
   DirectDatasetHandler,
+  RawFileDatasetHandler,
   MultipleFilesFileDatasetHandler,
   JSonFileDatasetHandler,
   YamlFileDatasetHandler,

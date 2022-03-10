@@ -2,6 +2,7 @@ import {IDataset} from '../Models/Interfaces/IDataset';
 import {IHelperset} from '../Models/Interfaces/IHelperset';
 import {IPartialset} from '../Models/Interfaces/IPartialset';
 import {IIterator} from '../Models/Interfaces/IIterator';
+import {ITemplate} from '../Models/Interfaces/ITemplate';
 
 /**
  * Interface convert class
@@ -91,6 +92,24 @@ export class InterfaceConverter {
       curValue);
     } else if (typeof(value) === 'string') {
       return [{variable: value} as IIterator];
+    }
+    return [value];
+  }
+
+  /**
+   * Converts an array of ITemplates, or an undefined
+   *  value into an array of ITemplate
+   * @param {ITemplate[] | ITemplate | undefined} value
+   *  The value to convert
+   * @return {ITemplate[]} An array of ITemplates
+   */
+  public static toITemplateArray(
+      value: ITemplate[] | ITemplate | undefined)
+      : ITemplate[] {
+    if (value === undefined) {
+      return [];
+    } else if (Array.isArray(value)) {
+      return value;
     }
     return [value];
   }

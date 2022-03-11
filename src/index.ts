@@ -35,6 +35,7 @@ export * from './Models/Interfaces/IHelperset';
 export * from './Models/Interfaces/IIterator';
 export * from './Models/Interfaces/IOutput';
 export * from './Models/Interfaces/IPartialset';
+export * from './Models/Interfaces/ITemplate';
 export * from './Exceptions/BebarException';
 export * from './Exceptions/DatasetLoadingException';
 export * from './Exceptions/HelperLoadingException';

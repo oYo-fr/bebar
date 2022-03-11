@@ -41,7 +41,7 @@ bebar
 ### Command line arguments
 
 - `-f, --filename` [optional] The filename of you bebar file(s). The path can include a wildcard. If ommited, will default to *.bebar.
-- `-w, --workdir` [optional] The working directory to use when running the bebar files. If you use relative path in your bebar files, they will be combined with this parameter. Defaults to the current directory.
+- `-w, --workdir` [optional] The working directory to use when running the bebar files. If you use relative path in your bebar files, they will be combined with this parameter. Defaults to the directory of the parsed bebar file.
 - `-v, --verbosity` [optional] Indicates the verbosity level to use. If ommited, will default to INFO. Possible values are INFO, WARN, ERROR and NONE.
 
 ## A basic example

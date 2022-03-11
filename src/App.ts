@@ -4,15 +4,23 @@ import {BebarController} from './BebarController';
  * Main class for command line call
  */
 export class App {
-  public bebarController: BebarController = new BebarController();
+  public bebarController: BebarController;
+
+  /**
+   * Constructor
+   * @param {string} workdir Working directory
+   */
+  public constructor(public workdir: string) {
+    this.bebarController = new BebarController(workdir);
+  }
+
   /**
    *Main app method
-   * @param {string} workdir Working directory
    * @param {string} filename Name of the bebar file(s) to run (can contain
    *  wildcards)
    */
-  public async run(workdir: string, filename: string) {
-    await this.bebarController.load(workdir, filename);
+  public async run(filename: string) {
+    await this.bebarController.load(filename);
     await this.bebarController.writeFiles();
   }
 }

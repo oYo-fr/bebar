@@ -1,5 +1,4 @@
 import {Helperset} from '../../Models/Helperset';
-import {Settings} from '../../Utils/Settings';
 import {Logger} from '../../Logging/Logger';
 import {HelperLoadingException}
   from './../../Exceptions/HelperLoadingException';
@@ -36,14 +35,13 @@ export class HelpersetHandler {
 
   /**
   * Reads data from the source
-  * @param {ParserFunction} parser Method to parse file content
+  * @param {string} rootPath The folder where the bebar file is
   * @return {any} The data extracted from the source
   */
-  async load(): Promise<any> {
+  async load(rootPath: string): Promise<any> {
     if (this.helperset.file) {
       const helperFiles = glob.sync(
-          path.resolve(
-              Settings.workingDirectory, this.helperset.file));
+          path.resolve(rootPath, this.helperset.file));
       for (let i = 0; i < helperFiles.length; i++) {
         const hFile = helperFiles[i];
         Logger.info(this, ` Loading helpers from ${hFile}`, '⚙️');
@@ -56,7 +54,7 @@ export class HelpersetHandler {
         }
         const fileContent =
           await readFile(hFile, this.helperset.encoding as BufferEncoding);
-        await this.saveHandlebarHelpers(fileContent);
+        await this.saveHandlebarHelpers(fileContent, rootPath);
       };
     } else if (this.helperset.url) {
       Logger.info(this, ` Loading helpers from ${this.helperset.url}`, '⚙️');
@@ -64,18 +62,19 @@ export class HelpersetHandler {
         url: this.helperset.url,
         ...this.helperset.httpOptions,
       });
-      await this.saveHandlebarHelpers(response.data);
+      await this.saveHandlebarHelpers(response.data, rootPath);
     }
   }
 
   /**
    * Registers helper functions from javascript code
    * @param {string} sourceCode The source code containing helper
+   * @param {string} rootPath The folder where the bebar file is
    *  functions
    */
-  private async saveHandlebarHelpers(sourceCode: string) {
+  private async saveHandlebarHelpers(sourceCode: string, rootPath: string) {
     try {
-      const hResult = await nodeEval(sourceCode, Settings.workingDirectory);
+      const hResult = await nodeEval(sourceCode, rootPath);
       for (let i = 0; i < Object.keys(hResult).length; i++) {
         const key = Object.keys(hResult)[i];
         Logger.info(this, `\t- ${key}`);

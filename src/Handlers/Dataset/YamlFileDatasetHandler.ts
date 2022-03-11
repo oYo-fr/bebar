@@ -17,9 +17,10 @@ export class YamlFileDatasetHandler extends FileDatasetHandler {
 
   /**
    * Reads data from the source
+   * @param {string} rootPath The folder where the bebar file is
    * @return {any} The data extracted from the source
    */
-  async load(): Promise<any> {
-    return await super.loadWithParser(YAML.parse);
+  async load(rootPath: string): Promise<any> {
+    return await super.loadWithParser(YAML.parse, rootPath);
   }
 };

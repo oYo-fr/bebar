@@ -2,7 +2,6 @@ import {DatasetLoadingException}
   from '../../Exceptions/DatasetLoadingException';
 import {Dataset} from '../../Models/Dataset';
 import {DatasetHandler} from './DatasetHandler';
-import {Settings} from './../../Utils/Settings';
 import {AxiosInstance} from '../../Utils/AxiosInstance';
 import {Logger} from '../../Logging/Logger';
 const axios = AxiosInstance.getInstance().axios;
@@ -11,7 +10,8 @@ import path from 'path';
 import util from 'util';
 const readFile = util.promisify(fs.readFile);
 
-type ParserFunction = (data: string, options?: any, context?: any)
+type ParserFunction = (
+  data: string, options?: any, context?: any, rootPath?: string)
   => Promise<any>;
 
 /**
@@ -23,23 +23,24 @@ export abstract class FileDatasetHandler extends DatasetHandler {
   /**
    * Reads data from the source
    * @param {ParserFunction} parser Method to parse file content
+   * @param {string} rootPath The folder where the bebar file is
    * @return {any} The data extracted from the source
    */
-  async loadWithParser(parser: ParserFunction): Promise<any> {
+  async loadWithParser(parser: ParserFunction, rootPath: string): Promise<any> {
     try {
       const content = this.dataset.file ?
-        await this.readFromFile() :
+        await this.readFromFile(rootPath) :
         await this.readFromUrl();
       const datasetName = this.dataset.name as string;
 
       const options = this.dataset.options;
       const context = {
         data: this.dataset,
-        workingDir: Settings.workingDirectory,
+        workingDir: rootPath,
       };
       this.content = {
         [datasetName]: typeof(content) === 'string' ?
-          await parser(content, options, context) :
+          await parser(content, options, context, rootPath) :
           content,
       };
     } catch (e) {
@@ -64,12 +65,13 @@ export abstract class FileDatasetHandler extends DatasetHandler {
   }
 
   /**
-   * Reads the file content
-   * @return {any} The content of the file
-   */
-  private async readFromFile(): Promise<any> {
+  * Reads the file content
+  * @param {string} rootPath The folder where the bebar file is
+  * @return {any} The content of the file
+  */
+  private async readFromFile(rootPath: string): Promise<any> {
     const filepath = path.resolve(
-        Settings.workingDirectory,
+        rootPath,
         this.dataset.file!);
     Logger.info(this, `Loading data from ${filepath}`, '📈');
     const encoding: string = this.dataset.encoding!;

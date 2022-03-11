@@ -1,38 +1,38 @@
 import {DatasetHandler} from './DatasetHandler';
 import {Dataset} from '../../Models/Dataset';
-import {DatasetFactory} from '../../Factories/DatasetFactory';
-import {Settings} from '../../Utils/Settings';
+import {FileDatasetFactory} from '../../Factories/FileDatasetFactory';
 const glob = require('glob');
 import path from 'path';
 
 /**
  * Dataset that can handle JS files
  */
-export class MultipleFilesFileDatasetHandler
-  extends DatasetHandler {
+export class MultipleFilesFileDatasetHandler extends DatasetHandler {
   /**
    * Indicates if this handler can handle the described Dataset object
    * @param {Dataset} dataset Object that will be transformed as a JSFileDataset
+   * @param {string} rootPath The folder where the bebar file is
    * @return {boolean} True if this handler can handle the provided object
    */
-  static canHandle(dataset: Dataset): boolean {
+  static canHandle(dataset: Dataset, rootPath: string): boolean {
     if (!dataset || !dataset.file) return false;
     return (glob.sync(
         path.resolve(
-            Settings.workingDirectory,
+            rootPath,
             dataset.file!))).length > 1;
   }
 
   /**
    * Reads data from the source
+   * @param {string} rootPath The folder where the bebar file is
    * @return {any} The data extracted from the source
    */
-  async load(): Promise<any> {
+  async load(rootPath: string): Promise<any> {
     const handlerFiles = glob.sync(path.resolve('.', this.dataset.file!));
     const handlers = handlerFiles.map((f: string) => {
-      const factory = new DatasetFactory(
-          new Dataset({file: f}), false);
-      factory.load();
+      const factory = new FileDatasetFactory(
+          new Dataset({file: f}));
+      factory.load(rootPath);
       return factory.handler;
     })
         .filter((e: any | undefined) => e && e != undefined);

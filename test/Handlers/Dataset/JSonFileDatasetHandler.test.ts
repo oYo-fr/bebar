@@ -28,7 +28,7 @@ describe('JSonFileDatasetHandler', () => {
           file: './test/Assets/Datasets/schools.json',
         }),
     );
-    const data = await handler.load();
+    const data = await handler.load('.');
     expect(data).toBeDefined();
     expect(data['schools']).toBe(handler.content['schools']);
     expect(data['schools'].length).toBe(10);
@@ -42,7 +42,7 @@ describe('JSonFileDatasetHandler', () => {
         }),
     );
     try {
-      await handler.load();
+      await handler.load('.');
       expect(false).toBeTruthy(); // We should never reach this point
     } catch (e) {
       expect((e as BebarException).inner).toBeDefined();
@@ -61,7 +61,7 @@ describe('JSonFileDatasetHandler', () => {
           url: '/schools.json',
         }),
     );
-    const data = await handler.load();
+    const data = await handler.load('.');
     expect(data).toBeDefined();
     expect(data['schools']).toBe(handler.content['schools']);
     expect(data['schools'].length).toBe(10);

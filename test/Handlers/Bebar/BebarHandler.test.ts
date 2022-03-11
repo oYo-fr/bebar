@@ -10,7 +10,7 @@ describe('BebarHandler', () => {
       helpers: [{file: './test/Assets/Helpers/*.js'}],
       templates: [{file: './test/Assets/Templates/list_of_schools.hbs'}],
     }));
-    await handler.load();
+    await handler.load('.');
     expect(handler.templateHandlers[0].outputs.length > 0).toBeTruthy();
     expect(handler.templateHandlers[0].outputs[0].content === '').toBeFalsy();
   });
@@ -22,7 +22,7 @@ describe('BebarHandler', () => {
       helpers: ['./test/Assets/Helpers/*.js'],
       templates: [{file: './test/Assets/Templates/list_of_schools.hbs'}],
     }));
-    await handler.load();
+    await handler.load('.');
     expect(handler.templateHandlers[0].outputs.length > 0).toBeTruthy();
     expect(handler.templateHandlers[0].outputs[0].content === '').toBeFalsy();
   });
@@ -34,7 +34,7 @@ describe('BebarHandler', () => {
       helpers: './test/Assets/Helpers/*.js',
       templates: [{file: './test/Assets/Templates/list_of_schools.hbs'}],
     }));
-    await handler.load();
+    await handler.load('.');
     expect(handler.templateHandlers[0].outputs.length > 0).toBeTruthy();
     expect(handler.templateHandlers[0].outputs[0].content === '').toBeFalsy();
   });
@@ -48,7 +48,7 @@ describe('BebarHandler', () => {
           templates: [
             {file: './test/Assets/Templates/list_of_schools_html_list.hbs'}],
         }));
-        await handler.load();
+        await handler.load('.');
         expect(handler.templateHandlers[0].outputs.length > 0).toBeTruthy();
         expect(handler.templateHandlers[0].outputs[0].content === '')
             .toBeFalsy();

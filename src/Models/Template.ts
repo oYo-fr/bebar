@@ -3,7 +3,6 @@ import {Iterator} from './Iterator';
 import {ITemplate} from './Interfaces/ITemplate';
 import {Partialset} from './Partialset';
 import {Helperset} from './Helperset';
-import {Converter} from '../Utils/Converter';
 
 /**
  * Generic Template class
@@ -63,13 +62,9 @@ export class Template {
       this.url = plainObject.url;
       this.httpOptions = plainObject.httpOptions;
       this.content = plainObject.content;
-      this.data = Converter.toDatasets(plainObject.data);
       this.output = plainObject.output;
-      this.iterators = Converter.toIterators(plainObject.iterators);
       this.iterationValueName = plainObject.iterationValueName;
       this.prettify = plainObject.prettify;
-      this.partials = Converter.toPartialsets(plainObject.partials);
-      this.helpers = Converter.toHelpersets(plainObject.helpers);
     }
     this.setDefaults();
   }

@@ -33,6 +33,9 @@ export abstract class DatasetHandler {
         dataset.parseAs.toLowerCase() === expectedValue));
   }
 
-  /** Load method to override */
-  public load() {}
+  /**
+   * Load method to override
+   * @param {string} _rootPath The folder where the bebar file is
+   * */
+  public load(_rootPath: string) {}
 };

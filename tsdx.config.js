@@ -8,7 +8,8 @@ module.exports = {
         replace({
           'process.env.NODE_ENV': JSON.stringify(opts.env),
           'preventAssignment': true,
-          'rootDir': './src',
+          'target': 'node',
+          'tsconfig': 'tsconfig.json',
         }) :
         p,
     );

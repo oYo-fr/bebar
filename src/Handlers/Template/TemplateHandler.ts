@@ -5,7 +5,6 @@ import {Iterator} from '../../Models/Iterator';
 import {DatasetHandler} from '../Dataset/DatasetHandler';
 import {HelpersetHandler} from '../Helper/HelpersetHandler';
 import {PartialsetHandler} from '../Partialset/PartialsetHandler';
-import {Settings} from '../../Utils/Settings';
 import path from 'path';
 import fs from 'fs';
 import {AxiosInstance} from '../../Utils/AxiosInstance';
@@ -45,27 +44,28 @@ export class TemplateHandler {
 
   /**
   * Reads data from the source
-  * @param {ParserFunction} parser Method to parse file content
+  * @param {string} rootPath The folder where the bebar file is
   * @return {any} The data extracted from the source
   */
-  async load(): Promise<any> {
-    await this.handleTemplate();
-    await this.handleData();
+  async load(rootPath: string): Promise<any> {
+    await this.handleTemplate(rootPath);
+    await this.handleData(rootPath);
     await this.handleIterators();
     await this.handlePrettifier();
   }
 
   /**
-   * Template management function
-   */
-  private async handleTemplate() {
+  * Template management function
+  * @param {string} rootPath The folder where the bebar file is
+  */
+  private async handleTemplate(rootPath: string) {
     if (this.template.content) {
       await this.registerHandlebarTemplate(this.template.content);
     } else if (this.template.file) {
       try {
         Logger.info(this, `Loading template from ${this.template.file}`, '📰');
         const filepath = path.resolve(
-            Settings.workingDirectory,
+            rootPath,
             this.template.file);
         const fileContent =
         fs.readFileSync(filepath, this.template.encoding as BufferEncoding);
@@ -96,7 +96,7 @@ export class TemplateHandler {
         const helperHandler = new HelpersetHandler(
             helper,
             this.handlebars);
-        await helperHandler.load();
+        await helperHandler.load(rootPath);
         this.helpersetHandlers.push(helperHandler);
       }
     }
@@ -106,7 +106,7 @@ export class TemplateHandler {
         const partialHandler = new PartialsetHandler(
             partial,
             this.handlebars);
-        await partialHandler.load();
+        await partialHandler.load(rootPath);
         this.partialsetHandlers.push(partialHandler);
       }
     }
@@ -129,16 +129,17 @@ export class TemplateHandler {
 
   /**
    * Data management function
+  * @param {string} rootPath The folder where the bebar file is
    */
-  private async handleData() {
+  private async handleData(rootPath: string) {
     if (this.template.data) {
       this.templateData = {};
       for (let i = 0; i < this.template.data.length; i++) {
         const data = this.template.data[i];
         const factory = new DatasetFactory(data);
-        factory.load();
+        factory.load(rootPath);
         if (factory.handler) {
-          await factory.handler.load();
+          await factory.handler.load(rootPath);
           this.datasetHandlers.push(factory.handler as DatasetHandler);
           if (factory.handler) {
             this.templateData = {

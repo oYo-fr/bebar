@@ -30,21 +30,23 @@ export abstract class Factory<T, TH> {
 
   /**
    * Picks a handler for the specified object
-   * @param {T} o The object to find a handler for
+   * @param {string} rootPath The folder where the bebar file is
    * @return {TH | undefined} A handler for the object
    */
-  public pickHandlerType() : TH | undefined {
-    const handlerType = this.handlerTypes.find((t) => t.canHandle(this.model));
+  public pickHandlerType(rootPath: string) : TH | undefined {
+    const handlerType = this.handlerTypes.find(
+        (t) => t.canHandle(this.model, rootPath));
     return handlerType ? this.create(handlerType) : undefined;
   }
 
   /**
    * Loads a proper handler if possible
+   * @param {string} rootPath The folder where the bebar file is
    */
-  public load() {
-    this.handler = this.pickHandlerType();
+  public load(rootPath: string) {
+    this.handler = this.pickHandlerType(rootPath);
     if (this.handler !== undefined) {
-      Eventifier.once(this.model, () => this.load());
+      Eventifier.once(this.model, () => this.load(rootPath));
     } else {
       throw new UnableToHandleObjectException(this);
     }

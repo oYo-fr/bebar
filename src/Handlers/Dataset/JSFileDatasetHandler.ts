@@ -1,6 +1,5 @@
 import {FileDatasetHandler} from './FileDatasetHandler';
 import {Dataset} from '../../Models/Dataset';
-import {Settings} from '../../Utils/Settings';
 const nodeEval = require('node-eval');
 
 /**
@@ -20,10 +19,11 @@ export class JSFileDatasetHandler
 
   /**
    * Reads data from the source
+   * @param {string} rootPath The folder where the bebar file is
    * @return {any} The data extracted from the source
    */
-  async load(): Promise<any> {
-    return await super.loadWithParser(this.parse);
+  async load(rootPath: string): Promise<any> {
+    return await super.loadWithParser(this.parse, rootPath);
   }
 
   /**
@@ -31,16 +31,18 @@ export class JSFileDatasetHandler
    * @param {string} data The data to parse
    * @param {any} options Options
    * @param {any} context Context
+   * @param {string} rootPath The folder where the bebar file is
    */
   private async parse(
       data: string,
       options?: any,
-      context?: any): Promise<any> {
+      context?: any,
+      rootPath: string = '.'): Promise<any> {
     const param = {
       ...context,
       options: options,
     };
-    let result = nodeEval(data, Settings.workingDirectory, param);
+    let result = nodeEval(data, rootPath, param);
     try {
       result = await result(param);
     } catch {}

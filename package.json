@@ -14,6 +14,7 @@
   ],
   "scripts": {
     "watch": "tsdx watch",
+    "watchnpx": "npx tsc -w",
     "testwatch": "npx jest --clearCache && jest --watchAll",
     "build": "npm run node-build && npm run copy-package-json && npm run copy-readme-files && npm run copy-bin",
     "test": "npx jest --clearCache && jest --coverage",

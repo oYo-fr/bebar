@@ -1,53 +1,54 @@
 import {TemplateHandler}
   from '../../../src/Handlers/Template/TemplateHandler';
 import {ITemplate} from '../../../src/Models/Interfaces/ITemplate';
-import {Template} from '../../../src/Models/Template';
 import {MockAxios} from '../../Utils/MockAxios';
 import Handlebars from 'handlebars';
+import {TemplateFactory} from '../../../src/Factories/TemplateFactory';
 
 describe('TemplateHandler', () => {
   it('load method should not crash', async () => {
     const handler = new TemplateHandler(
-        new Template({
+        TemplateFactory.create({
           file: './test/Assets/Templates/list_of_schools.hbs',
         }), Handlebars.create());
-    await handler.load();
+    await handler.load('.');
   });
 
   it('load method should not crash loading direct content', async () => {
     const handler = new TemplateHandler(
-        new Template({
+        TemplateFactory.create({
           content: `{{#each schools}}
           {{>school school=.}}
           {{/each}}`,
         }), Handlebars.create());
-    await handler.load();
+    await handler.load('.');
   });
 
   it('load from HTTP method should not crash', async () => {
     await MockAxios.mockUrl(
         '/list_of_schools.hbs',
         './test/Assets/Templates/list_of_schools.hbs');
-    const handler = new TemplateHandler(new Template({
+    const handler = new TemplateHandler(TemplateFactory.create({
       url: '/list_of_schools.hbs',
     }), Handlebars.create());
-    await handler.load();
+    await handler.load('.');
   });
 
   it('load method with data should not crash', async () => {
+    const itemplate: ITemplate = {
+      content: `{{#each schools as |school|}}
+      {{school.id}}. {{school.name}}
+      {{/each}}`,
+      data: [
+        {
+          name: 'schools',
+          file: './test/Assets/Datasets/schools.yaml',
+        },
+      ],
+    };
     const handler = new TemplateHandler(
-        new Template({
-          content: `{{#each schools as |school|}}
-          {{school.id}}. {{school.name}}
-          {{/each}}`,
-          data: [
-            {
-              name: 'schools',
-              file: './test/Assets/Datasets/schools.yaml',
-            },
-          ],
-        }), Handlebars.create());
-    await handler.load();
+        TemplateFactory.create(itemplate), Handlebars.create());
+    await handler.load('.');
     expect(handler.outputs[0].content === '').toBeFalsy();
   });
 
@@ -96,7 +97,7 @@ describe('TemplateHandler', () => {
 
   it('should produce multiple outputs', async () => {
     const handler = new TemplateHandler(
-        new Template({
+        TemplateFactory.create({
           content: '{{member.name}} ({{band.name}}) - {{member.wikipedia}}',
           data: [
             {
@@ -116,7 +117,7 @@ describe('TemplateHandler', () => {
             },
           ],
         }), Handlebars.create());
-    await handler.load();
+    await handler.load('.');
     expect(handler.outputs.length).toBe(8);
     expect(handler.outputs[0].file).toBe('Queen/Freddie Mercury.txt');
     expect(handler.outputs[0].content).toBe('Freddie Mercury (Queen) - https://www.wikiwand.com/en/Freddie_Mercury');
@@ -124,7 +125,7 @@ describe('TemplateHandler', () => {
 
   it('should produce multiple outputs (named iteravion value)', async () => {
     const handler = new TemplateHandler(
-        new Template({
+        TemplateFactory.create({
           content:
           '{{cur.member.name}} ({{cur.band.name}}) - {{cur.member.wikipedia}}',
           data: [
@@ -146,7 +147,7 @@ describe('TemplateHandler', () => {
           ],
           iterationValueName: 'cur',
         }), Handlebars.create());
-    await handler.load();
+    await handler.load('.');
     expect(handler.outputs.length).toBe(8);
     expect(handler.outputs[0].file).toBe('Queen/Freddie Mercury.txt');
     expect(handler.outputs[0].content).toBe('Freddie Mercury (Queen) - https://www.wikiwand.com/en/Freddie_Mercury');
@@ -154,7 +155,7 @@ describe('TemplateHandler', () => {
 
   it('should produce multiple outputs (with nested arrays)', async () => {
     const handler = new TemplateHandler(
-        new Template({
+        TemplateFactory.create({
           content: '{{breed.name}}',
           data: [
             {
@@ -176,7 +177,7 @@ describe('TemplateHandler', () => {
             },
           ],
         }), Handlebars.create());
-    await handler.load();
+    await handler.load('.');
     expect(handler.outputs.length).toBe(4);
     expect(handler.outputs[0].file).toBe('Border terrier.txt');
     expect(handler.outputs[0].content).toBe('Border terrier');
@@ -194,16 +195,16 @@ describe('TemplateHandler', () => {
       output: 'bands.md',
     };
     const handlerWithoutPrettify = new TemplateHandler(
-        new Template(templateData), Handlebars.create());
+        TemplateFactory.create(templateData), Handlebars.create());
     const handlerWithPrettify = new TemplateHandler(
-        new Template({
+        TemplateFactory.create({
           ...templateData,
           prettify: {
             parser: 'markdown',
           },
         }), Handlebars.create());
-    await handlerWithoutPrettify.load();
-    await handlerWithPrettify.load();
+    await handlerWithoutPrettify.load('.');
+    await handlerWithPrettify.load('.');
     expect(handlerWithoutPrettify.outputs[0].content !==
       handlerWithPrettify.outputs[0].content).toBeTruthy();
   });
@@ -220,13 +221,13 @@ describe('TemplateHandler', () => {
       output: 'bands.md',
     };
     const handler = new TemplateHandler(
-        new Template({
+        TemplateFactory.create({
           ...templateData,
           prettify: {
             parser: 'unknown',
           },
         }), Handlebars.create());
-    await handler.load();
+    await handler.load('.');
     expect(handler.outputs[0].content).toBeDefined();
   });
 });

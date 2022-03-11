@@ -9,14 +9,14 @@ describe('HelpersetHandler', () => {
     const handler = new HelpersetHandler(new Helperset({
       file: './test/Assets/Helpers/stringHelpers.js',
     }), Handlebars.create());
-    await handler.load();
+    await handler.load('.');
   });
 
   it('load method should not crash loading multiple files', async () => {
     const handler = new HelpersetHandler(new Helperset({
       file: './test/Assets/Helpers/*.js',
     }), Handlebars.create());
-    await handler.load();
+    await handler.load('.');
   });
 
   it('load from HTTP method should not crash', async () => {
@@ -26,6 +26,6 @@ describe('HelpersetHandler', () => {
     const handler = new HelpersetHandler(new Helperset({
       url: '/stringHelpers.js',
     }), Handlebars.create());
-    await handler.load();
+    await handler.load('.');
   });
 });

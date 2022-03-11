@@ -1,5 +1,4 @@
 import {Partialset} from '../../Models/Partialset';
-import {Settings} from '../../Utils/Settings';
 const glob = require('glob');
 import path from 'path';
 import fs from 'fs';
@@ -34,10 +33,10 @@ export class PartialsetHandler {
 
   /**
   * Reads data from the source
-  * @param {ParserFunction} parser Method to parse file content
+  * @param {string} rootPath The folder where the bebar file is
   * @return {any} The data extracted from the source
   */
-  async load(): Promise<any> {
+  async load(rootPath: string): Promise<any> {
     let name = this.partialset.name === null ||
       this.partialset.name === undefined ?
       '' :
@@ -48,7 +47,7 @@ export class PartialsetHandler {
           this.partialset.content);
     } else if (this.partialset.file) {
       const partialFiles = glob.sync(path.resolve(
-          Settings.workingDirectory, this.partialset.file));
+          rootPath, this.partialset.file));
       for (let i = 0; i< partialFiles.length; i++) {
         const pFile = partialFiles[i];
         if (partialFiles.length > 1 || name === '') {

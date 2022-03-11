@@ -36,7 +36,7 @@ describe('RawFileDatasetHandler', () => {
           file: './test/Assets/Datasets/schools.html',
           parseAs: 'raw',
         }));
-    const data = await handler.load();
+    const data = await handler.load('.');
     expect(data).toBeDefined();
     expect(data['schools']).toBeDefined();
     expect(data['schools'].length).toBeGreaterThan(0);
@@ -51,7 +51,7 @@ describe('RawFileDatasetHandler', () => {
       url: 'schools.html',
       parseAs: 'raw',
     }));
-    const data = await handler.load();
+    const data = await handler.load('.');
     expect(data).toBeDefined();
     expect(data['schools']).toBeDefined();
     expect(data['schools'].length).toBeGreaterThan(0);

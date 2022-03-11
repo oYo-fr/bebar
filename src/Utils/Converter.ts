@@ -36,7 +36,7 @@ export class Converter {
    * Transforms a plain object into an array of instances of Partialset
    * @param {(IPartialset | string)[] | IPartialset | string | undefined}
    *  obj The object to transform
-   * @return {Partialset[] | undefined} An array of Dataset object instances
+   * @return {Partialset[] | undefined} An array of Partialset object instances
    */
   public static toPartialsets(
       obj: (IPartialset | string)[] | IPartialset | string | undefined):
@@ -71,14 +71,28 @@ export class Converter {
   /**
    * Transforms a plain object into an array of instances of Helperset
    * @param {ITemplate[] | ITemplate | undefined} obj The object to transform
-   * @return {Helperset[] | undefined} An array of Helperset object instances
+   * @return {Template[] | undefined} An array of Template object instances
    */
   public static toTemplates(obj: ITemplate[] | ITemplate | undefined):
     Template[] | undefined {
     if (!obj) return obj;
     return Array.isArray(obj) ?
-      obj.map((o: ITemplate) => new Template(o)) :
-      [new Template(obj)];
+      obj.map((o: ITemplate) => Converter.toTemplate(o)) :
+      [Converter.toTemplate(obj)];
+  }
+
+  /**
+   * Transforms a plain object into an instance of Helperset
+   * @param {ITemplate} obj The object to transform
+   * @return {Template} An instance of Template
+   */
+  private static toTemplate(obj: ITemplate): Template {
+    const template = new Template(obj);
+    template.data = Converter.toDatasets(obj.data);
+    template.iterators = Converter.toIterators(obj.iterators);
+    template.partials = Converter.toPartialsets(obj.partials);
+    template.helpers = Converter.toHelpersets(obj.helpers);
+    return template;
   }
 
   /**

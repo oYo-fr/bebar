@@ -32,7 +32,7 @@ describe('JSFileDatasetHandler', () => {
           file: './test/Assets/Datasets/schools.js',
         }),
     );
-    const data = await handler.load();
+    const data = await handler.load('.');
     expect(data).toBeDefined();
     expect(data['schools']).toBe(handler.content['schools']);
     expect(data['schools'].length).toBe(10);
@@ -45,7 +45,7 @@ describe('JSFileDatasetHandler', () => {
           file: './test/Assets/Datasets/schools_promise.js',
         }),
     );
-    const data = await handler.load();
+    const data = await handler.load('.');
     expect(data).toBeDefined();
     expect(data['schools']).toBe(handler.content['schools']);
     expect(data['schools'].length).toBe(10);
@@ -59,7 +59,7 @@ describe('JSFileDatasetHandler', () => {
         }),
     );
     try {
-      await handler.load();
+      await handler.load('.');
       expect(false).toBeTruthy(); // We should never reach this point
     } catch (e) {
       expect(e).toBeInstanceOf(DatasetLoadingException);
@@ -79,7 +79,7 @@ describe('JSFileDatasetHandler', () => {
           url: '/schools.js',
         }),
     );
-    const data = await handler.load();
+    const data = await handler.load('.');
     expect(data).toBeDefined();
     expect(data['schools']).toBe(handler.content['schools']);
     expect(data['schools'].length).toBe(10);

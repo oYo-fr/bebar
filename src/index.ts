@@ -4,7 +4,6 @@ import chalk from 'chalk';
 import clear from 'clear';
 import figlet from 'figlet';
 const program = require('commander');
-import {Settings} from './Utils/Settings';
 import {LogLevel} from './Logging/LogLevel';
 import {Logger} from './Logging/Logger';
 import {App} from './App';
@@ -64,25 +63,27 @@ if (process.env.runAsProgram == 'TRUE') {
           'Input bebar file pattern',
           './*.bebar',
       )
-      .option('-w, --workdir <workdir>', 'Working directory', '.')
+      .option('-w, --workdir <workdir>', 'Working directory', undefined)
       .option('-v, --verbosity <verbosity>', 'Log verbosity', 'INFO')
       .action(async (options: {
     filename: string,
     workdir: string,
     verbosity: keyof typeof LogLevel }) => {
         try {
-          Settings.verbosity = LogLevel[options.verbosity];
+          Logger.verbosity = LogLevel[options.verbosity];
         } catch { }
-        if (Settings.verbosity) {
+        if (Logger.verbosity) {
           clear();
           console.log(chalk.blue(
               figlet.textSync('bebar', {horizontalLayout: 'full'})));
         }
         Logger.info(undefined, `Bebar version: ${pjson.version}`);
-        Logger.info(undefined, `Working directory: ${options.workdir}`);
+        if (options.workdir) {
+          Logger.info(undefined, `Working directory: ${options.workdir}`);
+        }
         Logger.info(undefined, `File name pattern: ${options.filename}`);
-        const app = new App();
-        await app.run(options.workdir, options.filename);
+        const app = new App(options.workdir);
+        await app.run(options.filename);
       })
       .parse();
 }

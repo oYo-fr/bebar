@@ -1,4 +1,3 @@
-import {Settings} from '../Utils/Settings';
 import {Log} from './Log';
 import {LogLevel} from './LogLevel';
 
@@ -7,6 +6,7 @@ import {LogLevel} from './LogLevel';
  */
 export class Logger {
   private static logs: Log[] = [];
+  public static verbosity: LogLevel | undefined = undefined;
 
   /**
    * Constructor
@@ -72,7 +72,7 @@ export class Logger {
    * @return {Log} The displayed log
    */
   private static showLog(log: Log) : Log {
-    if (Settings.verbosity && log.level >= Settings.verbosity) {
+    if (Logger.verbosity && log.level >= Logger.verbosity) {
       let msg = log.message;
       if (log.symbol) {
         msg = `${log.symbol} ${msg}`;

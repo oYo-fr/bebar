@@ -8,7 +8,6 @@ const glob = require('glob');
 const YAML = require('yaml');
 import util from 'util';
 import fs from 'fs';
-import {Settings} from './Utils/Settings';
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
 
@@ -19,21 +18,28 @@ export class BebarController {
   public handlers: BebarHandler[] = [];
 
   /**
-   * Loads a bebar file
+   * Constructor
    * @param {string} workdir Working directory
-   * @param {string} filename Name of the bebar file(s) to run (can contain
-   *  wildcards)
    */
-  public async load(workdir: string, filename: string) {
-    Settings.workingDirectory = workdir;
-    const files = glob
-        .sync(path.resolve(workdir, filename));
+  public constructor(public workdir: string | undefined) { }
+
+  /**
+   * Loads a bebar file
+   * @param {string} filenamePattern Name of the bebar file(s) to run
+   * (can contain wildcards)
+   */
+  public async load(filenamePattern: string) {
+    const rootPath = this.workdir ?
+      this.workdir :
+      path.dirname(filenamePattern);
+    const files = glob.sync(this.workdir ?
+      path.resolve(this.workdir, filenamePattern) :
+      filenamePattern);
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       Logger.info(this, `Loading bebar file ${file}`, '🚀');
-      const bebarFileContent = await readFile(
-          path.resolve(workdir, file),
+      const bebarFileContent = await readFile(path.resolve(rootPath, file),
           'utf-8',
       );
       const plainObject = YAML.parse(bebarFileContent);
@@ -41,7 +47,7 @@ export class BebarController {
         new Bebar(plainObject);
       if (bebar) {
         const handler = new BebarHandler(bebar!);
-        await handler.load();
+        await handler.load(rootPath);
         this.handlers.push(handler);
       }
     }
@@ -58,7 +64,9 @@ export class BebarController {
         for (let o = 0; o < templateHandler.outputs.length; o++) {
           const output = templateHandler.outputs[o];
           if (output.file) {
-            const p = path.resolve(Settings.workingDirectory, output.file);
+            const p = this.workdir ?
+              path.resolve(this.workdir, output.file) :
+              output.file;
             Logger.info(this, `Writing result file ${p}`, '🖊️ ');
             try {
               fs.mkdirSync(path.dirname(p), {recursive: true});

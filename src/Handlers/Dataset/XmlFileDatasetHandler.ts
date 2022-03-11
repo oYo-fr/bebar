@@ -16,10 +16,11 @@ export class XmlFileDatasetHandler extends FileDatasetHandler {
 
   /**
    * Reads data from the source
+   * @param {string} rootPath The folder where the bebar file is
    * @return {any} The data extracted from the source
    */
-  async load(): Promise<any> {
-    return await super.loadWithParser(this.parse);
+  async load(rootPath: string): Promise<any> {
+    return await super.loadWithParser(this.parse, rootPath);
   }
 
   /**
@@ -27,7 +28,8 @@ export class XmlFileDatasetHandler extends FileDatasetHandler {
    * @param {string} data The data to parse
    * @param {any} options Options to pass to the csv library
    */
-  private async parse(data: string, options?: any): Promise<any> {
+  private async parse(
+      data: string, options?: any): Promise<any> {
     return new Promise((resolve) => {
       const parser = new XMLParser(options);
       resolve(parser.parse(data));

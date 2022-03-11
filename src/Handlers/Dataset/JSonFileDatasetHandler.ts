@@ -18,9 +18,10 @@ export class JSonFileDatasetHandler
 
   /**
    * Reads data from the source
+   * @param {string} rootPath The folder where the bebar file is
    * @return {any} The data extracted from the source
    */
-  async load(): Promise<any> {
-    return await super.loadWithParser(JSON.parse);
+  async load(rootPath: string): Promise<any> {
+    return await super.loadWithParser(JSON.parse, rootPath);
   }
 };

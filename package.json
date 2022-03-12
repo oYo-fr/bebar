@@ -4,13 +4,14 @@
   "license": "Apache",
   "version": "0.29.0",
   "main": "./dist/index.js",
-  "typings": "dist/index.d.ts",
+  "typings": "dist/types.d.ts",
   "module": "dist/bebar.esm.js",
   "bin": {
     "bebar": "bin/bebar"
   },
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "scripts": {
     "watch": "tsdx watch",
@@ -67,7 +68,16 @@
     "ts-jest": "^27.1.2",
     "tsdx": "^0.14.1",
     "typedoc": "^0.22.10",
-    "typescript": "^4.5.4"
+    "typescript": "^4.6.2",
+    "@size-limit/preset-small-lib": "^7.0.8",
+    "husky": "^7.0.4",
+    "size-limit": "^7.0.8"
+  },
+  "peerDependencies": {},
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsdx lint"
+    }
   },
   "engines": {
     "node": ">=12"
@@ -86,7 +96,23 @@
   "bugs": {
     "url": "https://github.com/oYo-fr/bebar/issues"
   },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
   "homepage": "https://oyo-fr.github.io/bebar/",
+  "size-limit": [
+    {
+      "path": "dist/mylib.cjs.production.min.js",
+      "limit": "10 KB"
+    },
+    {
+      "path": "dist/mylib.esm.js",
+      "limit": "10 KB"
+    }
+  ],
   "dependencies": {
     "axios": "^0.26.0",
     "chalk": "4.1.2",

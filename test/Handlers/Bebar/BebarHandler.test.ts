@@ -9,8 +9,8 @@ describe('BebarHandler', () => {
       partials: [{file: './test/Assets/Partials/*.hbs'}],
       helpers: [{file: './test/Assets/Helpers/*.js'}],
       templates: [{file: './test/Assets/Templates/list_of_schools.hbs'}],
-    }));
-    await handler.load('.');
+    }), '.', 'sample.bebar');
+    await handler.load();
     expect(handler.templateHandlers[0].outputs.length).toBeGreaterThan(0);
     expect(handler.templateHandlers[0].outputs[0].data).toBeDefined();
     expect(handler.templateHandlers[0].outputs[0].content.length)
@@ -23,8 +23,8 @@ describe('BebarHandler', () => {
       partials: ['./test/Assets/Partials/*.hbs'],
       helpers: ['./test/Assets/Helpers/*.js'],
       templates: [{file: './test/Assets/Templates/list_of_schools.hbs'}],
-    }));
-    await handler.load('.');
+    }), '.', 'sample.bebar');
+    await handler.load();
     expect(handler.templateHandlers[0].outputs.length).toBeGreaterThan(0);
     expect(handler.templateHandlers[0].outputs[0].data).toBeDefined();
     expect(handler.templateHandlers[0].outputs[0].content.length)
@@ -37,8 +37,8 @@ describe('BebarHandler', () => {
       partials: './test/Assets/Partials/*.hbs',
       helpers: './test/Assets/Helpers/*.js',
       templates: [{file: './test/Assets/Templates/list_of_schools.hbs'}],
-    }));
-    await handler.load('.');
+    }), '.', 'sample.bebar');
+    await handler.load();
     expect(handler.templateHandlers[0].outputs.length).toBeGreaterThan(0);
     expect(handler.templateHandlers[0].outputs[0].data).toBeDefined();
     expect(handler.templateHandlers[0].outputs[0].content.length)
@@ -53,8 +53,8 @@ describe('BebarHandler', () => {
           helpers: './test/Assets/Helpers/stringHelpers.js',
           templates: [
             {file: './test/Assets/Templates/list_of_schools_html_list.hbs'}],
-        }));
-        await handler.load('.');
+        }), '.', 'sample.bebar');
+        await handler.load();
         expect(handler.templateHandlers[0].outputs[0].data).toBeDefined();
         expect(handler.templateHandlers[0].outputs.length).toBeGreaterThan(0);
         expect(handler.templateHandlers[0].outputs[0].content.length)

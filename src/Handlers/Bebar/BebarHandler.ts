@@ -20,18 +20,21 @@ export class BebarHandler {
   /**
    * Constructor.
    * @param {Bebar} Bebar Object that describes where to get the
+   * @param {string} rootPath The folder where the bebar file is
+   * @param {string} filename The name of the bebar file
    *  partials from
    */
   constructor(
-    public bebar: Bebar) {
+    public bebar: Bebar,
+    public rootPath: string,
+    public filename: string) {
   }
 
   /**
   * Reads data from the source
-  * @param {string} rootPath The folder where the bebar file is
   * @return {any} The data extracted from the source
   */
-  async load(rootPath: string): Promise<any> {
+  async load(): Promise<any> {
     if (this.bebar.templates) {
       for (let i = 0; i < this.bebar.templates.length; i++) {
         const template = this.bebar.templates[i];
@@ -46,9 +49,9 @@ export class BebarHandler {
       for (let i = 0; i < this.bebar.data.length; i++) {
         const data = this.bebar.data[i];
         const factory = new DatasetFactory(data);
-        factory.load(rootPath);
+        factory.load(this.rootPath);
         if (factory.handler) {
-          await factory.handler.load(rootPath);
+          await factory.handler.load(this.rootPath);
           this.datasetHandlers.push(factory.handler as DatasetHandler);
           if (factory.handler) {
             this.allData = {
@@ -63,7 +66,7 @@ export class BebarHandler {
       for (let i = 0; i < this.bebar.helpers.length; i++) {
         const helper = this.bebar.helpers[i];
         const helperHandler = new HelpersetHandler(helper);
-        await helperHandler.load(rootPath);
+        await helperHandler.load(this.rootPath);
         this.helpersetHandlers.push(helperHandler);
       }
       for (let i = 0; i < this.templateHandlers.length; i++) {
@@ -78,7 +81,7 @@ export class BebarHandler {
       for (let i = 0; i < this.bebar.partials.length; i++) {
         const partial = this.bebar.partials[i];
         const partialHandler = new PartialsetHandler(partial);
-        await partialHandler.load(rootPath);
+        await partialHandler.load(this.rootPath);
         this.partialsetHandlers.push(partialHandler);
       }
 
@@ -96,7 +99,7 @@ export class BebarHandler {
         templateHandler.bebarData = {
           ...this.allData,
         };
-        await templateHandler.load(rootPath);
+        await templateHandler.load(this.rootPath);
       }
     }
   }

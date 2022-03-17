@@ -46,8 +46,8 @@ export class BebarController {
       const bebar =
         new Bebar(plainObject);
       if (bebar) {
-        const handler = new BebarHandler(bebar!);
-        await handler.load(rootPath);
+        const handler = new BebarHandler(bebar!, rootPath, file);
+        await handler.load();
         this.handlers.push(handler);
       }
     }

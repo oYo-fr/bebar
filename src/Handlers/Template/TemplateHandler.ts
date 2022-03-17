@@ -265,6 +265,7 @@ export class TemplateHandler {
       this.outputs.push(new Output({
         content: await this.compiledTemplate(data),
         file: processedOutputFilename,
+        data: data,
       }));
     } catch (e) {
       const ex = new TemplateExecutionException(this, e);

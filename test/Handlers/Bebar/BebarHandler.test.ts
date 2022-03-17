@@ -11,8 +11,10 @@ describe('BebarHandler', () => {
       templates: [{file: './test/Assets/Templates/list_of_schools.hbs'}],
     }));
     await handler.load('.');
-    expect(handler.templateHandlers[0].outputs.length > 0).toBeTruthy();
-    expect(handler.templateHandlers[0].outputs[0].content === '').toBeFalsy();
+    expect(handler.templateHandlers[0].outputs.length).toBeGreaterThan(0);
+    expect(handler.templateHandlers[0].outputs[0].data).toBeDefined();
+    expect(handler.templateHandlers[0].outputs[0].content.length)
+        .toBeGreaterThan(0);
   });
 
   it('load method should not crash with direct arrays', async () => {
@@ -23,8 +25,10 @@ describe('BebarHandler', () => {
       templates: [{file: './test/Assets/Templates/list_of_schools.hbs'}],
     }));
     await handler.load('.');
-    expect(handler.templateHandlers[0].outputs.length > 0).toBeTruthy();
-    expect(handler.templateHandlers[0].outputs[0].content === '').toBeFalsy();
+    expect(handler.templateHandlers[0].outputs.length).toBeGreaterThan(0);
+    expect(handler.templateHandlers[0].outputs[0].data).toBeDefined();
+    expect(handler.templateHandlers[0].outputs[0].content.length)
+        .toBeGreaterThan(0);
   });
 
   it('load method should not crash with direct properties', async () => {
@@ -35,8 +39,10 @@ describe('BebarHandler', () => {
       templates: [{file: './test/Assets/Templates/list_of_schools.hbs'}],
     }));
     await handler.load('.');
-    expect(handler.templateHandlers[0].outputs.length > 0).toBeTruthy();
-    expect(handler.templateHandlers[0].outputs[0].content === '').toBeFalsy();
+    expect(handler.templateHandlers[0].outputs.length).toBeGreaterThan(0);
+    expect(handler.templateHandlers[0].outputs[0].data).toBeDefined();
+    expect(handler.templateHandlers[0].outputs[0].content.length)
+        .toBeGreaterThan(0);
   });
 
   it('load method should not crash with direct properties and one file',
@@ -49,9 +55,10 @@ describe('BebarHandler', () => {
             {file: './test/Assets/Templates/list_of_schools_html_list.hbs'}],
         }));
         await handler.load('.');
-        expect(handler.templateHandlers[0].outputs.length > 0).toBeTruthy();
-        expect(handler.templateHandlers[0].outputs[0].content === '')
-            .toBeFalsy();
+        expect(handler.templateHandlers[0].outputs[0].data).toBeDefined();
+        expect(handler.templateHandlers[0].outputs.length).toBeGreaterThan(0);
+        expect(handler.templateHandlers[0].outputs[0].content.length)
+            .toBeGreaterThan(0);
         expect(
             handler.templateHandlers[0].outputs[0].content.includes('Harvard'))
             .toBeTruthy();

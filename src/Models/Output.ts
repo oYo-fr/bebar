@@ -9,6 +9,10 @@ export class Output {
 
   /** The final name of the file to write */
   public file: string | undefined;
+
+  /** The data that was used to produce the output */
+  public data: any | undefined;
+
   /**
    * Constructor.
    * @param {IOutput | undefined} plainObject A plain object containing
@@ -17,6 +21,7 @@ export class Output {
     if (plainObject) {
       this.content = plainObject.content;
       this.file = plainObject.file;
+      this.data = plainObject.data;
     }
   }
 };

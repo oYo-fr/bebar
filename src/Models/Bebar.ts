@@ -11,16 +11,16 @@ import {TemplateFactory} from './../Factories/TemplateFactory';
  */
 export class Bebar {
   /** The list of data that will be available for all templates */
-  public data: Dataset[] | undefined = [];
+  public data: Dataset[] = [];
 
   /** The list of files containing partial mustache templates */
-  public partials: Partialset[] | undefined = [];
+  public partials: Partialset[] = [];
 
   /** The list of files containing helper functions */
-  public helpers: Helperset[] | undefined = [];
+  public helpers: Helperset[] = [];
 
   /** The list of files containing the mustache templates */
-  public templates: Template[] | undefined = [];
+  public templates: Template[] = [];
 
   /**
    * Constructor.
@@ -41,7 +41,7 @@ export class Bebar {
             template.iterators = Converter.toIterators(plainTemplate.iterators);
             template.partials = Converter.toPartialsets(plainTemplate.partials);
             template.helpers = Converter.toHelpersets(plainTemplate.helpers);
-            this.templates?.push(template);
+            this.templates.push(template);
           }
         }
       }

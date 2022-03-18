@@ -17,6 +17,10 @@ import {TemplateRegisteringException}
   from './../../Exceptions/TemplateRegisteringException';
 import {TemplateExecutionException}
   from './../../Exceptions/TemplateExecutionException';
+import {RefreshContext} from './../../Refresh/RefreshContext';
+import {RefreshType} from './../../Refresh/RefreshType';
+import {FileDatasetHandler} from '../Dataset/FileDatasetHandler';
+import {PathUtils} from '../../Utils/PathUtils';
 
 /**
  * A template handler is reponsible for reading and returning data
@@ -50,8 +54,27 @@ export class TemplateHandler {
   async load(rootPath: string): Promise<any> {
     await this.handleTemplate(rootPath);
     await this.handleData(rootPath);
+    await this.generateOutputs();
+  }
+
+  /** Compiles data & templates to produce outputs */
+  private async generateOutputs() {
+    this.outputs = [];
+    this.compileData();
     await this.handleIterators();
     await this.handlePrettifier();
+  }
+
+  /**
+   * Unloads all partials & helpers from template
+   */
+  public async unload() {
+    for (let i = 0; i < this.partialsetHandlers.length; i++) {
+      await this.partialsetHandlers[i].unload(this.handlebars);
+    }
+    for (let i = 0; i < this.helpersetHandlers.length; i++) {
+      await this.helpersetHandlers[i].unload(this.handlebars);
+    }
   }
 
   /**
@@ -89,7 +112,13 @@ export class TemplateHandler {
         throw ex;
       }
     }
+  }
 
+  /**
+   * Loads helpers & partials
+   * @param {string} rootPath The folder where the bebar file is
+   */
+  public async loadHelpersAndPartials(rootPath: string) {
     if (this.template.helpers) {
       for (let i = 0; i < this.template.helpers.length; i++) {
         const helper = this.template.helpers[i];
@@ -140,27 +169,34 @@ export class TemplateHandler {
         factory.load(rootPath);
         if (factory.handler) {
           await factory.handler.load(rootPath);
-          this.datasetHandlers.push(factory.handler as DatasetHandler);
           if (factory.handler) {
-            this.templateData = {
-              ...this.templateData,
-              ...factory.handler.content,
-            };
+            this.datasetHandlers.push(factory.handler as DatasetHandler);
           }
         }
       };
-      this.bebarData = {
-        ...this.bebarData,
+    }
+  }
+
+  /** Compiles data to be used by templates */
+  private async compileData() {
+    this.templateData = {};
+    for (let i = 0; i < this.datasetHandlers.length; i++) {
+      this.templateData = {
         ...this.templateData,
+        ...this.datasetHandlers[i].content,
       };
     }
+    this.bebarData = {
+      ...this.bebarData,
+      ...this.templateData,
+    };
   }
 
   /**
    * Iterators management function
    */
   private async handleIterators() {
-    if (this.template.iterators) {
+    if (this.template.iterators.length > 0) {
       await this.iterate(
           this.template.iterators,
           0,
@@ -262,15 +298,107 @@ export class TemplateHandler {
         const outputNameTemplate = await this.handlebars.compile(output);
         processedOutputFilename = await outputNameTemplate(data);
       }
-      this.outputs.push(new Output({
-        content: await this.compiledTemplate(data),
-        file: processedOutputFilename,
-        data: data,
-      }));
+      let outputObject: Output | undefined;
+      for (let i = 0; i < this.outputs.length && !outputObject; i++) {
+        const curOutput = this.outputs[i];
+        if (curOutput.file === processedOutputFilename) {
+          outputObject = curOutput;
+          outputObject.content = await this.compiledTemplate(data);
+        }
+      }
+      if (!outputObject) {
+        this.outputs.push(new Output({
+          content: await this.compiledTemplate(data),
+          file: processedOutputFilename,
+          data: data,
+        }));
+      }
     } catch (e) {
       const ex = new TemplateExecutionException(this, e);
       Logger.error(this, 'Failed producing output content', ex);
       throw ex;
     }
+  }
+
+  /**
+   * Handles a file change, a file content changed, ...
+   * @param {RefreshContext} refreshContext The refresh context
+   * @param {boolean} refreshOutputs Forces the refresh of outputs
+   */
+  public async handleRefresh(refreshContext: RefreshContext, refreshOutputs: boolean) {
+    let refreshOnPartials = false;
+    for (let i = 0; i < this.partialsetHandlers.length; i++) {
+      const partialsetHandler = this.partialsetHandlers[i];
+      const toUnregister = partialsetHandler.partials.map((h) => h.name);
+      if (await partialsetHandler.handleRefresh(refreshContext)) {
+        for (let j = 0; j < toUnregister.length; j++) {
+          this.handlebars.unregisterPartial(toUnregister[j]);
+        }
+        partialsetHandler.registerPartials(this.handlebars);
+        refreshOnPartials = true;
+        refreshContext.refreshedObjects.push(this);
+      }
+    }
+
+    let refreshOnHelpers = false;
+    for (let i = 0; i < this.helpersetHandlers.length; i++) {
+      const helpersetHandler = this.helpersetHandlers[i];
+      const toUnregister = helpersetHandler.helpers.map((h) => h.name);
+      if (await helpersetHandler.handleRefresh(refreshContext)) {
+        for (let j = 0; j < toUnregister.length; j++) {
+          this.handlebars.unregisterHelper(toUnregister[j]);
+        }
+        helpersetHandler.registerHelpers(this.handlebars);
+        refreshOnHelpers = true;
+        if (!refreshOnPartials) {
+          refreshContext.refreshedObjects.push(this);
+        }
+      }
+    }
+
+    let refreshOnData = false;
+    for (let i = 0; i < this.datasetHandlers.length; i++) {
+      const datasetHandler = this.datasetHandlers[i];
+      if ((<FileDatasetHandler> this.datasetHandlers[0]).handleRefresh !== undefined &&
+        await (datasetHandler as FileDatasetHandler).handleRefresh(refreshContext)) {
+        refreshOnData = true;
+        if (!refreshOnPartials && !refreshOnHelpers) {
+          refreshContext.refreshedObjects.push(this);
+        }
+      }
+    }
+
+    let refreshOnTemplate = false;
+    if (this.template.file) {
+      switch (refreshContext.refreshType) {
+        case RefreshType.FileContentChanged:
+          if (await this.handleFileContentChanged(refreshContext)) {
+            if (!refreshOnPartials && !refreshOnHelpers) {
+              refreshContext.refreshedObjects.push(this);
+            }
+            refreshOnTemplate = true;
+          }
+          break;
+      }
+    }
+
+    if (refreshOnTemplate || refreshOnHelpers || refreshOnData || refreshOnTemplate || refreshOutputs) {
+      await this.generateOutputs();
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Handles a change in the content of a file
+   * @param {RefreshContext} refreshContext The refresh context
+   * @return {boolean} Returns true if the changed occurred in one of the partial files
+   */
+  private async handleFileContentChanged(refreshContext: RefreshContext): Promise<boolean> {
+    if (PathUtils.pathsAreEqual(this.template.file!, refreshContext.newFilePath!)) {
+      this.compiledTemplate = await this.handlebars.compile(refreshContext.newFileContent);
+      return true;
+    }
+    return false;
   }
 };

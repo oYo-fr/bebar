@@ -22,6 +22,7 @@ export class JSonFileDatasetHandler
    * @return {any} The data extracted from the source
    */
   async load(rootPath: string): Promise<any> {
-    return await super.loadWithParser(JSON.parse, rootPath);
+    this.parser = JSON.parse;
+    return await super.loadData(rootPath, undefined);
   }
 };

@@ -27,13 +27,13 @@ export class Template {
   public content?: string | undefined;
 
   /** The datasets specific to the template */
-  public data?: Dataset[] | undefined;
+  public data?: Dataset[];
 
   /** The list of files containing partial mustache templates */
-  public partials: Partialset[] | undefined = [];
+  public partials: Partialset[] = [];
 
   /** The list of files containing helper functions */
-  public helpers: Helperset[] | undefined = [];
+  public helpers: Helperset[] = [];
 
   /** The file(s) where the output should be
    *  produced. This can be a handlebars template */
@@ -41,7 +41,7 @@ export class Template {
 
   /** A list of iterators to loop
    *  through when processing the outputs */
-  public iterators?: Iterator[] | undefined;
+  public iterators: Iterator[] = [];
 
   /** Indicates the name of the
    *  property where the current iteration will be found within the data. If not

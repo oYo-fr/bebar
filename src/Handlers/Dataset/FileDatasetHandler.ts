@@ -9,6 +9,9 @@ import fs from 'fs';
 import path from 'path';
 import util from 'util';
 const readFile = util.promisify(fs.readFile);
+import {RefreshContext} from './../../Refresh/RefreshContext';
+import {RefreshType} from './../../Refresh/RefreshType';
+import {PathUtils} from '../../Utils/PathUtils';
 
 type ParserFunction = (
   data: string, options?: any, context?: any, rootPath?: string)
@@ -20,17 +23,19 @@ type ParserFunction = (
  * and emitting events when necessary
  */
 export abstract class FileDatasetHandler extends DatasetHandler {
+  public parser: ParserFunction | undefined = undefined;
+
   /**
    * Reads data from the source
-   * @param {ParserFunction} parser Method to parse file content
    * @param {string} rootPath The folder where the bebar file is
+   * @param {string} fileContent The content of the file (undefined to read from disc or url)
    * @return {any} The data extracted from the source
    */
-  async loadWithParser(parser: ParserFunction, rootPath: string): Promise<any> {
+  async loadData(rootPath: string, fileContent: string | undefined): Promise<any> {
     try {
-      const content = this.dataset.file ?
+      const content = fileContent ?? (this.dataset.file ?
         await this.readFromFile(rootPath) :
-        await this.readFromUrl();
+        await this.readFromUrl());
       const datasetName = this.dataset.name as string;
 
       const options = this.dataset.options;
@@ -40,7 +45,7 @@ export abstract class FileDatasetHandler extends DatasetHandler {
       };
       this.content = {
         [datasetName]: typeof(content) === 'string' ?
-          await parser(content, options, context, rootPath) :
+          await this.parser!(content, options, context, rootPath) :
           content,
       };
     } catch (e) {
@@ -112,5 +117,26 @@ export abstract class FileDatasetHandler extends DatasetHandler {
       dataset.file != null &&
       dataset.file != undefined &&
       dataset.file.toLowerCase().endsWith(`.${expectedValue}`));
+  }
+
+  /**
+   * Handles a file change, a file content changed, ...
+   * @param {RefreshContext} refreshContext The refresh context
+   * @return {boolean} Returns true if the changed occurred in one of the partial files
+   */
+  public async handleRefresh(refreshContext: RefreshContext): Promise<boolean> {
+    if (!this.dataset.file || !PathUtils.pathsAreEqual(this.dataset.file, refreshContext.newFilePath!)) return false;
+    switch (refreshContext.refreshType) {
+      case RefreshType.FileContentChanged:
+        await this.loadData(refreshContext.rootPath, refreshContext.newFileContent);
+        refreshContext.refreshedObjects.push(this);
+        return true;
+      case RefreshType.FileDeleted:
+      case RefreshType.FileMovedOrRenamed:
+        await this.loadData(refreshContext.rootPath, undefined);
+        refreshContext.refreshedObjects.push(this);
+        return true;
+    }
+    return false;
   }
 };

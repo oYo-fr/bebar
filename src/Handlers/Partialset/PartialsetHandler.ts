@@ -44,7 +44,8 @@ export class PartialsetHandler {
     if (name !== '' && this.partialset.content) {
       await this.saveHandlebarPartial(
           name,
-          this.partialset.content);
+          this.partialset.content,
+          '');
     } else if (this.partialset.file) {
       const partialFiles = glob.sync(path.resolve(
           rootPath, this.partialset.file));
@@ -57,7 +58,7 @@ export class PartialsetHandler {
         try {
           const fileContent =
             await readFile(pFile, this.partialset.encoding as BufferEncoding);
-          await this.saveHandlebarPartial(name, fileContent);
+          await this.saveHandlebarPartial(name, fileContent, pFile);
         } catch (e) {
           const ex = new PartialLoadingException(this, e);
           Logger.error(this, 'Failed loading partial file', ex);
@@ -71,7 +72,10 @@ export class PartialsetHandler {
           url: this.partialset.url,
           ...this.partialset.httpOptions,
         });
-        await this.saveHandlebarPartial(name, response.data);
+        await this.saveHandlebarPartial(
+            name,
+            response.data,
+            this.partialset.url);
       } catch (e) {
         const ex = new PartialLoadingException(this, e);
         Logger.error(this, 'Failed loading partial file', ex);
@@ -84,11 +88,15 @@ export class PartialsetHandler {
    * Registers partial to handlebars
    * @param {string} name The name of the partial to register
    * @param {string} sourceCode The source code containing partial
+   * @param {string} origin The origin of the partial (file or url)
    *  functions
    */
-  private async saveHandlebarPartial(name: string, sourceCode: string) {
+  private async saveHandlebarPartial(
+      name: string,
+      sourceCode: string,
+      origin: string) {
     try {
-      this.partials.push(new Partial(name, sourceCode));
+      this.partials.push(new Partial(name, sourceCode, origin));
     } catch (e) {
       const ex = new PartialRegisteringException(this, e);
       Logger.error(this, 'Failed parsing partial file', ex);

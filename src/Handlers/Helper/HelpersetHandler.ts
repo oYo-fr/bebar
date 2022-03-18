@@ -54,7 +54,7 @@ export class HelpersetHandler {
         }
         const fileContent =
           await readFile(hFile, this.helperset.encoding as BufferEncoding);
-        await this.saveHandlebarHelpers(fileContent, rootPath);
+        await this.saveHandlebarHelpers(fileContent, rootPath, hFile);
       };
     } else if (this.helperset.url) {
       Logger.info(this, ` Loading helpers from ${this.helperset.url}`, '⚙️');
@@ -62,7 +62,10 @@ export class HelpersetHandler {
         url: this.helperset.url,
         ...this.helperset.httpOptions,
       });
-      await this.saveHandlebarHelpers(response.data, rootPath);
+      await this.saveHandlebarHelpers(
+          response.data,
+          rootPath,
+          this.helperset.url);
     }
   }
 
@@ -70,15 +73,19 @@ export class HelpersetHandler {
    * Registers helper functions from javascript code
    * @param {string} sourceCode The source code containing helper
    * @param {string} rootPath The folder where the bebar file is
+   * @param {string} origin The origin of the helper (file or url)
    *  functions
    */
-  private async saveHandlebarHelpers(sourceCode: string, rootPath: string) {
+  private async saveHandlebarHelpers(
+      sourceCode: string,
+      rootPath: string,
+      origin: string) {
     try {
       const hResult = await nodeEval(sourceCode, rootPath);
       for (let i = 0; i < Object.keys(hResult).length; i++) {
         const key = Object.keys(hResult)[i];
         Logger.info(this, `\t- ${key}`);
-        this.helpers.push(new Helper(key, hResult[key]));
+        this.helpers.push(new Helper(key, hResult[key], origin));
       }
     } catch (e) {
       const ex = new HelperParsingException(this, e);

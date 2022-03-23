@@ -15,6 +15,9 @@ import {AxiosInstance} from '../../Utils/AxiosInstance';
 const axios = AxiosInstance.getInstance().axios;
 const nodeEval = require('node-eval');
 import {Helper} from './Helper';
+import {RefreshContext} from './../../Refresh/RefreshContext';
+import {RefreshType} from './../../Refresh/RefreshType';
+import {PathUtils} from '../../Utils/PathUtils';
 
 /**
  * A helperset handler is reponsible for reading and returning data
@@ -40,8 +43,7 @@ export class HelpersetHandler {
   */
   async load(rootPath: string): Promise<any> {
     if (this.helperset.file) {
-      const helperFiles = glob.sync(
-          path.resolve(rootPath, this.helperset.file));
+      const helperFiles = glob.sync(path.resolve(rootPath, this.helperset.file));
       for (let i = 0; i < helperFiles.length; i++) {
         const hFile = helperFiles[i];
         Logger.info(this, ` Loading helpers from ${hFile}`, '⚙️');
@@ -66,6 +68,17 @@ export class HelpersetHandler {
           response.data,
           rootPath,
           this.helperset.url);
+    }
+  }
+
+  /**
+   * Unloads all helpers
+   * @param {any} handlebars The handlebars context
+   */
+  public async unload(handlebars: any) {
+    for (let i = 0; i < this.helpers.length; i++) {
+      const helper = this.helpers[i];
+      await handlebars.unregisterHelper(helper.name);
     }
   }
 
@@ -109,5 +122,126 @@ export class HelpersetHandler {
         throw ex;
       }
     }
+  }
+
+  /**
+   * Handles a file change, a file content changed, ...
+   * @param {RefreshContext} refreshContext The refresh context
+   * @return {boolean} Returns true if the changed occurred in one of the helper files
+   */
+  public async handleRefresh(refreshContext: RefreshContext): Promise<boolean> {
+    if (!this.helperset.file) return false;
+    let result = false;
+    switch (refreshContext.refreshType) {
+      case RefreshType.FileContentChanged:
+        if (await this.handleFileContentChanged(refreshContext)) {
+          refreshContext.refreshedObjects.push(this);
+          result = true;
+        }
+        break;
+      case RefreshType.FileCreated:
+        if (await this.handleFileCreated(refreshContext)) {
+          refreshContext.refreshedObjects.push(this);
+          result = true;
+        }
+        break;
+      case RefreshType.FileDeleted:
+        if (await this.handleFileDeleted(refreshContext)) {
+          refreshContext.refreshedObjects.push(this);
+          result = true;
+        }
+        break;
+      case RefreshType.FileMovedOrRenamed:
+        if (await this.handleFileMovedOrRenamed(refreshContext)) {
+          refreshContext.refreshedObjects.push(this);
+          result = true;
+        }
+        break;
+    }
+    return result;
+  }
+
+  /**
+   * Handles a change in the content of a file
+   * @param {RefreshContext} refreshContext The refresh context
+   * @return {boolean} Returns true if the changed occurred in one of the partial files
+   */
+  private async handleFileContentChanged(refreshContext: RefreshContext): Promise<boolean> {
+    let result = false;
+
+    const globResults = glob.sync(path.resolve(refreshContext.rootPath, this.helperset.file!));
+    for (let i = 0; i< globResults.length; i++) {
+      const globResult = globResults[i];
+
+      if (PathUtils.pathsAreEqual(globResult, refreshContext.newFilePath!)) {
+        this.helpers = this.helpers.filter(async (h) => h.origin !== refreshContext.newFilePath);
+        await this.saveHandlebarHelpers(refreshContext.newFileContent!, refreshContext.rootPath, refreshContext.newFilePath!);
+        result = true;
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Handles a new file creation
+   * @param {RefreshContext} refreshContext The refresh context
+   * @return {boolean} Returns true if the changed occurred in one of the partial files
+   */
+  private async handleFileCreated(refreshContext: RefreshContext): Promise<boolean> {
+    let result = false;
+    const globResults = glob.sync(path.resolve(refreshContext.rootPath, this.helperset.file!));
+    for (let i = 0; i< globResults.length; i++) {
+      const globResult = globResults[i];
+
+      if (PathUtils.pathsAreEqual(globResult, refreshContext.newFilePath!)) {
+        result = true;
+        try {
+          const fileContent = await readFile(globResult, this.helperset.encoding as BufferEncoding);
+          await this.saveHandlebarHelpers(fileContent, refreshContext.rootPath, globResult);
+        } catch (e) {
+          const ex = new HelperParsingException(this, e);
+          Logger.error(this, 'Failed loading partial file', ex);
+          throw ex;
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Handles the deletion of a file
+   * @param {RefreshContext} refreshContext The refresh context
+   * @return {boolean} Returns true if the changed occurred in one of the partial files
+   */
+  private async handleFileDeleted(refreshContext: RefreshContext): Promise<boolean> {
+    if (!refreshContext.oldFilePath) return false;
+    const beforeFilterCount = this.helpers.length;
+    this.helpers = this.helpers.filter((h) => !PathUtils.pathsAreEqual(h.origin, refreshContext.oldFilePath!));
+    return beforeFilterCount !== this.helpers.length;
+  }
+
+  /**
+   * Handles a the move or rename of a file
+   * @param {RefreshContext} refreshContext The refresh context
+   * @return {boolean} Returns true if the changed occurred in one of the
+   *  partial files
+   */
+  private async handleFileMovedOrRenamed(refreshContext: RefreshContext): Promise<Boolean> {
+    const globResults = glob.sync(path.resolve(refreshContext.rootPath, this.helperset.file!));
+    const foundInGlob = globResults.some((g: string) => PathUtils.pathsAreEqual(g, refreshContext.newFilePath!));
+    const foundInActual = this.helpers.some((h) => PathUtils.pathsAreEqual(h.origin, refreshContext.oldFilePath!));
+
+    if (!foundInActual && foundInGlob) {
+      await this.handleFileCreated(refreshContext);
+      return true;
+    }
+
+    if (foundInActual && !foundInGlob) {
+      await this.handleFileDeleted(refreshContext);
+      return true;
+    }
+
+    return false;
   }
 };

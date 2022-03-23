@@ -21,6 +21,7 @@ export class YamlFileDatasetHandler extends FileDatasetHandler {
    * @return {any} The data extracted from the source
    */
   async load(rootPath: string): Promise<any> {
-    return await super.loadWithParser(YAML.parse, rootPath);
+    this.parser = YAML.parse;
+    return await super.loadData(rootPath, undefined);
   }
 };

@@ -1,13 +1,19 @@
 import {DatasetHandler} from './DatasetHandler';
+import {FileDatasetHandler} from './FileDatasetHandler';
 import {Dataset} from '../../Models/Dataset';
 import {FileDatasetFactory} from '../../Factories/FileDatasetFactory';
 const glob = require('glob');
 import path from 'path';
+import {RefreshContext} from './../../Refresh/RefreshContext';
+import {RefreshType} from './../../Refresh/RefreshType';
+import {PathUtils} from '../../Utils/PathUtils';
 
 /**
  * Dataset that can handle JS files
  */
 export class MultipleFilesFileDatasetHandler extends DatasetHandler {
+  private datasetHandlers: FileDatasetHandler[] = [];
+
   /**
    * Indicates if this handler can handle the described Dataset object
    * @param {Dataset} dataset Object that will be transformed as a JSFileDataset
@@ -29,7 +35,7 @@ export class MultipleFilesFileDatasetHandler extends DatasetHandler {
    */
   async load(rootPath: string): Promise<any> {
     const handlerFiles = glob.sync(path.resolve('.', this.dataset.file!));
-    const handlers = handlerFiles.map((f: string) => {
+    this.datasetHandlers = handlerFiles.map((f: string) => {
       const factory = new FileDatasetFactory(
           new Dataset({file: f}));
       factory.load(rootPath);
@@ -37,15 +43,23 @@ export class MultipleFilesFileDatasetHandler extends DatasetHandler {
     })
         .filter((e: any | undefined) => e && e != undefined);
     this.content = {};
-    for (let i = 0; i < handlers.length; i++) {
-      const handler = handlers[i];
+    for (let i = 0; i < this.datasetHandlers.length; i++) {
+      const handler = this.datasetHandlers[i];
       if (handler) {
-        await handler.load();
+        await handler.load(rootPath);
       }
     }
-    // await Promise.all(handlers.map((h: { load: () => any; }) => h.load()));
-    for (let i = 0; i < handlers.length; i++) {
-      const handler = handlers[i];
+
+    return this.compileData();
+  }
+
+  /** Compiles data to be used by templates
+   * @return {any} The compiled data
+   */
+  private compileData(): any {
+    this.content = {};
+    for (let i = 0; i < this.datasetHandlers.length; i++) {
+      const handler = this.datasetHandlers[i];
       if (handler) {
         const handlerContent = handler.content;
         this.content = {
@@ -55,5 +69,110 @@ export class MultipleFilesFileDatasetHandler extends DatasetHandler {
       }
     };
     return this.content;
+  }
+
+  /**
+   * Handles a file change, a file content changed, ...
+   * @param {RefreshContext} refreshContext The refresh context
+   * @return {boolean} Returns true if the changed occurred in one of the partial files
+   */
+  public async handleRefresh(refreshContext: RefreshContext): Promise<boolean> {
+    if (!this.dataset.file) return false;
+    switch (refreshContext.refreshType) {
+      case RefreshType.FileContentChanged:
+        if (await this.handleFileContentChanged(refreshContext)) {
+          refreshContext.refreshedObjects.push(this);
+          this.compileData();
+        }
+        break;
+      case RefreshType.FileCreated:
+        if (await this.handleFileCreated(refreshContext)) {
+          refreshContext.refreshedObjects.push(this);
+          this.compileData();
+        }
+        break;
+      case RefreshType.FileDeleted:
+        if (await this.handleFileDeleted(refreshContext)) {
+          refreshContext.refreshedObjects.push(this);
+          this.compileData();
+        }
+        break;
+      case RefreshType.FileMovedOrRenamed:
+        if (await this.handleFileMovedOrRenamed(refreshContext)) {
+          refreshContext.refreshedObjects.push(this);
+          this.compileData();
+        }
+        break;
+    }
+    return true;
+  }
+
+  /**
+   * Handles a change in the content of a file
+   * @param {RefreshContext} refreshContext The refresh context
+   * @return {boolean} Returns true if the changed occurred in one of the partial files
+   */
+  private async handleFileContentChanged(refreshContext: RefreshContext): Promise<boolean> {
+    for (let i = 0; i < this.datasetHandlers.length; i++) {
+      const handler = this.datasetHandlers[i];
+      if (await handler.handleRefresh(refreshContext)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Handles a new file creation
+   * @param {RefreshContext} refreshContext The refresh context
+   * @return {boolean} Returns true if the changed occurred in one of the partial files
+   */
+  private async handleFileCreated(refreshContext: RefreshContext): Promise<boolean> {
+    let result = false;
+    const globResults = glob.sync(path.resolve(refreshContext.rootPath, this.dataset.file!));
+    for (let i = 0; i< globResults.length; i++) {
+      const globResult = globResults[i];
+
+      if (PathUtils.pathsAreEqual(globResult, refreshContext.newFilePath!)) {
+        result = true;
+        const factory = new FileDatasetFactory(
+            new Dataset({file: globResult}));
+        factory.load(refreshContext.rootPath);
+
+        if (factory.handler) {
+          await factory.handler.load(refreshContext.rootPath);
+          this.datasetHandlers.push(factory.handler);
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Handles the deletion of a file
+   * @param {RefreshContext} refreshContext The refresh context
+   * @return {boolean} Returns true if the changed occurred in one of the partial files
+   */
+  private async handleFileDeleted(refreshContext: RefreshContext): Promise<boolean> {
+    for (let i = 0; i < this.datasetHandlers.length; i++) {
+      const handler = this.datasetHandlers[i];
+      if (PathUtils.pathsAreEqual(handler.dataset.file!, refreshContext.oldFilePath!)) {
+        this.datasetHandlers.splice(i, 1);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Handles a the move or rename of a file
+   * @param {RefreshContext} refreshContext The refresh context
+   * @return {boolean} Returns true if the changed occurred in one of the
+   *  partial files
+   */
+  private async handleFileMovedOrRenamed(refreshContext: RefreshContext): Promise<Boolean> {
+    const fileDeletedResult = await this.handleFileDeleted(refreshContext);
+    const fileCreatedResult = await this.handleFileCreated(refreshContext);
+    return fileDeletedResult || fileCreatedResult;
   }
 };

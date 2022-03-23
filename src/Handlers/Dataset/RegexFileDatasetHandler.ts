@@ -27,7 +27,8 @@ export class RegexFileDatasetHandler extends FileDatasetHandler {
    * @return {any} The data extracted from the source
    */
   async load(rootPath: string): Promise<any> {
-    return await super.loadWithParser(this.parse, rootPath);
+    this.parser = this.parse;
+    return await super.loadData(rootPath, undefined);
   }
 
   /**

@@ -51,6 +51,8 @@ export * from './Exceptions/TemplateRegisteringException';
 export * from './Exceptions/UnableToHandleObjectException';
 export * from './Utils/Converter';
 export * from './Utils/InterfaceConverter';
+export * from './Refresh/RefreshContext';
+export * from './Refresh/RefreshType';
 
 if (process.env.runAsProgram == 'TRUE') {
   program

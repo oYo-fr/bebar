@@ -156,7 +156,7 @@ export class MultipleFilesFileDatasetHandler extends DatasetHandler {
   private async handleFileDeleted(refreshContext: RefreshContext): Promise<boolean> {
     for (let i = 0; i < this.datasetHandlers.length; i++) {
       const handler = this.datasetHandlers[i];
-      if (PathUtils.pathsAreEqual(handler.dataset.file!, refreshContext.oldFilePath!)) {
+      if (PathUtils.pathsAreEqual(path.resolve(refreshContext.rootPath, handler.dataset.file!), refreshContext.oldFilePath!)) {
         this.datasetHandlers.splice(i, 1);
         return true;
       }

@@ -395,7 +395,7 @@ export class TemplateHandler {
    * @return {boolean} Returns true if the changed occurred in one of the partial files
    */
   private async handleFileContentChanged(refreshContext: RefreshContext): Promise<boolean> {
-    if (PathUtils.pathsAreEqual(this.template.file!, refreshContext.newFilePath!)) {
+    if (PathUtils.pathsAreEqual(path.resolve(refreshContext.rootPath, this.template.file!), refreshContext.newFilePath!)) {
       this.compiledTemplate = await this.handlebars.compile(refreshContext.newFileContent);
       return true;
     }

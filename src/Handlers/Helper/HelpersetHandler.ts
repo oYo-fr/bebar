@@ -98,7 +98,7 @@ export class HelpersetHandler {
       for (let i = 0; i < Object.keys(hResult).length; i++) {
         const key = Object.keys(hResult)[i];
         Logger.info(this, `\t- ${key}`);
-        this.helpers.push(new Helper(key, hResult[key], origin));
+        this.helpers.push(new Helper(key, hResult[key], path.resolve(rootPath, origin)));
       }
     } catch (e) {
       const ex = new HelperParsingException(this, e);

@@ -8,6 +8,9 @@ import {Helperset} from './Helperset';
  * Generic Template class
  */
 export class Template {
+  /** The name of the template (can be undefined) **/
+  public name?: string | undefined;
+
   /** The file that contains the actual template */
   public file?: string | undefined;
 
@@ -57,6 +60,7 @@ export class Template {
    */
   constructor(plainObject: ITemplate | undefined) {
     if (plainObject) {
+      this.name = plainObject.name;
       this.file = plainObject.file;
       this.encoding = plainObject.encoding;
       this.url = plainObject.url;

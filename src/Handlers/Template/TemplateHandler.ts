@@ -82,11 +82,12 @@ export class TemplateHandler {
   * @param {string} rootPath The folder where the bebar file is
   */
   private async handleTemplate(rootPath: string) {
+    const templatename = ` ${this.template.name}`;
     if (this.template.content) {
       await this.registerHandlebarTemplate(this.template.content);
     } else if (this.template.file) {
       try {
-        Logger.info(this, `Loading template from ${this.template.file}`, '📰');
+        Logger.info(this, `Loading template${templatename} from ${this.template.file}`, '📰');
         const filepath = path.resolve(
             rootPath,
             this.template.file);
@@ -95,11 +96,11 @@ export class TemplateHandler {
         await this.registerHandlebarTemplate(fileContent);
       } catch (e) {
         const ex = new TemplateLoadingException(this, e);
-        Logger.error(this, 'Failed loading template file', ex);
+        Logger.error(this, 'Failed loading template file${templatename}', ex);
         throw ex;
       }
     } else if (this.template.url) {
-      Logger.info(this, `Loading template from ${this.template.url}`, '📰');
+      Logger.info(this, `Loading template${templatename} from ${this.template.url}`, '📰');
       try {
         const response = await axios.request({
           url: this.template.url,
@@ -108,7 +109,7 @@ export class TemplateHandler {
         await this.registerHandlebarTemplate(response.data);
       } catch (e) {
         const ex = new TemplateLoadingException(this, e);
-        Logger.error(this, 'Failed loading template file', ex);
+        Logger.error(this, 'Failed loading template file${templatename}', ex);
         throw ex;
       }
     }

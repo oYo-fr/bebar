@@ -4,6 +4,10 @@ Partials are just parts of templates you can externalize and reuse as you please
 
 ## Options
 
+- ```name [Optional]``` The name of the template.
+
+Can be ignored. This option is only used in logs and in vscode extension for better readability.
+
 - ```file [Optional]``` The path to the file containing the partial templates.
 
 Can be ignored if you use the option ```url``` or if you define the `content` directly.

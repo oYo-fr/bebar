@@ -4,7 +4,7 @@ import {RefreshContext} from '../../../src/Refresh/RefreshContext';
 import {RefreshType} from '../../../src/Refresh/RefreshType';
 import path from 'path';
 import fs from 'fs';
-import { PathUtils } from '../../../src/Utils/PathUtils';
+import {PathUtils} from '../../../src/Utils/PathUtils';
 const YAML = require('yaml');
 
 describe('BebarHandler', () => {
@@ -113,14 +113,14 @@ describe('BebarHandler', () => {
           expect(handler.templateHandlers[0].outputs[0].content.includes('**Paris')).toBeTruthy();
           const newHelpersCode = `module.exports = {bold: function(text) { const Handlebars = require('handlebars');
             return new Handlebars.SafeString('__' + Handlebars.escapeExpression(text) + '__');}};`;
-            const jsPath = path.resolve('./test/Assets/Helpers/stringHelpers.js');
+          const jsPath = path.resolve('./test/Assets/Helpers/stringHelpers.js');
           await handler.handleRefresh(
               new RefreshContext(
                   RefreshType.FileContentChanged, '.', undefined, jsPath, newHelpersCode));
           expect(handler.templateHandlers[0].outputs[0].content.includes('__Paris')).toBeTruthy();
           const helpersetHandlers = testcase === 0 ? handler.helpersetHandlers[0] : handler.templateHandlers[0].helpersetHandlers[0];
           const newHelpersForFile = helpersetHandlers.helpers.filter(
-            (h) => PathUtils.pathsAreEqual(h.origin, jsPath));
+              (h) => PathUtils.pathsAreEqual(h.origin, jsPath));
           expect(newHelpersForFile.length).toBe(1);
           await handler.handleRefresh(
               new RefreshContext(

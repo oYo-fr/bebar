@@ -4,6 +4,7 @@ import {IHelperset} from './IHelperset';
 import {IPartialset} from './IPartialset';
 
 export interface ITemplate {
+  name?: string | undefined;
   file?: string | undefined;
   encoding?: string | undefined;
   url?: string | undefined;

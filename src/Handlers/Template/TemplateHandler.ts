@@ -384,6 +384,7 @@ export class TemplateHandler {
 
     if (refreshOnTemplate || refreshOnHelpers || refreshOnData || refreshOnTemplate || refreshOutputs) {
       await this.generateOutputs();
+      refreshContext.refreshedObjects.push(this);
       return true;
     }
     return false;

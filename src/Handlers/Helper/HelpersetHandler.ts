@@ -174,7 +174,7 @@ export class HelpersetHandler {
       const globResult = globResults[i];
 
       if (PathUtils.pathsAreEqual(globResult, refreshContext.newFilePath!)) {
-        this.helpers = this.helpers.filter(async (h) => h.origin !== refreshContext.newFilePath);
+        this.helpers = this.helpers.filter((h) => !PathUtils.pathsAreEqual(h.origin, refreshContext.newFilePath!));
         await this.saveHandlebarHelpers(refreshContext.newFileContent!, refreshContext.rootPath, refreshContext.newFilePath!);
         result = true;
       }

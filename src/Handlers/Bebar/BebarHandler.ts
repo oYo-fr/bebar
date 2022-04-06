@@ -10,6 +10,8 @@ import {RefreshContext} from './../../Refresh/RefreshContext';
 import {RefreshType} from '../../Refresh/RefreshType';
 const YAML = require('yaml');
 const deepEqual = require('deep-equal');
+import path from 'path';
+import {PathUtils} from '../../Utils/PathUtils';
 
 /**
  * A bebar handler is reponsible for loading everything that migh be
@@ -232,7 +234,7 @@ export class BebarHandler {
    * @return {boolean} Returns true if the changed occurred in one of the partial files
    */
   private async handleFileContentChanged(refreshContext: RefreshContext): Promise<boolean> {
-    if (this.filename === refreshContext.newFilePath) {
+    if (PathUtils.pathsAreEqual(path.resolve(refreshContext.rootPath, this.filename), refreshContext.newFilePath!)) {
       let result = false;
       const plainObject = YAML.parse(refreshContext.newFileContent);
       const newBebar = new Bebar(plainObject);
@@ -278,42 +280,4 @@ export class BebarHandler {
     }
     return false;
   }
-
-
-  // private async handleFileContentChangedForPartialArray(
-  //   refreshContext: RefreshContext,
-  //   existingPartials: PartialsetHandler[],
-  //   newPartials: Partialset[]
-  //   ): Promise<PartialsetHandler[] | undefined> {
-
-  //   const result: PartialsetHandler[] = [];
-  //   let changeDetected = false;
-
-  //   for (let i = 0; i < existingPartials.length; i++) {
-  //     let foundMatch = false;
-  //     for (let j = 0; j < newPartials.length && !foundMatch; j++) {
-  //       foundMatch = deepEqual(existingPartials[i].partialset, newPartials[j]);
-  //     }
-  //     if (foundMatch) {
-  //       result.push(existingPartials[i]);
-  //     } else {
-  //       existingPartials[i].unload(refreshContext);
-  //       changeDetected = true;
-  //     }
-  //   }
-
-  //   for (let i = 0; i < newPartials.length; i++) {
-  //     let foundMatch = false;
-  //     for (let j = 0; j < existingPartials.length && !foundMatch; j++) {
-  //       foundMatch = deepEqual(existingPartials[j].partialset, newPartials[i]);
-  //     }
-  //     if (!foundMatch) {
-  //       const partialHandler = new PartialsetHandler(newPartials[i]);
-  //       await partialHandler.load(refreshContext.rootPath);
-  //       result.push(partialHandler);
-  //       changeDetected = true;
-  //     }
-  //   }
-  //   return changeDetected ? result : undefined;
-  // }
 };

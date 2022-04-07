@@ -53,6 +53,9 @@ export * from './Utils/Converter';
 export * from './Utils/InterfaceConverter';
 export * from './Refresh/RefreshContext';
 export * from './Refresh/RefreshType';
+export * from './Diagnostics/Diagnostic';
+export * from './Diagnostics/DiagnosticBag';
+export * from './Diagnostics/DiagnosticSeverity';
 
 if (process.env.runAsProgram == 'TRUE') {
   program

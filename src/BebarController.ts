@@ -1,7 +1,6 @@
 import {Bebar} from './Models/Bebar';
 import {BebarHandler} from './Handlers/Bebar/BebarHandler';
-import {OutputWritingException}
-  from './Exceptions/OutputWritingException';
+import {OutputWritingException} from './Exceptions/OutputWritingException';
 import {Logger} from './Logging/Logger';
 import path from 'path';
 const glob = require('glob');
@@ -10,6 +9,8 @@ import util from 'util';
 import fs from 'fs';
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
+import {DiagnosticBag} from './Diagnostics/DiagnosticBag';
+import {DiagnosticSeverity} from './Diagnostics/DiagnosticSeverity';
 
 /**
  * Main class for command line call
@@ -29,6 +30,7 @@ export class BebarController {
    * (can contain wildcards)
    */
   public async load(filenamePattern: string) {
+    DiagnosticBag.clear();
     const rootPath = this.workdir ?
       this.workdir :
       path.dirname(filenamePattern);
@@ -42,13 +44,22 @@ export class BebarController {
       const bebarFileContent = await readFile(path.resolve(rootPath, file),
           'utf-8',
       );
-      const plainObject = YAML.parse(bebarFileContent);
-      const bebar =
-        new Bebar(plainObject);
-      if (bebar) {
-        const handler = new BebarHandler(bebar!, rootPath, file);
-        await handler.load();
-        this.handlers.push(handler);
+
+      let plainObject: any | undefined;
+      try {
+        plainObject = YAML.parse(bebarFileContent);
+      } catch (ex: any) {
+        DiagnosticBag.add(ex.source.range.start, ex.source.range.end, 'Failed parsing bebar file: ' + ex.message, DiagnosticSeverity.Error);
+        console.log(ex);
+      }
+      if (plainObject) {
+        const bebar =
+            new Bebar(plainObject);
+        if (bebar) {
+          const handler = new BebarHandler(bebar!, rootPath, file);
+          await handler.load();
+          this.handlers.push(handler);
+        }
       }
     }
   }

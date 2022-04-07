@@ -12,6 +12,7 @@ const YAML = require('yaml');
 const deepEqual = require('deep-equal');
 import path from 'path';
 import {PathUtils} from '../../Utils/PathUtils';
+import {DiagnosticBag} from './../../Diagnostics/DiagnosticBag';
 
 /**
  * A bebar handler is reponsible for loading everything that migh be
@@ -148,6 +149,7 @@ export class BebarHandler {
    * @param {RefreshContext} refreshContext The refresh context
    */
   public async handleRefresh(refreshContext: RefreshContext) {
+    DiagnosticBag.clear();
     if (refreshContext.refreshType === RefreshType.FileContentChanged &&
       await this.handleFileContentChanged(refreshContext)) {
       refreshContext.refreshedObjects.push(this);

@@ -18,6 +18,8 @@ import {Helper} from './Helper';
 import {RefreshContext} from './../../Refresh/RefreshContext';
 import {RefreshType} from './../../Refresh/RefreshType';
 import {PathUtils} from '../../Utils/PathUtils';
+import {DiagnosticBag} from './../../Diagnostics/DiagnosticBag';
+import {DiagnosticSeverity} from './../../Diagnostics/DiagnosticSeverity';
 
 /**
  * A helperset handler is reponsible for reading and returning data
@@ -48,15 +50,14 @@ export class HelpersetHandler {
         const hFile = helperFiles[i];
         Logger.info(this, ` Loading helpers from ${hFile}`, '⚙️');
         try {
-
+          const fileContent =
+            await readFile(hFile, this.helperset.encoding as BufferEncoding);
+          await this.saveHandlebarHelpers(fileContent, rootPath, hFile);
         } catch (e) {
           const ex = new HelperLoadingException(this, e);
           Logger.error(this, 'Failed loading helper file', ex);
           throw ex;
         }
-        const fileContent =
-          await readFile(hFile, this.helperset.encoding as BufferEncoding);
-        await this.saveHandlebarHelpers(fileContent, rootPath, hFile);
       };
     } else if (this.helperset.url) {
       Logger.info(this, ` Loading helpers from ${this.helperset.url}`, '⚙️');
@@ -101,9 +102,19 @@ export class HelpersetHandler {
         this.helpers.push(new Helper(key, hResult[key], path.resolve(rootPath, origin)));
       }
     } catch (e) {
-      const ex = new HelperParsingException(this, e);
-      Logger.error(this, 'Failed parsing javascript content', ex);
-      throw ex;
+      const regexLine = /.*:(?<line>\d*)/mg;
+      const matchLine = regexLine.exec((e as any).stack);
+      const lineNumer = matchLine ? parseInt(matchLine[1]) : 0;
+      const regexCols = /^\s*\^+/mg;
+      const matchCol = regexCols.exec((e as any).stack)?.toString();
+      DiagnosticBag.add(
+          lineNumer-1,
+          matchCol?.length! - matchCol?.trim().length!-1,
+          lineNumer-1,
+          matchCol?.length!-1,
+          'Failed parsing helper file: ' + (e as any).message,
+          DiagnosticSeverity.Error,
+          path.resolve(rootPath, origin));
     }
   }
 

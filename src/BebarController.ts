@@ -54,7 +54,8 @@ export class BebarController {
             (ex as any).source.range.start,
             (ex as any).source.range.end,
             'Failed parsing bebar file: ' + (ex as any).message,
-            DiagnosticSeverity.Error);
+            DiagnosticSeverity.Error,
+            path.resolve(rootPath, file));
       }
       if (plainObject) {
         const bebar =

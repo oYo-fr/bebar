@@ -13,6 +13,7 @@ const deepEqual = require('deep-equal');
 import path from 'path';
 import {PathUtils} from '../../Utils/PathUtils';
 import {DiagnosticBag} from './../../Diagnostics/DiagnosticBag';
+import {DiagnosticSeverity} from './../../Diagnostics/DiagnosticSeverity';
 
 /**
  * A bebar handler is reponsible for loading everything that migh be
@@ -238,7 +239,21 @@ export class BebarHandler {
   private async handleFileContentChanged(refreshContext: RefreshContext): Promise<boolean> {
     if (PathUtils.pathsAreEqual(path.resolve(refreshContext.rootPath, this.filename), refreshContext.newFilePath!)) {
       let result = false;
-      const plainObject = YAML.parse(refreshContext.newFileContent);
+      let plainObject: any | undefined;
+      try {
+        plainObject = YAML.parse(refreshContext.newFileContent);
+      } catch (ex) {
+        DiagnosticBag.addByPosition(
+            refreshContext.newFileContent!,
+            (ex as any).source.range.start,
+            (ex as any).source.range.end,
+            'Failed parsing bebar file: ' + (ex as any).message,
+            DiagnosticSeverity.Error,
+            path.resolve(refreshContext.rootPath, path.resolve(refreshContext.rootPath, this.filename)));
+      }
+
+      if (!plainObject) return true;
+
       const newBebar = new Bebar(plainObject);
 
       if (!deepEqual(this.bebar.helpers, newBebar.helpers)) {

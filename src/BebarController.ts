@@ -48,9 +48,12 @@ export class BebarController {
       let plainObject: any | undefined;
       try {
         plainObject = YAML.parse(bebarFileContent);
-      } catch (ex: any) {
-        DiagnosticBag.add(ex.source.range.start, ex.source.range.end, 'Failed parsing bebar file: ' + ex.message, DiagnosticSeverity.Error);
-        console.log(ex);
+      } catch (ex) {
+        DiagnosticBag.add(
+            (ex as any).source.range.start,
+            (ex as any).source.range.end,
+            'Failed parsing bebar file: ' + (ex as any).message,
+            DiagnosticSeverity.Error);
       }
       if (plainObject) {
         const bebar =

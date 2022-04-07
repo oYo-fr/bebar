@@ -249,7 +249,7 @@ export class BebarHandler {
             (ex as any).source.range.end,
             'Failed parsing bebar file: ' + (ex as any).message,
             DiagnosticSeverity.Error,
-            path.resolve(refreshContext.rootPath, path.resolve(refreshContext.rootPath, this.filename)));
+            path.resolve(refreshContext.rootPath, this.filename));
       }
 
       if (!plainObject) return true;

@@ -55,8 +55,8 @@ export class DiagnosticBag {
 
     DiagnosticBag.Diagnostics.push(
         new Diagnostic(
-            linesStart.length, linesStart[linesStart.length-1].length,
-            linesEnd.length, linesEnd[linesEnd.length-1].length,
+            linesStart.length-1, linesStart[linesStart.length-1].length-1,
+            linesEnd.length-1, linesEnd[linesEnd.length-1].length-1,
             message, severity, file));
   }
 }

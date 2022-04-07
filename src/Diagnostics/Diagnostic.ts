@@ -10,6 +10,7 @@ export class Diagnostic {
    * @param {number} endColumn End column of the diagnostic
    * @param {string} message Message of the diagnostic
    * @param {DiagnosticSeverity} severity Severity of the diagnostic
+   * @param {string} file The file where the error is
    */
   constructor(
     public startLine: number,
@@ -17,5 +18,6 @@ export class Diagnostic {
     public endLine: number,
     public endColumn: number,
     public message: string,
-    public severity: DiagnosticSeverity) {}
+    public severity: DiagnosticSeverity,
+    public file: string) {}
 }

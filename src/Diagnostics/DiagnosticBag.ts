@@ -18,6 +18,7 @@ export class DiagnosticBag {
    * @param {number} endColumn End column of the diagnostic
    * @param {string} message Message of the diagnostic
    * @param {DiagnosticSeverity} severity Severity of the diagnostic
+   * @param {string} file The file where the error is
    */
   public static add(
       startLine: number,
@@ -25,9 +26,10 @@ export class DiagnosticBag {
       endLine: number,
       endColumn: number,
       message: string,
-      severity: DiagnosticSeverity) {
+      severity: DiagnosticSeverity,
+      file: string) {
     DiagnosticBag.Diagnostics.push(
-        new Diagnostic(startLine, startColumn, endLine, endColumn, message, severity));
+        new Diagnostic(startLine, startColumn, endLine, endColumn, message, severity, file));
   }
 
   /**
@@ -37,13 +39,15 @@ export class DiagnosticBag {
    * @param {number} end End line of the diagnostic
    * @param {string} message Message of the diagnostic
    * @param {DiagnosticSeverity} severity Severity of the diagnostic
+   * @param {string} file The file where the error is
    */
   public static addByPosition(
       source: string,
       start: number,
       end: number,
       message: string,
-      severity: DiagnosticSeverity) {
+      severity: DiagnosticSeverity,
+      file: string) {
     const substringStart = source.substring(0, start);
     const linesStart = substringStart.split('\n');
     const substringEnd = source.substring(0, end);
@@ -53,6 +57,6 @@ export class DiagnosticBag {
         new Diagnostic(
             linesStart.length, linesStart[linesStart.length-1].length,
             linesEnd.length, linesEnd[linesEnd.length-1].length,
-            message, severity));
+            message, severity, file));
   }
 }

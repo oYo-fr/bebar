@@ -49,7 +49,8 @@ export class BebarController {
       try {
         plainObject = YAML.parse(bebarFileContent);
       } catch (ex) {
-        DiagnosticBag.add(
+        DiagnosticBag.addByPosition(
+            bebarFileContent,
             (ex as any).source.range.start,
             (ex as any).source.range.end,
             'Failed parsing bebar file: ' + (ex as any).message,

@@ -12,17 +12,47 @@ export class DiagnosticBag {
 
   /**
    * Adds a new diagnostic into the bag
-   * @param {number} start Start position of the diagnostic
-   * @param {number} end End position of the diagnostic
+   * @param {number} startLine Start line of the diagnostic
+   * @param {number} startColumn Start column of the diagnostic
+   * @param {number} endLine End line of the diagnostic
+   * @param {number} endColumn End column of the diagnostic
    * @param {string} message Message of the diagnostic
    * @param {DiagnosticSeverity} severity Severity of the diagnostic
    */
   public static add(
+      startLine: number,
+      startColumn: number,
+      endLine: number,
+      endColumn: number,
+      message: string,
+      severity: DiagnosticSeverity) {
+    DiagnosticBag.Diagnostics.push(
+        new Diagnostic(startLine, startColumn, endLine, endColumn, message, severity));
+  }
+
+  /**
+   * Adds a new diagnostic into the bag
+   * @param {string} source The source for whish we have to compute the real position
+   * @param {number} start Start line of the diagnostic
+   * @param {number} end End line of the diagnostic
+   * @param {string} message Message of the diagnostic
+   * @param {DiagnosticSeverity} severity Severity of the diagnostic
+   */
+  public static addByPosition(
+      source: string,
       start: number,
       end: number,
       message: string,
       severity: DiagnosticSeverity) {
+    const substringStart = source.substring(0, start);
+    const linesStart = substringStart.split('\n');
+    const substringEnd = source.substring(0, end);
+    const linesEnd = substringEnd.split('\n');
+
     DiagnosticBag.Diagnostics.push(
-        new Diagnostic(start, end, message, severity));
+        new Diagnostic(
+            linesStart.length, linesStart[linesStart.length-1].length,
+            linesEnd.length, linesEnd[linesEnd.length-1].length,
+            message, severity));
   }
 }

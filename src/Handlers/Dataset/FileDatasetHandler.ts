@@ -125,7 +125,7 @@ export abstract class FileDatasetHandler extends DatasetHandler {
    * @return {boolean} Returns true if the changed occurred in one of the partial files
    */
   public async handleRefresh(refreshContext: RefreshContext): Promise<boolean> {
-    if(!this.dataset.file || refreshContext.refreshType === RefreshType.FileCreated) {
+    if (!this.dataset.file || refreshContext.refreshType === RefreshType.FileCreated) {
       return false;
     }
     if (refreshContext.newFilePath &&

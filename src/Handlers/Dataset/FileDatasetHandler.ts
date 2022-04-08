@@ -12,6 +12,8 @@ const readFile = util.promisify(fs.readFile);
 import {RefreshContext} from './../../Refresh/RefreshContext';
 import {RefreshType} from './../../Refresh/RefreshType';
 import {PathUtils} from '../../Utils/PathUtils';
+import {DiagnosticBag} from './../../Diagnostics/DiagnosticBag';
+import {DiagnosticSeverity} from './../../Diagnostics/DiagnosticSeverity';
 
 type ParserFunction = (
   data: string, options?: any, context?: any, rootPath?: string)
@@ -49,6 +51,12 @@ export abstract class FileDatasetHandler extends DatasetHandler {
           content,
       };
     } catch (e) {
+      const error = (e as any).message ?? (e as any).toString();
+      DiagnosticBag.add(
+          0, 0, 0, 0,
+          'Failed loading data: ' + error,
+          DiagnosticSeverity.Error,
+          this.dataset.file ? path.resolve(rootPath, this.dataset.file) : this.dataset.url!);
       const ex = new DatasetLoadingException(this, e);
       Logger.error(this, 'Failed loading data', ex);
       throw ex;

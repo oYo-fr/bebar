@@ -1,11 +1,11 @@
 import {Helperset} from '../../Models/Helperset';
 import {Logger} from '../../Logging/Logger';
 import {HelperLoadingException}
-  from './../../Exceptions/HelperLoadingException';
+  from '../../Exceptions/HelperLoadingException';
 import {HelperParsingException}
-  from './../../Exceptions/HelperParsingException';
+  from '../../Exceptions/HelperParsingException';
 import {HelperRegisteringException}
-  from './../../Exceptions/HelperRegisteringException';
+  from '../../Exceptions/HelperRegisteringException';
 const glob = require('glob');
 import path from 'path';
 import fs from 'fs';
@@ -15,11 +15,11 @@ import {AxiosInstance} from '../../Utils/AxiosInstance';
 const axios = AxiosInstance.getInstance().axios;
 const nodeEval = require('node-eval');
 import {Helper} from './Helper';
-import {RefreshContext} from './../../Refresh/RefreshContext';
-import {RefreshType} from './../../Refresh/RefreshType';
+import {RefreshContext} from '../../Refresh/RefreshContext';
+import {RefreshType} from '../../Refresh/RefreshType';
 import {PathUtils} from '../../Utils/PathUtils';
-import {DiagnosticBag} from './../../Diagnostics/DiagnosticBag';
-import {DiagnosticSeverity} from './../../Diagnostics/DiagnosticSeverity';
+import {DiagnosticBag} from '../../Diagnostics/DiagnosticBag';
+import {DiagnosticSeverity} from '../../Diagnostics/DiagnosticSeverity';
 
 /**
  * A helperset handler is reponsible for reading and returning data

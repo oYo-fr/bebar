@@ -1,5 +1,5 @@
 import {HelpersetHandler}
-  from '../../../src/Handlers/Helper/HelpersetHandler';
+  from '../../../src/Handlers/Helperset/HelpersetHandler';
 import {Helperset} from '../../../src/Models/Helperset';
 import {MockAxios} from '../../Utils/MockAxios';
 import Handlebars from 'handlebars';

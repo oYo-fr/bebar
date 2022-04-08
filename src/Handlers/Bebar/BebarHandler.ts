@@ -2,7 +2,7 @@ import {DatasetFactory} from '../../Factories/DatasetFactory';
 import {Bebar} from '../../Models/Bebar';
 import {DatasetHandler} from '../Dataset/DatasetHandler';
 import {FileDatasetHandler} from '../Dataset/FileDatasetHandler';
-import {HelpersetHandler} from '../Helper/HelpersetHandler';
+import {HelpersetHandler} from '../Helperset/HelpersetHandler';
 import {PartialsetHandler} from '../Partialset/PartialsetHandler';
 import {TemplateHandler} from '../Template/TemplateHandler';
 import Handlebars from 'handlebars';

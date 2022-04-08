@@ -8,8 +8,6 @@ import {AxiosInstance} from '../../Utils/AxiosInstance';
 const axios = AxiosInstance.getInstance().axios;
 import {PartialLoadingException}
   from './../../Exceptions/PartialLoadingException';
-import {PartialRegisteringException}
-  from '../../Exceptions/PartialRegisteringException';
 import {Logger} from '../../Logging/Logger';
 import {Partial} from './Partial';
 import {RefreshContext} from './../../Refresh/RefreshContext';
@@ -109,13 +107,7 @@ export class PartialsetHandler {
       name: string,
       sourceCode: string,
       origin: string) {
-    try {
-      this.partials.push(new Partial(name, sourceCode, origin));
-    } catch (e) {
-      const ex = new PartialRegisteringException(this, e);
-      Logger.error(this, 'Failed parsing partial file', ex);
-      throw ex;
-    }
+    this.partials.push(new Partial(name, sourceCode, origin));
   }
 
   /**
@@ -125,13 +117,7 @@ export class PartialsetHandler {
   public async registerPartials(handlebars: any) {
     for (let i = 0; i < this.partials.length; i++) {
       const partial = this.partials[i];
-      try {
-        await handlebars.registerPartial(partial.name, partial.code);
-      } catch (e) {
-        const ex = new PartialRegisteringException(this, e);
-        Logger.error(this, 'Failed registering partial', ex);
-        throw ex;
-      }
+      await handlebars.registerPartial(partial.name, partial.code);
     }
   }
 

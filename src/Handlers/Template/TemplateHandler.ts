@@ -3,7 +3,7 @@ import {Template} from '../../Models/Template';
 import {Output} from '../../Models/Output';
 import {Iterator} from '../../Models/Iterator';
 import {DatasetHandler} from '../Dataset/DatasetHandler';
-import {HelpersetHandler} from '../Helper/HelpersetHandler';
+import {HelpersetHandler} from '../Helperset/HelpersetHandler';
 import {PartialsetHandler} from '../Partialset/PartialsetHandler';
 import path from 'path';
 import fs from 'fs';
@@ -11,16 +11,15 @@ import {AxiosInstance} from '../../Utils/AxiosInstance';
 const axios = AxiosInstance.getInstance().axios;
 import prettier from 'prettier';
 import {Logger} from '../../Logging/Logger';
-import {TemplateLoadingException}
-  from './../../Exceptions/TemplateLoadingException';
-import {TemplateRegisteringException}
-  from './../../Exceptions/TemplateRegisteringException';
-import {TemplateExecutionException}
-  from './../../Exceptions/TemplateExecutionException';
+import {TemplateLoadingException} from './../../Exceptions/TemplateLoadingException';
+import {TemplateRegisteringException} from './../../Exceptions/TemplateRegisteringException';
+import {TemplateExecutionException} from './../../Exceptions/TemplateExecutionException';
 import {RefreshContext} from './../../Refresh/RefreshContext';
 import {RefreshType} from './../../Refresh/RefreshType';
 import {FileDatasetHandler} from '../Dataset/FileDatasetHandler';
 import {PathUtils} from '../../Utils/PathUtils';
+import {DiagnosticBag} from './../../Diagnostics/DiagnosticBag';
+import {DiagnosticSeverity} from './../../Diagnostics/DiagnosticSeverity';
 
 /**
  * A template handler is reponsible for reading and returning data
@@ -54,14 +53,17 @@ export class TemplateHandler {
   async load(rootPath: string): Promise<any> {
     await this.handleTemplate(rootPath);
     await this.handleData(rootPath);
-    await this.generateOutputs();
+    await this.generateOutputs(rootPath);
   }
 
-  /** Compiles data & templates to produce outputs */
-  private async generateOutputs() {
+  /**
+   * Compiles data & templates to produce outputs
+   * @param {string} rootPath The folder where the bebar file is
+   */
+  private async generateOutputs(rootPath: string) {
     this.outputs = [];
     this.compileData();
-    await this.handleIterators();
+    await this.handleIterators(rootPath);
     await this.handlePrettifier();
   }
 
@@ -169,7 +171,16 @@ export class TemplateHandler {
         const factory = new DatasetFactory(data);
         factory.load(rootPath);
         if (factory.handler) {
-          await factory.handler.load(rootPath);
+          try {
+            await factory.handler.load(rootPath);
+          } catch (e) {
+            const error = (e as any).message ?? (e as any).toString();
+            DiagnosticBag.add(
+                0, 0, 0, 0,
+                'Failed loading data: ' + error,
+                DiagnosticSeverity.Error,
+              this.template.file ? path.resolve(rootPath, this.template.file) : this.template.url!);
+          }
           if (factory.handler) {
             this.datasetHandlers.push(factory.handler as DatasetHandler);
           }
@@ -195,8 +206,9 @@ export class TemplateHandler {
 
   /**
    * Iterators management function
+   * @param {string} rootPath The folder where the bebar file is
    */
-  private async handleIterators() {
+  private async handleIterators(rootPath: string) {
     if (this.template.iterators.length > 0) {
       await this.iterate(
           this.template.iterators,
@@ -205,9 +217,10 @@ export class TemplateHandler {
           {},
           this.bebarData,
           this.template.output,
-          this.template.iterationValueName);
+          this.template.iterationValueName,
+          rootPath);
     } else {
-      await this.produceOutput(this.bebarData, this.template.output);
+      await this.produceOutput(this.bebarData, this.template.output, rootPath);
     }
   }
 
@@ -242,6 +255,7 @@ export class TemplateHandler {
    * @param {any} originalData The original template data
    * @param {string | undefined} output Where the iteration data will go to
    * @param {string | undefined} iterationValueName Indicates the name of the
+   * @param {string} rootPath The folder where the bebar file is
    *  property where the current iteration will be found within the data. If not
    *  set, iteration values will be pushed at the root of the data passed to the
    *  template
@@ -253,7 +267,8 @@ export class TemplateHandler {
       indexedData: any,
       originalData: any,
       output: string | undefined,
-      iterationValueName: string | undefined) {
+      iterationValueName: string | undefined,
+      rootPath: string) {
     const currentIterator = iterators[iteratorIndex];
     const currentArray: any[] = currentIterator.array ?
         data[currentIterator.array] :
@@ -271,7 +286,8 @@ export class TemplateHandler {
             currentData,
             originalData,
             output,
-            iterationValueName);
+            iterationValueName,
+            rootPath);
       } else {
         const outputData = iterationValueName ?
         {
@@ -282,7 +298,7 @@ export class TemplateHandler {
           ...originalData,
           ...currentData,
         };
-        await this.produceOutput(outputData, output);
+        await this.produceOutput(outputData, output, rootPath);
       }
     }
   }
@@ -291,8 +307,9 @@ export class TemplateHandler {
    * Produces a output an add it to the outputs list
    * @param {any} data The data that should be used to produce the output
    * @param {string} output The name of the file that should be produced
+   * @param {string} rootPath The folder where the bebar file is
    */
-  private async produceOutput(data: any, output: string | undefined) {
+  private async produceOutput(data: any, output: string | undefined, rootPath: string) {
     try {
       let processedOutputFilename = output;
       if (output) {
@@ -315,6 +332,11 @@ export class TemplateHandler {
         }));
       }
     } catch (e) {
+      DiagnosticBag.add(
+          0, 0, 0, 0,
+          'Failed producing output: ' + (e as any).message,
+          DiagnosticSeverity.Error,
+          this.template.file ? path.resolve(rootPath, this.template.file) : this.template.url!);
       const ex = new TemplateExecutionException(this, e);
       Logger.error(this, 'Failed producing output content', ex);
       throw ex;
@@ -384,7 +406,7 @@ export class TemplateHandler {
     }
 
     if (refreshOnTemplate || refreshOnHelpers || refreshOnData || refreshOnTemplate || refreshOutputs) {
-      await this.generateOutputs();
+      await this.generateOutputs(refreshContext.rootPath);
       refreshContext.refreshedObjects.push(this);
       return true;
     }

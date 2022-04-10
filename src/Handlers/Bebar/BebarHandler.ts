@@ -60,7 +60,9 @@ export class BebarHandler {
         const factory = new DatasetFactory(data);
         factory.load(this.rootPath);
         if (factory.handler) {
-          await factory.handler.load(this.rootPath);
+          try {
+            await factory.handler.load(this.rootPath);
+          } catch {}
           if (factory.handler) {
             this.datasetHandlers.push(factory.handler as DatasetHandler);
           }

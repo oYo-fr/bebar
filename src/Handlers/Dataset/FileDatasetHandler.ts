@@ -140,7 +140,9 @@ export abstract class FileDatasetHandler extends DatasetHandler {
         !PathUtils.pathsAreEqual(path.resolve(refreshContext.rootPath, this.dataset.file), refreshContext.newFilePath!)) {
       return false;
     }
-    await this.loadData(refreshContext.rootPath, refreshContext.newFileContent);
+    try {
+      await this.loadData(refreshContext.rootPath, refreshContext.newFileContent);
+    } catch {}
     refreshContext.refreshedObjects.push(this);
     return true;
   }

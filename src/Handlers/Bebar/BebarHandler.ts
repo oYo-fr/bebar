@@ -156,7 +156,6 @@ export class BebarHandler {
     if (refreshContext.refreshType === RefreshType.FileContentChanged &&
       await this.handleFileContentChanged(refreshContext)) {
       refreshContext.refreshedObjects.push(this);
-      this.compileData();
       return true;
     }
 
@@ -284,9 +283,10 @@ export class BebarHandler {
         result = true;
         this.bebar.data = newBebar.data;
         await this.loadDatasets();
+        await this.compileData();
       }
 
-      if (!deepEqual(this.bebar.templates, newBebar.templates)) {
+      if (result || !deepEqual(this.bebar.templates, newBebar.templates)) {
         result = true;
         for (let i = 0; i < this.templateHandlers.length; i++) {
           await this.templateHandlers[i].unload();

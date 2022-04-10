@@ -63,8 +63,10 @@ export class TemplateHandler {
   private async generateOutputs(rootPath: string) {
     this.outputs = [];
     this.compileData();
-    await this.handleIterators(rootPath);
-    await this.handlePrettifier();
+    try {
+      await this.handleIterators(rootPath);
+    } catch {}
+    await this.handlePrettifier(rootPath);
   }
 
   /**
@@ -226,8 +228,9 @@ export class TemplateHandler {
 
   /**
    * Pretifier management function
+   * @param {string} rootPath The folder where the bebar file is
    */
-  private async handlePrettifier() {
+  private async handlePrettifier(rootPath: string) {
     return new Promise((resolve) => {
       const exceptions: Array<any> = [];
       if (this.template.prettify) {
@@ -238,6 +241,11 @@ export class TemplateHandler {
                 output.content,
                 this.template.prettify);
           } catch (e) {
+            DiagnosticBag.add(
+                0, 0, 0, 0,
+                'Failed applying prerrifier: ' + (e as any).toString(),
+                DiagnosticSeverity.Error,
+              this.template.file ? path.resolve(rootPath, this.template.file) : this.template.url!);
             exceptions.push(e);
           }
         }

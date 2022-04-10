@@ -21,6 +21,6 @@ describe('BebarHandler - error handling', () => {
     try {
       await handler.load();
     } catch {}
-    expect(DiagnosticBag.Diagnostics.length).toBe(2);
+    expect(DiagnosticBag.Diagnostics.length).toBe(3);
   });
 });

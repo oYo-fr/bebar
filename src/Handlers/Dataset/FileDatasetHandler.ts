@@ -14,6 +14,7 @@ import {RefreshType} from './../../Refresh/RefreshType';
 import {PathUtils} from '../../Utils/PathUtils';
 import {DiagnosticBag} from './../../Diagnostics/DiagnosticBag';
 import {DiagnosticSeverity} from './../../Diagnostics/DiagnosticSeverity';
+import {DatasetCache} from './../../Caching/DatasetCache';
 
 type ParserFunction = (
   data: string, options?: any, context?: any, rootPath?: string)
@@ -35,21 +36,7 @@ export abstract class FileDatasetHandler extends DatasetHandler {
    */
   async loadData(rootPath: string, fileContent: string | undefined): Promise<any> {
     try {
-      const content = fileContent ?? (this.dataset.file ?
-        await this.readFromFile(rootPath) :
-        await this.readFromUrl());
-      const datasetName = this.dataset.name as string;
-
-      const options = this.dataset.options;
-      const context = {
-        data: this.dataset,
-        workingDir: rootPath,
-      };
-      this.content = {
-        [datasetName]: typeof(content) === 'string' ?
-          await this.parser!(content, options, context, rootPath) :
-          content,
-      };
+      this.content = await DatasetCache.get(this.dataset, this.fetchAndParseData, {rootPath: rootPath, fileContent: fileContent, instance: this});
     } catch (e) {
       const error = (e as any).message ?? (e as any).toString();
       DiagnosticBag.add(
@@ -65,29 +52,56 @@ export abstract class FileDatasetHandler extends DatasetHandler {
   }
 
   /**
+   * Reads data from the source and parse it using the givent parser and options
+   * @param {any} options The options to pass to the data parser
+   * @return {any} The data from the source, as an object
+   */
+  private async fetchAndParseData(options: any): Promise<any> {
+    const content = options.fileContent ?? (options.instance.dataset.file ?
+      await FileDatasetHandler.readFromFile(options.instance, options.rootPath) :
+      await FileDatasetHandler.readFromUrl(options.instance));
+    const datasetName = options.instance.dataset.name as string;
+
+    const datasetOptions = options.instance.dataset.options;
+    const context = {
+      data: options.instance.dataset,
+      workingDir: options.rootPath,
+    };
+    return {
+      [datasetName]: typeof(content) === 'string' ?
+        await options.instance.parser!(content, datasetOptions, context, options.rootPath) :
+        content,
+    };
+  }
+
+  /**
    * Reads the file content
+   * @param {FileDatasetHandler} instance The instance of the handler that contains information
+   * on how to load data
    * @return {any} The content of the file
    */
-  private async readFromUrl(): Promise<any> {
-    Logger.info(this, `Loading data from ${this.dataset.url}`, '📈');
+  private static async readFromUrl(instance: FileDatasetHandler): Promise<any> {
+    Logger.info(this, `Loading data from ${instance.dataset.url}`, '📈');
     return (await axios
         .request({
-          url: this.dataset.url,
-          ...this.dataset.httpOptions,
+          url: instance.dataset.url,
+          ...instance.dataset.httpOptions,
         })).data;
   }
 
   /**
   * Reads the file content
+  * @param {FileDatasetHandler} instance The instance of the handler that contains information
+  * on how to load data
   * @param {string} rootPath The folder where the bebar file is
   * @return {any} The content of the file
   */
-  private async readFromFile(rootPath: string): Promise<any> {
+  private static async readFromFile(instance: FileDatasetHandler, rootPath: string): Promise<any> {
     const filepath = path.resolve(
         rootPath,
-        this.dataset.file!);
+        instance.dataset.file!);
     Logger.info(this, `Loading data from ${filepath}`, '📈');
-    const encoding: string = this.dataset.encoding!;
+    const encoding: string = instance.dataset.encoding!;
     const result = await readFile(filepath, encoding as BufferEncoding);
     return result;
   }

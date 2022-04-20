@@ -45,7 +45,12 @@ export class JSFileDatasetHandler
     };
     let result = nodeEval(data, rootPath, param);
     try {
-      result = await result(param);
+      if (result && typeof result.then === 'function' && result[Symbol.toStringTag] === 'Promise') {
+        // is compliant native promise implementation
+      } else {
+        result = await result(param);
+      }
+      result = result(param);
     } catch {}
     return result;
   }

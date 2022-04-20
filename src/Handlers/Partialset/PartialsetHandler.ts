@@ -189,7 +189,7 @@ export class PartialsetHandler {
     for (let i = 0; i< globResults.length; i++) {
       const globResult = globResults[i];
 
-      if (globResult === refreshContext.newFilePath) {
+      if (PathUtils.pathsAreEqual(globResult, refreshContext.newFilePath!)) {
         result = true;
         if (globResults.length > 1 || name === '') {
           name = path.parse(globResult).name;

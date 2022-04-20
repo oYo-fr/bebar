@@ -1,4 +1,5 @@
 import {IDataset} from './Interfaces/IDataset';
+import {CachingOptions} from './CachingOptions';
 import path from 'path';
 const glob = require('glob');
 
@@ -38,6 +39,10 @@ export class Dataset {
   /** Http options that can be used to
    *  specify method (GET, POST, ...), headers, ... */
   public httpOptions?: any | undefined;
+
+  /** The caching options for the dataset */
+  public cache?: CachingOptions | undefined;
+
   /**
    * Constructor.
    * @param {Dataset | undefined} plainObject A plain object containing
@@ -54,6 +59,7 @@ export class Dataset {
       this.parseAs = plainObject.parseAs;
       this.url = plainObject.url;
       this.httpOptions = plainObject.httpOptions;
+      this.cache = plainObject.cache ? new CachingOptions(plainObject.cache) : undefined;
     }
     this.setDefaults();
   }

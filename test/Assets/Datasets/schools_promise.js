@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 module.exports = async (context) => {
+  if(!context.options.testParam) return [];
   const fs = require('fs'); // <- this should not crash
   return [
     {

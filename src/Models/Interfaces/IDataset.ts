@@ -1,3 +1,5 @@
+import {ICachingOptions} from './ICachingOptions';
+
 export interface IDataset {
   name?: string | undefined;
   file?: string | undefined;
@@ -8,4 +10,5 @@ export interface IDataset {
   parseAs?: any | undefined;
   url?: string | undefined;
   httpOptions?: any | undefined;
+  cache?: ICachingOptions | undefined;
 }

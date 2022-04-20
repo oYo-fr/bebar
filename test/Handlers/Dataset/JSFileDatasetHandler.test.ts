@@ -30,6 +30,9 @@ describe('JSFileDatasetHandler', () => {
         new Dataset({
           name: 'schools',
           file: './test/Assets/Datasets/schools.js',
+          options: {
+            testParam: true
+          },
         }),
     );
     const data = await handler.load('.');
@@ -43,6 +46,9 @@ describe('JSFileDatasetHandler', () => {
         new Dataset({
           name: 'schools',
           file: './test/Assets/Datasets/schools_promise.js',
+          options: {
+            testParam: true
+          },
         }),
     );
     const data = await handler.load('.');
@@ -77,6 +83,9 @@ describe('JSFileDatasetHandler', () => {
           name: 'schools',
           parseAs: 'js',
           url: '/schools.js',
+          options: {
+            testParam: true
+          },
         }),
     );
     const data = await handler.load('.');

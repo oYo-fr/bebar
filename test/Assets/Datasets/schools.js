@@ -1,5 +1,5 @@
 module.exports = function(context) {
-  if(!context.options.testParam) return [];
+  if (!context.options.testParam) return [];
   return [
     {
       id: 1,
@@ -42,4 +42,4 @@ module.exports = function(context) {
       name: 'Johns Hopkins University',
     },
   ];
-}
+};

@@ -41,6 +41,28 @@ Bebar uses [Axios](https://axios-http.com/) to fetch http requests. You can use 
 
 This can be ignored if the web request is a simple `GET`.
 
+- ```cache [Optional]``` Allows you to cache locally the data extracted from the source.
+This is especially useful when the source comes from an http query, and also if you use the vscode bebar extension, where a lot of refresh can happen.
+The cache options looks like this:
+``` yaml
+cache:
+  enabled: true
+  ttl: 1 second # Optional
+```
+
+The cache is a local file located in the .cache folder next to your bebar file. It's name is computed based on the url and the http options you provided.
+If these settings do not change, the the cache will be used.
+You can also add a ttl to this local cache to force refresh after a certain amount of time, that you can express in a natural language.
+Examples of valid ttl expressions:
+- 2 h
+- 2hours
+- 48hr
+- 1y 12month
+- 55s500ms
+- 300ms20s 5day
+
+More details on what you can do [here (timespan-parser)](https://www.npmjs.com/package/timespan-parser)
+
 ## Examples
 
 ``` yaml

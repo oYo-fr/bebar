@@ -36,8 +36,7 @@ export abstract class FileDatasetHandler extends DatasetHandler {
    */
   async loadData(rootPath: string, fileContent: string | undefined): Promise<any> {
     try {
-      this.content = await DatasetCache.get(this.dataset, this.fetchAndParseData, { rootPath: rootPath, fileContent: fileContent, instance: this});
-      // this.content = await this.fetchAndParseData({ rootPath: rootPath, fileContent: fileContent})
+      this.content = await DatasetCache.get(this.dataset, this.fetchAndParseData, {rootPath: rootPath, fileContent: fileContent, instance: this});
     } catch (e) {
       const error = (e as any).message ?? (e as any).toString();
       DiagnosticBag.add(
@@ -52,6 +51,11 @@ export abstract class FileDatasetHandler extends DatasetHandler {
     return this.content;
   }
 
+  /**
+   * Reads data from the source and parse it using the givent parser and options
+   * @param {any} options The options to pass to the data parser
+   * @return {any} The data from the source, as an object
+   */
   private async fetchAndParseData(options: any): Promise<any> {
     const content = options.fileContent ?? (options.instance.dataset.file ?
       await FileDatasetHandler.readFromFile(options.instance, options.rootPath) :
@@ -72,6 +76,8 @@ export abstract class FileDatasetHandler extends DatasetHandler {
 
   /**
    * Reads the file content
+   * @param {FileDatasetHandler} instance The instance of the handler that contains information
+   * on how to load data
    * @return {any} The content of the file
    */
   private static async readFromUrl(instance: FileDatasetHandler): Promise<any> {
@@ -85,6 +91,8 @@ export abstract class FileDatasetHandler extends DatasetHandler {
 
   /**
   * Reads the file content
+  * @param {FileDatasetHandler} instance The instance of the handler that contains information
+  * on how to load data
   * @param {string} rootPath The folder where the bebar file is
   * @return {any} The content of the file
   */

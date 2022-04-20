@@ -31,7 +31,7 @@ describe('JSFileDatasetHandler', () => {
           name: 'schools',
           file: './test/Assets/Datasets/schools.js',
           options: {
-            testParam: true
+            testParam: true,
           },
         }),
     );
@@ -47,7 +47,7 @@ describe('JSFileDatasetHandler', () => {
           name: 'schools',
           file: './test/Assets/Datasets/schools_promise.js',
           options: {
-            testParam: true
+            testParam: true,
           },
         }),
     );
@@ -84,7 +84,7 @@ describe('JSFileDatasetHandler', () => {
           parseAs: 'js',
           url: '/schools.js',
           options: {
-            testParam: true
+            testParam: true,
           },
         }),
     );

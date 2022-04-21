@@ -25,6 +25,7 @@ export class BebarHandler {
   public helpersetHandlers: HelpersetHandler[] = [];
   public templateHandlers: TemplateHandler[] = [];
   private allData: any = {};
+  public keyToDataset: any | undefined = undefined;
 
   /**
    * Constructor.
@@ -62,7 +63,9 @@ export class BebarHandler {
         if (factory.handler) {
           try {
             await factory.handler.load(this.rootPath);
-          } catch {}
+          } catch (e) {
+            console.log(e);
+          }
           if (factory.handler) {
             this.datasetHandlers.push(factory.handler as DatasetHandler);
           }
@@ -74,11 +77,15 @@ export class BebarHandler {
   /** Compiles data to be used by templates */
   private async compileData() {
     this.allData = {};
+    this.keyToDataset = {};
     for (let i = 0; i < this.datasetHandlers.length; i++) {
       this.allData = {
         ...this.allData,
         ...this.datasetHandlers[0].content,
       };
+      if (this.datasetHandlers[i].key) {
+        this.keyToDataset[this.datasetHandlers[i].key!] = this.datasetHandlers[i].dataset;
+      }
     }
   }
 
@@ -141,6 +148,9 @@ export class BebarHandler {
 
         templateHandler.bebarData = {
           ...this.allData,
+        };
+        templateHandler.bebarKeyToDataset = {
+          ...this.keyToDataset,
         };
         await templateHandler.load(this.rootPath);
       }
@@ -221,6 +231,9 @@ export class BebarHandler {
       const templateHandler = this.templateHandlers[i];
       templateHandler.bebarData = {
         ...this.allData,
+      };
+      templateHandler.bebarKeyToDataset = {
+        ...this.keyToDataset,
       };
       if (await templateHandler.handleRefresh(refreshContext, refreshOnPartials || refreshOnHelpers || refreshOnData)) {
         refreshOnTemplates = true;

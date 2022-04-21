@@ -23,15 +23,15 @@ export class DirectDatasetHandler extends DatasetHandler {
   async load(): Promise<any> {
     const instance = this;
     return new Promise((resolve) => {
-      if (!this.dataset.name) {
-        this.content = instance.dataset.content;
+      if (!instance.dataset.name) {
+        instance.content = instance.dataset.content;
       } else {
-        const datasetName = this.dataset.name as string;
-        this.content = {
-          [datasetName]: instance.dataset.content,
+        instance.key = instance.dataset.name as string;
+        instance.content = {
+          [instance.key]: instance.dataset.content,
         };
       }
-      resolve(this.content);
+      resolve(instance.content);
     });
   }
 };

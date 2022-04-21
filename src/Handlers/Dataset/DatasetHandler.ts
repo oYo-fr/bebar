@@ -6,6 +6,8 @@ import {Dataset} from '../../Models/Dataset';
  * and emitting events when necessary
  */
 export abstract class DatasetHandler {
+  public key: string | undefined;
+
   /**
    * Constructor.
    * @param {Dataset} Dataset Object that describes where to get the data from

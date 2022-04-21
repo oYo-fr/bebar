@@ -86,7 +86,7 @@ export class BebarHandler {
         this.keyToDataset[handler.key!] = handler.dataset;
       } else {
         if (handler.datasetHandlers) {
-          for(let i = 0; i < handler.datasetHandlers.length; i++) {
+          for (let i = 0; i < handler.datasetHandlers.length; i++) {
             this.keyToDataset[handler.datasetHandlers[i].key!] = handler.datasetHandlers[i].dataset;
           }
         }

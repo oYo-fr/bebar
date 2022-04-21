@@ -6,7 +6,7 @@ import path from 'path';
 import {RefreshContext} from './../../Refresh/RefreshContext';
 import {RefreshType} from './../../Refresh/RefreshType';
 import {PathUtils} from '../../Utils/PathUtils';
-import { FileDatasetHandler } from './FileDatasetHandler';
+import {FileDatasetHandler} from './FileDatasetHandler';
 
 /**
  * Dataset that can handle JS files

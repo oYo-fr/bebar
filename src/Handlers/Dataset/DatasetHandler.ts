@@ -7,6 +7,7 @@ import {Dataset} from '../../Models/Dataset';
  */
 export abstract class DatasetHandler {
   public key: string | undefined;
+  public datasetHandlers: DatasetHandler[] = [];
 
   /**
    * Constructor.

@@ -18,8 +18,8 @@ describe('BebarHandler', () => {
     await handler.load();
     expect(handler.templateHandlers[0].outputs.length).toBeGreaterThan(0);
     expect(handler.templateHandlers[0].outputs[0].data).toBeDefined();
-    expect(handler.templateHandlers[0].outputs[0].content.length)
-        .toBeGreaterThan(0);
+    expect(handler.templateHandlers[0].outputs[0].content.length).toBeGreaterThan(0);
+    expect(Object.keys(handler.templateHandlers[0].outputs[0].keyToDataset).length).toBeGreaterThan(0);
   });
 
   it('load method should not crash with direct arrays', async () => {
@@ -32,8 +32,8 @@ describe('BebarHandler', () => {
     await handler.load();
     expect(handler.templateHandlers[0].outputs.length).toBeGreaterThan(0);
     expect(handler.templateHandlers[0].outputs[0].data).toBeDefined();
-    expect(handler.templateHandlers[0].outputs[0].content.length)
-        .toBeGreaterThan(0);
+    expect(handler.templateHandlers[0].outputs[0].content.length).toBeGreaterThan(0);
+    expect(Object.keys(handler.templateHandlers[0].outputs[0].keyToDataset).length).toBeGreaterThan(0);
   });
 
   it('load method should not crash with direct properties', async () => {
@@ -46,8 +46,8 @@ describe('BebarHandler', () => {
     await handler.load();
     expect(handler.templateHandlers[0].outputs.length).toBeGreaterThan(0);
     expect(handler.templateHandlers[0].outputs[0].data).toBeDefined();
-    expect(handler.templateHandlers[0].outputs[0].content.length)
-        .toBeGreaterThan(0);
+    expect(handler.templateHandlers[0].outputs[0].content.length).toBeGreaterThan(0);
+    expect(Object.keys(handler.templateHandlers[0].outputs[0].keyToDataset).length).toBeGreaterThan(0);
   });
 
   it('load method should not crash with direct properties and one file',
@@ -62,11 +62,9 @@ describe('BebarHandler', () => {
         await handler.load();
         expect(handler.templateHandlers[0].outputs[0].data).toBeDefined();
         expect(handler.templateHandlers[0].outputs.length).toBeGreaterThan(0);
-        expect(handler.templateHandlers[0].outputs[0].content.length)
-            .toBeGreaterThan(0);
-        expect(
-            handler.templateHandlers[0].outputs[0].content.includes('Harvard'))
-            .toBeTruthy();
+        expect(handler.templateHandlers[0].outputs[0].content.length).toBeGreaterThan(0);
+        expect(handler.templateHandlers[0].outputs[0].content.includes('Harvard')).toBeTruthy();
+        expect(Object.keys(handler.templateHandlers[0].outputs[0].keyToDataset).length).toBeGreaterThan(0);
       });
 
   it('should refresh outputs properly',
@@ -95,6 +93,7 @@ describe('BebarHandler', () => {
           expect(handler.templateHandlers[0].outputs.length).toBeGreaterThan(0);
           expect(handler.templateHandlers[0].outputs[0].content.length).toBeGreaterThan(0);
           expect(handler.templateHandlers[0].outputs[0].content.includes('Harvard')).toBeTruthy();
+          expect(Object.keys(handler.templateHandlers[0].outputs[0].keyToDataset).length).toBeGreaterThan(0);
           await handler.handleRefresh(
               new RefreshContext(
                   RefreshType.FileContentChanged,
@@ -130,6 +129,7 @@ describe('BebarHandler', () => {
                   path.resolve('./test/Assets/Templates/list_of_schools.hbs'),
                   handler.templateHandlers[0].template.content + 'TEMPLATE UPDATED'));
           expect(handler.templateHandlers[0].outputs[0].content.includes('TEMPLATE UPDATED')).toBeTruthy();
+          expect(Object.keys(handler.templateHandlers[0].outputs[0].keyToDataset).length).toBeGreaterThan(0);
 
           expect(handler.templateHandlers[0].outputs[0].data['schools']).toBeDefined();
           expect(handler.templateHandlers[0].outputs[0].data['schools_utf-16']).toBeDefined();
@@ -139,6 +139,7 @@ describe('BebarHandler', () => {
           await handler.handleRefresh(
               new RefreshContext(RefreshType.FileCreated, '.', undefined, path.resolve('./test/Assets/Datasets/schools_utf-16.yaml'), undefined));
           expect(handler.templateHandlers[0].outputs[0].data['schools_utf-16']).toBeDefined();
+          expect(Object.keys(handler.templateHandlers[0].outputs[0].keyToDataset).length).toBeGreaterThan(0);
 
           const helpersHandler = testcase === 0 ? handler.helpersetHandlers[0] : handler.templateHandlers[0].helpersetHandlers[0];
           let helpersCount = helpersHandler.helpers.length;

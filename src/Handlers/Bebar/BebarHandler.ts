@@ -46,7 +46,7 @@ export class BebarHandler {
   */
   async load(): Promise<any> {
     await this.loadDatasets();
-    this.compileData();
+    await this.compileData();
     await this.loadHelpers();
     await this.loadPartials();
     await this.loadTemplates();
@@ -63,9 +63,7 @@ export class BebarHandler {
         if (factory.handler) {
           try {
             await factory.handler.load(this.rootPath);
-          } catch (e) {
-            console.log(e);
-          }
+          } catch { }
           if (factory.handler) {
             this.datasetHandlers.push(factory.handler as DatasetHandler);
           }
@@ -79,12 +77,19 @@ export class BebarHandler {
     this.allData = {};
     this.keyToDataset = {};
     for (let i = 0; i < this.datasetHandlers.length; i++) {
+      const handler = this.datasetHandlers[i];
       this.allData = {
         ...this.allData,
-        ...this.datasetHandlers[0].content,
+        ...handler.content,
       };
-      if (this.datasetHandlers[i].key) {
-        this.keyToDataset[this.datasetHandlers[i].key!] = this.datasetHandlers[i].dataset;
+      if (handler.key) {
+        this.keyToDataset[handler.key!] = handler.dataset;
+      } else {
+        if (handler.datasetHandlers) {
+          for(let i = 0; i < handler.datasetHandlers.length; i++) {
+            this.keyToDataset[handler.datasetHandlers[i].key!] = handler.datasetHandlers[i].dataset;
+          }
+        }
       }
     }
   }
@@ -223,7 +228,7 @@ export class BebarHandler {
       }
     }
     if (refreshOnData) {
-      this.compileData();
+      await this.compileData();
     }
 
     let refreshOnTemplates = false;

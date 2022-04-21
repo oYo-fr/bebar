@@ -121,6 +121,7 @@ describe('TemplateHandler', () => {
     expect(handler.outputs.length).toBe(8);
     expect(handler.outputs[0].file).toBe('Queen/Freddie Mercury.txt');
     expect(handler.outputs[0].content).toBe('Freddie Mercury (Queen) - https://www.wikiwand.com/en/Freddie_Mercury');
+    expect(handler.outputs[0].keyToDataset['bands']).toBeDefined();
   });
 
   it('should produce multiple outputs (named iteravion value)', async () => {

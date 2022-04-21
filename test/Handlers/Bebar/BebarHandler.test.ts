@@ -10,7 +10,7 @@ const YAML = require('yaml');
 describe('BebarHandler', () => {
   it('load method should not crash', async () => {
     const handler = new BebarHandler(new Bebar({
-      data: [{file: './test/Assets/Datasets/*.yaml'}],
+      data: [{file: './test/Assets/Datasets/schools.yaml'}],
       partials: [{file: './test/Assets/Partials/*.hbs'}],
       helpers: [{file: './test/Assets/Helpers/*.js'}],
       templates: [{file: './test/Assets/Templates/list_of_schools.hbs'}],
@@ -24,7 +24,7 @@ describe('BebarHandler', () => {
 
   it('load method should not crash with direct arrays', async () => {
     const handler = new BebarHandler(new Bebar({
-      data: ['./test/Assets/Datasets/*.yaml'],
+      data: ['./test/Assets/Datasets/schools.yaml'],
       partials: ['./test/Assets/Partials/*.hbs'],
       helpers: ['./test/Assets/Helpers/*.js'],
       templates: [{file: './test/Assets/Templates/list_of_schools.hbs'}],
@@ -38,7 +38,7 @@ describe('BebarHandler', () => {
 
   it('load method should not crash with direct properties', async () => {
     const handler = new BebarHandler(new Bebar({
-      data: './test/Assets/Datasets/*.yaml',
+      data: './test/Assets/Datasets/schools.yaml',
       partials: './test/Assets/Partials/*.hbs',
       helpers: './test/Assets/Helpers/*.js',
       templates: [{file: './test/Assets/Templates/list_of_schools.hbs'}],
@@ -53,7 +53,7 @@ describe('BebarHandler', () => {
   it('load method should not crash with direct properties and one file',
       async () => {
         const handler = new BebarHandler(new Bebar({
-          data: './test/Assets/Datasets/*.yaml',
+          data: './test/Assets/Datasets/schools.yaml',
           partials: './test/Assets/Partials/school_*.hbs',
           helpers: './test/Assets/Helpers/stringHelpers.js',
           templates: [

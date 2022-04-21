@@ -33,6 +33,8 @@ export class TemplateHandler {
   private templateData: any = {};
   public outputs: Output[] = [];
   public bebarData: any = {};
+  public keyToDataset: any | undefined = undefined;
+  public bebarKeyToDataset: any | undefined = undefined;
 
   /**
    * Constructor.
@@ -194,11 +196,15 @@ export class TemplateHandler {
   /** Compiles data to be used by templates */
   private async compileData() {
     this.templateData = {};
+    this.keyToDataset = {};
     for (let i = 0; i < this.datasetHandlers.length; i++) {
       this.templateData = {
         ...this.templateData,
         ...this.datasetHandlers[i].content,
       };
+      if (this.datasetHandlers[i].key) {
+        this.keyToDataset[this.datasetHandlers[i].key!] = this.datasetHandlers[i].dataset;
+      }
     }
     this.bebarData = {
       ...this.bebarData,
@@ -330,6 +336,7 @@ export class TemplateHandler {
         if (curOutput.file === processedOutputFilename) {
           outputObject = curOutput;
           outputObject.content = await this.compiledTemplate(data);
+          outputObject.keyToDataset = this.keyToDataset;
         }
       }
       if (!outputObject) {
@@ -337,6 +344,7 @@ export class TemplateHandler {
           content: await this.compiledTemplate(data),
           file: processedOutputFilename,
           data: data,
+          keyToDataset: this.keyToDataset,
         }));
       }
     } catch (e) {

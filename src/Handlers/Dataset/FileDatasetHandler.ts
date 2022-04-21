@@ -60,7 +60,7 @@ export abstract class FileDatasetHandler extends DatasetHandler {
     const content = options.fileContent ?? (options.instance.dataset.file ?
       await FileDatasetHandler.readFromFile(options.instance, options.rootPath) :
       await FileDatasetHandler.readFromUrl(options.instance));
-    const datasetName = options.instance.dataset.name as string;
+    options.instance.key = options.instance.dataset.name as string;
 
     const datasetOptions = options.instance.dataset.options;
     const context = {
@@ -68,7 +68,7 @@ export abstract class FileDatasetHandler extends DatasetHandler {
       workingDir: options.rootPath,
     };
     return {
-      [datasetName]: typeof(content) === 'string' ?
+      [options.instance.key]: typeof(content) === 'string' ?
         await options.instance.parser!(content, datasetOptions, context, options.rootPath) :
         content,
     };

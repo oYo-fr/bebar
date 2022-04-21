@@ -64,7 +64,7 @@ export class TemplateHandler {
    */
   private async generateOutputs(rootPath: string) {
     this.outputs = [];
-    this.compileData();
+    await this.compileData();
     try {
       await this.handleIterators(rootPath);
     } catch {}
@@ -196,7 +196,7 @@ export class TemplateHandler {
   /** Compiles data to be used by templates */
   private async compileData() {
     this.templateData = {};
-    this.keyToDataset = {};
+    this.keyToDataset = this.bebarKeyToDataset ?? {};
     for (let i = 0; i < this.datasetHandlers.length; i++) {
       this.templateData = {
         ...this.templateData,
@@ -204,6 +204,14 @@ export class TemplateHandler {
       };
       if (this.datasetHandlers[i].key) {
         this.keyToDataset[this.datasetHandlers[i].key!] = this.datasetHandlers[i].dataset;
+      } else {
+        if (this.datasetHandlers[i].datasetHandlers) {
+          for (let j = 0; j < this.datasetHandlers[i].datasetHandlers.length; j++) {
+            if (this.datasetHandlers[i].datasetHandlers[j].key) {
+              this.keyToDataset[this.datasetHandlers[i].datasetHandlers[j].key!] = this.datasetHandlers[i].datasetHandlers[j].dataset;
+            }
+          }
+        }
       }
     }
     this.bebarData = {

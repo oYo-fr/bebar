@@ -1,5 +1,4 @@
 import {DatasetHandler} from './DatasetHandler';
-import {FileDatasetHandler} from './FileDatasetHandler';
 import {Dataset} from '../../Models/Dataset';
 import {FileDatasetFactory} from '../../Factories/FileDatasetFactory';
 const glob = require('glob');
@@ -7,13 +6,12 @@ import path from 'path';
 import {RefreshContext} from './../../Refresh/RefreshContext';
 import {RefreshType} from './../../Refresh/RefreshType';
 import {PathUtils} from '../../Utils/PathUtils';
+import {FileDatasetHandler} from './FileDatasetHandler';
 
 /**
  * Dataset that can handle JS files
  */
 export class MultipleFilesFileDatasetHandler extends DatasetHandler {
-  private datasetHandlers: FileDatasetHandler[] = [];
-
   /**
    * Indicates if this handler can handle the described Dataset object
    * @param {Dataset} dataset Object that will be transformed as a JSFileDataset
@@ -115,7 +113,7 @@ export class MultipleFilesFileDatasetHandler extends DatasetHandler {
   private async handleFileContentChanged(refreshContext: RefreshContext): Promise<boolean> {
     for (let i = 0; i < this.datasetHandlers.length; i++) {
       const handler = this.datasetHandlers[i];
-      if (await handler.handleRefresh(refreshContext)) {
+      if (await (handler as FileDatasetHandler).handleRefresh(refreshContext)) {
         return true;
       }
     }

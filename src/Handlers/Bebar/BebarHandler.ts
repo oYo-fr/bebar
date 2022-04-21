@@ -2,6 +2,7 @@ import {DatasetFactory} from '../../Factories/DatasetFactory';
 import {Bebar} from '../../Models/Bebar';
 import {DatasetHandler} from '../Dataset/DatasetHandler';
 import {FileDatasetHandler} from '../Dataset/FileDatasetHandler';
+import {MultipleFilesFileDatasetHandler} from '../Dataset/MultipleFilesFileDatasetHandler';
 import {HelpersetHandler} from '../Helperset/HelpersetHandler';
 import {PartialsetHandler} from '../Partialset/PartialsetHandler';
 import {TemplateHandler} from '../Template/TemplateHandler';
@@ -221,6 +222,13 @@ export class BebarHandler {
       const datasetHandler = this.datasetHandlers[i];
       if ((<FileDatasetHandler> this.datasetHandlers[0]).handleRefresh !== undefined &&
         await (datasetHandler as FileDatasetHandler).handleRefresh(refreshContext)) {
+        refreshOnData = true;
+        if (!refreshOnPartials && !refreshOnHelpers) {
+          refreshContext.refreshedObjects.push(this);
+        }
+      }
+      if ((<MultipleFilesFileDatasetHandler> this.datasetHandlers[0]).handleRefresh !== undefined &&
+        await (datasetHandler as MultipleFilesFileDatasetHandler).handleRefresh(refreshContext)) {
         refreshOnData = true;
         if (!refreshOnPartials && !refreshOnHelpers) {
           refreshContext.refreshedObjects.push(this);

@@ -17,6 +17,7 @@ import {TemplateExecutionException} from './../../Exceptions/TemplateExecutionEx
 import {RefreshContext} from './../../Refresh/RefreshContext';
 import {RefreshType} from './../../Refresh/RefreshType';
 import {FileDatasetHandler} from '../Dataset/FileDatasetHandler';
+import {MultipleFilesFileDatasetHandler} from '../Dataset/MultipleFilesFileDatasetHandler';
 import {PathUtils} from '../../Utils/PathUtils';
 import {DiagnosticBag} from './../../Diagnostics/DiagnosticBag';
 import {DiagnosticSeverity} from './../../Diagnostics/DiagnosticSeverity';
@@ -408,6 +409,13 @@ export class TemplateHandler {
       const datasetHandler = this.datasetHandlers[i];
       if ((<FileDatasetHandler> this.datasetHandlers[0]).handleRefresh !== undefined &&
         await (datasetHandler as FileDatasetHandler).handleRefresh(refreshContext)) {
+        refreshOnData = true;
+        if (!refreshOnPartials && !refreshOnHelpers) {
+          refreshContext.refreshedObjects.push(this);
+        }
+      }
+      if ((<MultipleFilesFileDatasetHandler> this.datasetHandlers[0]).handleRefresh !== undefined &&
+        await (datasetHandler as MultipleFilesFileDatasetHandler).handleRefresh(refreshContext)) {
         refreshOnData = true;
         if (!refreshOnPartials && !refreshOnHelpers) {
           refreshContext.refreshedObjects.push(this);

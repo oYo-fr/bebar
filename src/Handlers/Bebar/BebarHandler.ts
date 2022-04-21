@@ -63,7 +63,7 @@ export class BebarHandler {
         if (factory.handler) {
           try {
             await factory.handler.load(this.rootPath);
-          } catch (e){
+          } catch (e) {
             console.log(e);
           }
           if (factory.handler) {
@@ -151,7 +151,7 @@ export class BebarHandler {
         };
         templateHandler.bebarKeyToDataset = {
           ...this.keyToDataset,
-        }
+        };
         await templateHandler.load(this.rootPath);
       }
     }
@@ -234,7 +234,7 @@ export class BebarHandler {
       };
       templateHandler.bebarKeyToDataset = {
         ...this.keyToDataset,
-      }
+      };
       if (await templateHandler.handleRefresh(refreshContext, refreshOnPartials || refreshOnHelpers || refreshOnData)) {
         refreshOnTemplates = true;
         if (!refreshOnPartials && !refreshOnHelpers && !refreshOnData) {

@@ -27,6 +27,7 @@ export * from './Models/Bebar';
 export * from './Models/Dataset';
 export * from './Models/Helperset';
 export * from './Models/Iterator';
+export * from './Models/Import';
 export * from './Models/Output';
 export * from './Models/Partialset';
 export * from './Models/Template';

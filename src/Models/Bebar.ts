@@ -4,6 +4,7 @@ import {Dataset} from './Dataset';
 import {Template} from './Template';
 import {Partialset} from './Partialset';
 import {Helperset} from './Helperset';
+import {Import} from './Import';
 import {TemplateFactory} from './../Factories/TemplateFactory';
 
 /**
@@ -22,16 +23,19 @@ export class Bebar {
   /** The list of files containing the mustache templates */
   public templates: Template[] = [];
 
+  /** The list of imported bebar files */
+  public imports: Import[] = [];
+
   /**
    * Constructor.
-   * @param {IBebar | undefined} plainObject A plain object containing
-   *  required properties
+   * @param {IBebar | undefined} plainObject A plain object containing required properties
    */
   constructor(plainObject: IBebar | undefined) {
     if (plainObject) {
       this.data = Converter.toDatasets(plainObject.data);
       this.partials = Converter.toPartialsets(plainObject.partials);
       this.helpers = Converter.toHelpersets(plainObject.helpers);
+      this.imports = Converter.toImports(plainObject.helpers);
       if (plainObject.templates) {
         if (Array.isArray(plainObject.templates)) {
           for (let i = 0; i < plainObject.templates.length; i++) {

@@ -13,7 +13,7 @@ export class Iterator {
 
   /**
    * Constructor.
-   * @param {IIterator | undefined} plainObject A plain object containing
+   * @param {IIterator | undefined} plainObject A plain object containing required properties
    */
   constructor(plainObject: IIterator | undefined) {
     if (plainObject) {

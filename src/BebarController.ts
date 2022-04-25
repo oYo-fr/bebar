@@ -21,9 +21,8 @@ export class BebarController {
 
   /**
    * Constructor
-   * @param {string} workdir Working directory
    */
-  public constructor(public workdir: string | undefined) { }
+  public constructor() { }
 
   /**
    * Loads a bebar file
@@ -32,17 +31,13 @@ export class BebarController {
    */
   public async load(filenamePattern: string) {
     DiagnosticBag.clear();
-    const rootPath = this.workdir ?
-      this.workdir :
-      path.dirname(filenamePattern);
-    const files = glob.sync(this.workdir ?
-      path.resolve(this.workdir, filenamePattern) :
-      filenamePattern);
+    const files = glob.sync(filenamePattern);
 
     for (let i = 0; i < files.length; i++) {
-      const file = files[i];
+      const file = path.resolve(files[i]);
+      const rootPath = path.resolve(path.dirname(file));
       Logger.info(this, `Loading bebar file ${file}`, '🚀');
-      const bebarFileContent = await readFile(path.resolve(rootPath, file),
+      const bebarFileContent = await readFile(file,
           'utf-8',
       );
 
@@ -56,7 +51,7 @@ export class BebarController {
             (ex as any).source.range.end,
             'Failed parsing bebar file: ' + (ex as any).message,
             DiagnosticSeverity.Error,
-            path.resolve(rootPath, file));
+            file);
       }
       if (plainObject) {
         const bebar =
@@ -81,8 +76,8 @@ export class BebarController {
         for (let o = 0; o < templateHandler.outputs.length; o++) {
           const output = templateHandler.outputs[o];
           if (output.file) {
-            const p = this.workdir ?
-              path.resolve(this.workdir, output.file) :
+            const p = bebarhandler.ctx.outputPath ?
+              path.resolve(bebarhandler.ctx.outputPath, output.file) :
               output.file;
             Logger.info(this, `Writing result file ${p}`, '🖊️ ');
             try {

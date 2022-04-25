@@ -71,7 +71,6 @@ if (process.env.runAsProgram == 'TRUE') {
           'Input bebar file pattern',
           './*.bebar',
       )
-      .option('-w, --workdir <workdir>', 'Working directory', undefined)
       .option('-v, --verbosity <verbosity>', 'Log verbosity', 'INFO')
       .action(async (options: {
     filename: string,
@@ -90,7 +89,7 @@ if (process.env.runAsProgram == 'TRUE') {
           Logger.info(undefined, `Working directory: ${options.workdir}`);
         }
         Logger.info(undefined, `File name pattern: ${options.filename}`);
-        const app = new App(options.workdir);
+        const app = new App();
         await app.run(options.filename);
       })
       .parse();

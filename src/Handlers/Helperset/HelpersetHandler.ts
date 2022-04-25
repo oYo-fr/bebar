@@ -20,6 +20,7 @@ import {RefreshType} from '../../Refresh/RefreshType';
 import {PathUtils} from '../../Utils/PathUtils';
 import {DiagnosticBag} from '../../Diagnostics/DiagnosticBag';
 import {DiagnosticSeverity} from '../../Diagnostics/DiagnosticSeverity';
+import {BebarHandlerContext} from '../Bebar/BebarHandlerContext';
 
 /**
  * A helperset handler is reponsible for reading and returning data
@@ -40,19 +41,19 @@ export class HelpersetHandler {
 
   /**
   * Reads data from the source
-  * @param {string} rootPath The folder where the bebar file is
+  * @param {BebarHandlerContext} ctx The bebar execution context
   * @return {any} The data extracted from the source
   */
-  async load(rootPath: string): Promise<any> {
+  async load(ctx: BebarHandlerContext): Promise<any> {
     if (this.helperset.file) {
-      const helperFiles = glob.sync(path.resolve(rootPath, this.helperset.file));
+      const helperFiles = glob.sync(path.resolve(ctx.rootPath, this.helperset.file));
       for (let i = 0; i < helperFiles.length; i++) {
         const hFile = helperFiles[i];
         Logger.info(this, ` Loading helpers from ${hFile}`, '⚙️');
         try {
           const fileContent =
             await readFile(hFile, this.helperset.encoding as BufferEncoding);
-          await this.saveHandlebarHelpers(fileContent, rootPath, hFile);
+          await this.saveHandlebarHelpers(fileContent, ctx, hFile);
         } catch (e) {
           const ex = new HelperLoadingException(this, e);
           Logger.error(this, 'Failed loading helper file', ex);
@@ -67,7 +68,7 @@ export class HelpersetHandler {
       });
       await this.saveHandlebarHelpers(
           response.data,
-          rootPath,
+          ctx,
           this.helperset.url);
     }
   }
@@ -92,14 +93,14 @@ export class HelpersetHandler {
    */
   private async saveHandlebarHelpers(
       sourceCode: string,
-      rootPath: string,
+      ctx: BebarHandlerContext,
       origin: string) {
     try {
-      const hResult = await nodeEval(sourceCode, rootPath);
+      const hResult = await nodeEval(sourceCode, ctx.rootPath);
       for (let i = 0; i < Object.keys(hResult).length; i++) {
         const key = Object.keys(hResult)[i];
         Logger.info(this, `\t- ${key}`);
-        this.helpers.push(new Helper(key, hResult[key], path.resolve(rootPath, origin)));
+        this.helpers.push(new Helper(key, hResult[key], path.resolve(ctx.rootPath, origin)));
       }
     } catch (e) {
       const regexLine = /.*:(?<line>\d*)/mg;
@@ -114,7 +115,7 @@ export class HelpersetHandler {
           matchCol?.length!-1,
           'Failed parsing helper file: ' + (e as any).message,
           DiagnosticSeverity.Error,
-          path.resolve(rootPath, origin));
+          path.resolve(ctx.rootPath, origin));
     }
   }
 
@@ -180,13 +181,13 @@ export class HelpersetHandler {
   private async handleFileContentChanged(refreshContext: RefreshContext): Promise<boolean> {
     let result = false;
 
-    const globResults = glob.sync(path.resolve(refreshContext.rootPath, this.helperset.file!));
+    const globResults = glob.sync(path.resolve(refreshContext.ctx.rootPath, this.helperset.file!));
     for (let i = 0; i< globResults.length; i++) {
       const globResult = globResults[i];
 
       if (PathUtils.pathsAreEqual(globResult, refreshContext.newFilePath!)) {
         this.helpers = this.helpers.filter((h) => !PathUtils.pathsAreEqual(h.origin, refreshContext.newFilePath!));
-        await this.saveHandlebarHelpers(refreshContext.newFileContent!, refreshContext.rootPath, refreshContext.newFilePath!);
+        await this.saveHandlebarHelpers(refreshContext.newFileContent!, refreshContext.ctx, refreshContext.newFilePath!);
         result = true;
       }
     }
@@ -201,7 +202,7 @@ export class HelpersetHandler {
    */
   private async handleFileCreated(refreshContext: RefreshContext): Promise<boolean> {
     let result = false;
-    const globResults = glob.sync(path.resolve(refreshContext.rootPath, this.helperset.file!));
+    const globResults = glob.sync(path.resolve(refreshContext.ctx.rootPath, this.helperset.file!));
     for (let i = 0; i< globResults.length; i++) {
       const globResult = globResults[i];
 
@@ -209,7 +210,7 @@ export class HelpersetHandler {
         result = true;
         try {
           const fileContent = await readFile(globResult, this.helperset.encoding as BufferEncoding);
-          await this.saveHandlebarHelpers(fileContent, refreshContext.rootPath, globResult);
+          await this.saveHandlebarHelpers(fileContent, refreshContext.ctx, globResult);
         } catch (e) {
           const ex = new HelperParsingException(this, e);
           Logger.error(this, 'Failed loading partial file', ex);
@@ -239,7 +240,7 @@ export class HelpersetHandler {
    *  partial files
    */
   private async handleFileMovedOrRenamed(refreshContext: RefreshContext): Promise<Boolean> {
-    const globResults = glob.sync(path.resolve(refreshContext.rootPath, this.helperset.file!));
+    const globResults = glob.sync(path.resolve(refreshContext.ctx.rootPath, this.helperset.file!));
     const foundInGlob = globResults.some((g: string) => PathUtils.pathsAreEqual(g, refreshContext.newFilePath!));
     const foundInActual = this.helpers.some((h) => PathUtils.pathsAreEqual(h.origin, refreshContext.oldFilePath!));
 

@@ -1,13 +1,14 @@
 import {BebarHandler} from '../../../src/Handlers/Bebar/BebarHandler';
 import {Bebar} from '../../../src/Models/Bebar';
 import {DiagnosticBag} from '../../../src/Diagnostics/DiagnosticBag';
+import {BebarHandlerContext} from '../../../src/Handlers/Bebar/BebarHandlerContext';
 
 describe('BebarHandler - error handling', () => {
   it('load method should report problems', async () => {
     let handler = new BebarHandler(new Bebar({
       partials: [{file: './test/BuggyAssets/Partials/buggy.hbs'}],
       templates: [{file: './test/BuggyAssets/Templates/call_buggy_partial.hbs'}],
-    }), '.', 'sample.bebar');
+    }), new BebarHandlerContext('.', 'sample.bebar'));
     try {
       await handler.load();
     } catch {}
@@ -17,7 +18,7 @@ describe('BebarHandler - error handling', () => {
       data: [{file: './test/BuggyAssets/Datasets/buggy.json'}],
       partials: [{file: './test/BuggyAssets/Partials/buggy.hbs'}],
       templates: [{file: './test/BuggyAssets/Templates/call_buggy_partial.hbs'}],
-    }), '.', 'sample.bebar');
+    }), new BebarHandlerContext('.', 'sample.bebar'));
     try {
       await handler.load();
     } catch {}

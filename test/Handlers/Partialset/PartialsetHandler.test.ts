@@ -3,13 +3,14 @@ import {PartialsetHandler}
 import {Partialset} from '../../../src/Models/Partialset';
 import {MockAxios} from '../../Utils/MockAxios';
 import Handlebars from 'handlebars';
+import {BebarHandlerContext} from '../../../src/Handlers/Bebar/BebarHandlerContext';
 
 describe('PartialsetHandler', () => {
   it('load method should not crash (name is undefined)', async () => {
     const handler = new PartialsetHandler(new Partialset({
       file: './test/Assets/Partials/school.hbs',
     }), Handlebars.create());
-    await handler.load('.');
+    await handler.load(new BebarHandlerContext('.', 'do.bebar'));
   });
 
   it('load method should not crash (specify name)', async () => {
@@ -17,28 +18,28 @@ describe('PartialsetHandler', () => {
       name: 'school',
       file: './test/Assets/Partials/school.hbs',
     }), Handlebars.create());
-    await handler.load('.');
+    await handler.load(new BebarHandlerContext('.', 'do.bebar'));
   });
 
   it('load method should not crash (name is null)', async () => {
     const handler = new PartialsetHandler(new Partialset({
       file: './test/Assets/Partials/school.hbs',
     }), Handlebars.create());
-    await handler.load('.');
+    await handler.load(new BebarHandlerContext('.', 'do.bebar'));
   });
 
   it('load method should not crash (multiple files)', async () => {
     const handler = new PartialsetHandler(new Partialset({
       file: './test/Assets/Partials/*.hbs',
     }), Handlebars.create());
-    await handler.load('.');
+    await handler.load(new BebarHandlerContext('.', 'do.bebar'));
   });
 
   it('load method should not crash loading multiple files', async () => {
     const handler = new PartialsetHandler(new Partialset({
       file: './test/Assets/Partials/*.hbs',
     }), Handlebars.create());
-    await handler.load('.');
+    await handler.load(new BebarHandlerContext('.', 'do.bebar'));
   });
 
   it('load method should not crash loading direct content', async () => {
@@ -46,7 +47,7 @@ describe('PartialsetHandler', () => {
       name: 'school',
       content: '{{school.id}}. {{school.name}}',
     }), Handlebars.create());
-    await handler.load('.');
+    await handler.load(new BebarHandlerContext('.', 'do.bebar'));
   });
 
   it('load from HTTP method should not crash', async () => {
@@ -57,6 +58,6 @@ describe('PartialsetHandler', () => {
       name: 'school',
       url: `/school.hbs`,
     }), Handlebars.create());
-    await handler.load('.');
+    await handler.load(new BebarHandlerContext('.', 'do.bebar'));
   });
 });

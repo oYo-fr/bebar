@@ -1,6 +1,7 @@
 import {UnableToHandleObjectException}
   from '../Exceptions/UnableToHandleObjectException';
 import {Eventifier} from '../Events/Eventifier';
+import {BebarHandlerContext} from '../Handlers/Bebar/BebarHandlerContext';
 
 /**
  * Base factory that contains basic objects creation methods
@@ -30,23 +31,23 @@ export abstract class Factory<T, TH> {
 
   /**
    * Picks a handler for the specified object
-   * @param {string} rootPath The folder where the bebar file is
+   * @param {BebarHandlerContext} ctx The bebar execution context
    * @return {TH | undefined} A handler for the object
    */
-  public pickHandlerType(rootPath: string) : TH | undefined {
+  public pickHandlerType(ctx: BebarHandlerContext) : TH | undefined {
     const handlerType = this.handlerTypes.find(
-        (t) => t.canHandle(this.model, rootPath));
+        (t) => t.canHandle(this.model, ctx));
     return handlerType ? this.create(handlerType) : undefined;
   }
 
   /**
    * Loads a proper handler if possible
-   * @param {string} rootPath The folder where the bebar file is
+   * @param {BebarHandlerContext} ctx The bebar execution context
    */
-  public load(rootPath: string) {
-    this.handler = this.pickHandlerType(rootPath);
+  public load(ctx: BebarHandlerContext) {
+    this.handler = this.pickHandlerType(ctx);
     if (this.handler !== undefined) {
-      Eventifier.once(this.model, () => this.load(rootPath));
+      Eventifier.once(this.model, () => this.load(ctx));
     } else {
       throw new UnableToHandleObjectException(this);
     }

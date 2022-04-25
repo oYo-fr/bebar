@@ -11,6 +11,7 @@ const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
 import {DiagnosticBag} from './Diagnostics/DiagnosticBag';
 import {DiagnosticSeverity} from './Diagnostics/DiagnosticSeverity';
+import {BebarHandlerContext} from './Handlers/Bebar/BebarHandlerContext';
 
 /**
  * Main class for command line call
@@ -61,7 +62,7 @@ export class BebarController {
         const bebar =
             new Bebar(plainObject);
         if (bebar) {
-          const handler = new BebarHandler(bebar!, rootPath, file);
+          const handler = new BebarHandler(bebar!, new BebarHandlerContext(rootPath, file));
           await handler.load();
           this.handlers.push(handler);
         }

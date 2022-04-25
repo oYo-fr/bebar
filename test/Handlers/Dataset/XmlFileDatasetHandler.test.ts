@@ -1,4 +1,5 @@
 import {BebarException} from '../../../src/Exceptions/BebarException';
+import {BebarHandlerContext} from '../../../src/Handlers/Bebar/BebarHandlerContext';
 import {XmlFileDatasetHandler}
   from '../../../src/Handlers/Dataset/XmlFileDatasetHandler';
 import {Dataset} from '../../../src/Models/Dataset';
@@ -34,7 +35,7 @@ describe('XmlFileDatasetHandler', () => {
           name: 'schools',
           file: './test/Assets/Datasets/schools.xml',
         }));
-    const data = await handler.load('.');
+    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar'));
     expect(data).toBeDefined();
     expect(data['schools'].root.row).toBe(handler.content['schools'].root.row);
     expect(data['schools'].root.row.length).toBe(10);
@@ -47,7 +48,7 @@ describe('XmlFileDatasetHandler', () => {
           file: './test/Assets/Datasets/missing_file.xml',
         }));
     try {
-      await handler.load('.');
+      await handler.load(new BebarHandlerContext('.', 'do.bebar'));
       expect(false).toBeTruthy(); // We should never reach this point
     } catch (e) {
       expect((e as BebarException).inner).toBeDefined();
@@ -64,7 +65,7 @@ describe('XmlFileDatasetHandler', () => {
       parseAs: 'xml',
       url: '/schools.xml',
     }));
-    const data = await handler.load('.');
+    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar'));
     expect(data).toBeDefined();
     expect(data['schools'].root.row).toBe(handler.content['schools'].root.row);
     expect(data['schools'].root.row.length).toBe(10);

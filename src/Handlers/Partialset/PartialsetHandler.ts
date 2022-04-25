@@ -13,6 +13,7 @@ import {Partial} from './Partial';
 import {RefreshContext} from './../../Refresh/RefreshContext';
 import {RefreshType} from './../../Refresh/RefreshType';
 import {PathUtils} from './../../Utils/PathUtils';
+import {BebarHandlerContext} from '../Bebar/BebarHandlerContext';
 
 /**
  * A partialset handler is reponsible for reading and returning data
@@ -34,10 +35,10 @@ export class PartialsetHandler {
 
   /**
   * Reads data from the source
-  * @param {string} rootPath The folder where the bebar file is
+  * @param {BebarHandlerContext} ctx The bebar execution context
   * @return {any} The data extracted from the source
   */
-  async load(rootPath: string): Promise<any> {
+  async load(ctx: BebarHandlerContext): Promise<any> {
     let name = this.partialset.name === null ||
       this.partialset.name === undefined ?
       '' :
@@ -49,7 +50,7 @@ export class PartialsetHandler {
           '');
     } else if (this.partialset.file) {
       const partialFiles = glob.sync(path.resolve(
-          rootPath, this.partialset.file));
+          ctx.rootPath, this.partialset.file));
       for (let i = 0; i< partialFiles.length; i++) {
         const pFile = partialFiles[i];
         if (partialFiles.length > 1 || name === '') {
@@ -185,7 +186,7 @@ export class PartialsetHandler {
     this.partialset.name === undefined ?
     '' :
     this.partialset.name;
-    const globResults = glob.sync(path.resolve(refreshContext.rootPath, this.partialset.file!));
+    const globResults = glob.sync(path.resolve(refreshContext.ctx.rootPath, this.partialset.file!));
     for (let i = 0; i< globResults.length; i++) {
       const globResult = globResults[i];
 
@@ -230,7 +231,7 @@ export class PartialsetHandler {
    *  partial files
    */
   private async handleFileMovedOrRenamed(refreshContext: RefreshContext): Promise<Boolean> {
-    const globResults = glob.sync(path.resolve(refreshContext.rootPath, this.partialset.file!));
+    const globResults = glob.sync(path.resolve(refreshContext.ctx.rootPath, this.partialset.file!));
     const foundInGlob = globResults.some((g: string) => PathUtils.pathsAreEqual(g, refreshContext.newFilePath!));
     let result = false;
     let foundInActual = false;

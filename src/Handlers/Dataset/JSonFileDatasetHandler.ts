@@ -1,4 +1,5 @@
 import {Dataset} from '../../Models/Dataset';
+import {BebarHandlerContext} from '../Bebar/BebarHandlerContext';
 import {FileDatasetHandler} from './FileDatasetHandler';
 
 /**
@@ -18,11 +19,11 @@ export class JSonFileDatasetHandler
 
   /**
    * Reads data from the source
-   * @param {string} rootPath The folder where the bebar file is
+   * @param {BebarHandlerContext} ctx The bebar execution context
    * @return {any} The data extracted from the source
    */
-  async load(rootPath: string): Promise<any> {
+  async load(ctx: BebarHandlerContext): Promise<any> {
     this.parser = JSON.parse;
-    return await super.loadData(rootPath, undefined);
+    return await super.loadData(ctx, undefined);
   }
 };

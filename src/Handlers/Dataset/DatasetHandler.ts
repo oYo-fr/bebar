@@ -1,4 +1,5 @@
 import {Dataset} from '../../Models/Dataset';
+import {BebarHandlerContext} from '../Bebar/BebarHandlerContext';
 
 /**
  * Generic Dataset handler class
@@ -38,7 +39,7 @@ export abstract class DatasetHandler {
 
   /**
    * Load method to override
-   * @param {string} _rootPath The folder where the bebar file is
+   * @param {string} _ctx The bebar execution context
    * */
-  public load(_rootPath: string) {}
+  public load(_ctx: BebarHandlerContext) {}
 };

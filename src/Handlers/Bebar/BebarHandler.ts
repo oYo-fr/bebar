@@ -15,6 +15,7 @@ import path from 'path';
 import {PathUtils} from '../../Utils/PathUtils';
 import {DiagnosticBag} from './../../Diagnostics/DiagnosticBag';
 import {DiagnosticSeverity} from './../../Diagnostics/DiagnosticSeverity';
+import {BebarHandlerContext} from './BebarHandlerContext';
 
 /**
  * A bebar handler is reponsible for loading everything that migh be
@@ -31,14 +32,12 @@ export class BebarHandler {
   /**
    * Constructor.
    * @param {Bebar} Bebar Object that describes where to get the
-   * @param {string} rootPath The folder where the bebar file is
-   * @param {string} filename The name of the bebar file
+   * @param {BebarHandlerContext} ctx The bebar execution context
    *  partials from
    */
   constructor(
     public bebar: Bebar,
-    public rootPath: string,
-    public filename: string) {
+    public ctx: BebarHandlerContext) {
   }
 
   /**
@@ -60,10 +59,10 @@ export class BebarHandler {
       for (let i = 0; i < this.bebar.data.length; i++) {
         const data = this.bebar.data[i];
         const factory = new DatasetFactory(data);
-        factory.load(this.rootPath);
+        factory.load(this.ctx);
         if (factory.handler) {
           try {
-            await factory.handler.load(this.rootPath);
+            await factory.handler.load(this.ctx);
           } catch { }
           if (factory.handler) {
             this.datasetHandlers.push(factory.handler as DatasetHandler);
@@ -102,7 +101,7 @@ export class BebarHandler {
       for (let i = 0; i < this.bebar.helpers.length; i++) {
         const helper = this.bebar.helpers[i];
         const helperHandler = new HelpersetHandler(helper);
-        await helperHandler.load(this.rootPath);
+        await helperHandler.load(this.ctx);
         this.helpersetHandlers.push(helperHandler);
       }
     }
@@ -115,7 +114,7 @@ export class BebarHandler {
       for (let i = 0; i < this.bebar.partials.length; i++) {
         const partial = this.bebar.partials[i];
         const partialHandler = new PartialsetHandler(partial);
-        await partialHandler.load(this.rootPath);
+        await partialHandler.load(this.ctx);
         this.partialsetHandlers.push(partialHandler);
       }
     }
@@ -136,7 +135,7 @@ export class BebarHandler {
     if (this.bebar.templates) {
       for (let i = 0; i < this.templateHandlers.length; i++) {
         const templateHandler = this.templateHandlers[i];
-        await templateHandler.loadHelpersAndPartials(this.rootPath);
+        await templateHandler.loadHelpersAndPartials(this.ctx);
 
         for (let j = 0; j < this.helpersetHandlers.length; j++) {
           this.helpersetHandlers[j].registerHelpers(templateHandler.handlebars);
@@ -158,7 +157,7 @@ export class BebarHandler {
         templateHandler.bebarKeyToDataset = {
           ...this.keyToDataset,
         };
-        await templateHandler.load(this.rootPath);
+        await templateHandler.load(this.ctx);
       }
     }
   }
@@ -264,7 +263,7 @@ export class BebarHandler {
    * @return {boolean} Returns true if the changed occurred in one of the partial files
    */
   private async handleFileContentChanged(refreshContext: RefreshContext): Promise<boolean> {
-    if (PathUtils.pathsAreEqual(path.resolve(refreshContext.rootPath, this.filename), refreshContext.newFilePath!)) {
+    if (PathUtils.pathsAreEqual(path.resolve(refreshContext.ctx.rootPath, this.ctx.filename), refreshContext.newFilePath!)) {
       let result = false;
       let plainObject: any | undefined;
       try {
@@ -276,7 +275,7 @@ export class BebarHandler {
             (ex as any).source.range.end,
             'Failed parsing bebar file: ' + (ex as any).message,
             DiagnosticSeverity.Error,
-            path.resolve(refreshContext.rootPath, this.filename));
+            path.resolve(refreshContext.ctx.rootPath, this.ctx.filename));
       }
 
       if (!plainObject) return true;

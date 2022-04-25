@@ -1,4 +1,5 @@
 import {BebarException} from '../../../src/Exceptions/BebarException';
+import {BebarHandlerContext} from '../../../src/Handlers/Bebar/BebarHandlerContext';
 import {CSVFileDatasetHandler}
   from '../../../src/Handlers/Dataset/CSVFileDatasetHandler';
 import {Dataset} from '../../../src/Models/Dataset';
@@ -32,7 +33,7 @@ describe('CSVFileDatasetHandler', () => {
         separator: ';',
       },
     }));
-    const data = await handler.load('.');
+    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar'));
     expect(data).toBeDefined();
     expect(data['schools']).toBe(handler.content['schools']);
     expect(data['schools'].length).toBe(10);
@@ -47,7 +48,7 @@ describe('CSVFileDatasetHandler', () => {
       },
     }));
     try {
-      await handler.load('.');
+      await handler.load(new BebarHandlerContext('.', 'do.bebar'));
       expect(false).toBeTruthy(); // We should never reach this point
     } catch (e) {
       expect((e as BebarException).inner).toBeDefined();
@@ -68,7 +69,7 @@ describe('CSVFileDatasetHandler', () => {
           },
         }),
     );
-    const data = await handler.load('.');
+    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar'));
     expect(data).toBeDefined();
     expect(data['schools']).toBe(handler.content['schools']);
     expect(data['schools'].length).toBe(10);

@@ -14,6 +14,7 @@ import {CSVFileDatasetHandler}
 import {Dataset} from '../../src/Models/Dataset';
 import {RawFileDatasetHandler}
   from '../../src/Handlers/Dataset/RawFileDatasetHandler';
+import {BebarHandlerContext} from '../../src/Handlers/Bebar/BebarHandlerContext';
 
 describe('DatasetFactory', () => {
   it('should throw a UnableToHandleObjectException', () => {
@@ -22,7 +23,7 @@ describe('DatasetFactory', () => {
       file: 'myfile.jpg',
     }));
     try {
-      factory.load('.');
+      factory.load(new BebarHandlerContext('.', 'do.bebar'));
       expect(false).toBeTruthy(); // We should never reach this point
     } catch (e) {
       expect(e).toBeInstanceOf(UnableToHandleObjectException);
@@ -35,7 +36,7 @@ describe('DatasetFactory', () => {
       name: '',
       file: './test/Assets/Datasets/schools.yaml',
     }));
-    factory.load('.');
+    factory.load(new BebarHandlerContext('.', 'do.bebar'));
     expect(factory.handler).toBeInstanceOf(YamlFileDatasetHandler);
   });
 
@@ -44,7 +45,7 @@ describe('DatasetFactory', () => {
       name: '',
       file: './test/Assets/Datasets/schools.js',
     }));
-    factory.load('.');
+    factory.load(new BebarHandlerContext('.', 'do.bebar'));
     expect(factory.handler).toBeInstanceOf(JSFileDatasetHandler);
   });
 
@@ -53,7 +54,7 @@ describe('DatasetFactory', () => {
       name: '',
       file: './test/Assets/Datasets/schools.json',
     }));
-    factory.load('.');
+    factory.load(new BebarHandlerContext('.', 'do.bebar'));
     expect(factory.handler).toBeInstanceOf(JSonFileDatasetHandler);
   });
 
@@ -62,7 +63,7 @@ describe('DatasetFactory', () => {
       name: 'test',
       content: { },
     }));
-    factory.load('.');
+    factory.load(new BebarHandlerContext('.', 'do.bebar'));
     expect(factory.handler).toBeInstanceOf(DirectDatasetHandler);
   });
 
@@ -71,7 +72,7 @@ describe('DatasetFactory', () => {
       name: '',
       file: './test/Assets/Datasets/schools.csv',
     }));
-    factory.load('.');
+    factory.load(new BebarHandlerContext('.', 'do.bebar'));
     expect(factory.handler).toBeInstanceOf(CSVFileDatasetHandler);
   });
 
@@ -81,14 +82,14 @@ describe('DatasetFactory', () => {
       file: './test/Assets/Datasets/schools.csv',
       parseAs: 'raw',
     }));
-    factory.load('.');
+    factory.load(new BebarHandlerContext('.', 'do.bebar'));
     expect(factory.handler).toBeInstanceOf(RawFileDatasetHandler);
   });
 
   it('should switch handler if needed', () => {
     const dataset = new Dataset({name: 'sample', file: 'myfile.json'});
     const factory: DatasetFactory = new DatasetFactory(dataset);
-    factory.load('.');
+    factory.load(new BebarHandlerContext('.', 'do.bebar'));
     expect(factory.handler).toBeInstanceOf(JSonFileDatasetHandler);
     dataset.file = 'myfile.yaml';
     expect(factory.handler).toBeInstanceOf(YamlFileDatasetHandler);

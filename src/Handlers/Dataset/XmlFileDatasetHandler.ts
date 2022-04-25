@@ -1,5 +1,6 @@
 import {FileDatasetHandler} from './FileDatasetHandler';
 import {XMLParser} from 'fast-xml-parser';
+import {BebarHandlerContext} from '../Bebar/BebarHandlerContext';
 
 /**
  * Dataset that can handle Xml files
@@ -16,12 +17,12 @@ export class XmlFileDatasetHandler extends FileDatasetHandler {
 
   /**
    * Reads data from the source
-   * @param {string} rootPath The folder where the bebar file is
+   * @param {BebarHandlerContext} ctx The bebar execution context
    * @return {any} The data extracted from the source
    */
-  async load(rootPath: string): Promise<any> {
+  async load(ctx: BebarHandlerContext): Promise<any> {
     this.parser = this.parse;
-    return await super.loadData(rootPath, undefined);
+    return await super.loadData(ctx, undefined);
   }
 
   /**

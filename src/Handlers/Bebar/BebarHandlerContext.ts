@@ -1,3 +1,5 @@
+import Handlebars from 'handlebars';
+
 export class BebarHandlerContext {
   /**
    * Constructor.
@@ -11,6 +13,7 @@ export class BebarHandlerContext {
     public rootPath: string,
     public filename: string,
     public cachePath: string = rootPath,
-    public outputPath: string = rootPath) {
+    public outputPath: string = rootPath,
+    public bebarHandlebarsContext = Handlebars.create()) {
   }
 }

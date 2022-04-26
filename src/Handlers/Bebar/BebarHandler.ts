@@ -6,7 +6,6 @@ import {MultipleFilesFileDatasetHandler} from '../Dataset/MultipleFilesFileDatas
 import {HelpersetHandler} from '../Helperset/HelpersetHandler';
 import {PartialsetHandler} from '../Partialset/PartialsetHandler';
 import {TemplateHandler} from '../Template/TemplateHandler';
-import Handlebars from 'handlebars';
 import {RefreshContext} from './../../Refresh/RefreshContext';
 import {RefreshType} from '../../Refresh/RefreshType';
 const YAML = require('yaml');
@@ -16,6 +15,7 @@ import {PathUtils} from '../../Utils/PathUtils';
 import {DiagnosticBag} from './../../Diagnostics/DiagnosticBag';
 import {DiagnosticSeverity} from './../../Diagnostics/DiagnosticSeverity';
 import {BebarHandlerContext} from './BebarHandlerContext';
+import Handlebars from 'handlebars';
 
 /**
  * A bebar handler is reponsible for loading everything that migh be
@@ -131,8 +131,6 @@ export class BebarHandler {
             Handlebars.create());
         this.templateHandlers.push(templateHandler);
       }
-    }
-    if (this.bebar.templates) {
       for (let i = 0; i < this.templateHandlers.length; i++) {
         const templateHandler = this.templateHandlers[i];
         await templateHandler.loadHelpersAndPartials(this.ctx);

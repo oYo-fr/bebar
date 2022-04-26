@@ -16,6 +16,7 @@ import {DiagnosticBag} from './../../Diagnostics/DiagnosticBag';
 import {DiagnosticSeverity} from './../../Diagnostics/DiagnosticSeverity';
 import {DatasetCache} from './../../Caching/DatasetCache';
 import {BebarHandlerContext} from '../Bebar/BebarHandlerContext';
+const glob = require('glob');
 
 type ParserFunction = (
   data: string, options?: any, context?: any, rootPath?: string)
@@ -37,6 +38,16 @@ export abstract class FileDatasetHandler extends DatasetHandler {
    */
   async loadData(ctx: BebarHandlerContext, fileContent: string | undefined): Promise<any> {
     try {
+      if (this.dataset.file) {
+        if (glob.hasMagic(path.resolve(ctx.rootPath, this.dataset.file!))) {
+          const globResult = glob.sync(path.resolve(ctx.rootPath, this.dataset.file!));
+          if (globResult && globResult.length > 0) {
+            this.dataset.file = globResult[0];
+            this.dataset.setDefaults();
+          }
+        }
+      }
+
       this.content = await DatasetCache.get(this.dataset, this.fetchAndParseData, {ctx: ctx, fileContent: fileContent, instance: this});
     } catch (e) {
       const error = (e as any).message ?? (e as any).toString();
@@ -99,7 +110,7 @@ export abstract class FileDatasetHandler extends DatasetHandler {
   */
   private static async readFromFile(instance: FileDatasetHandler, ctx: BebarHandlerContext): Promise<any> {
     const filepath = path.resolve(
-      ctx.rootPath,
+        ctx.rootPath,
         instance.dataset.file!);
     Logger.info(this, `Loading data from ${filepath}`, '📈');
     const encoding: string = instance.dataset.encoding!;

@@ -87,7 +87,7 @@ export class HelpersetHandler {
   /**
    * Registers helper functions from javascript code
    * @param {string} sourceCode The source code containing helper
-   * @param {string} rootPath The folder where the bebar file is
+   * @param {BebarHandlerContext} ctx The bebar execution context
    * @param {string} origin The origin of the helper (file or url)
    *  functions
    */

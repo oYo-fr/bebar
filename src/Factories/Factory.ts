@@ -46,8 +46,9 @@ export abstract class Factory<T, TH> {
    */
   public load(ctx: BebarHandlerContext) {
     this.handler = this.pickHandlerType(ctx);
-    if (this.handler !== undefined) {
-      Eventifier.once(this.model, () => this.load(ctx));
+    if (this.handler) {
+      const instance = this;
+      Eventifier.once(this.model, () => instance.load(ctx));
     } else {
       throw new UnableToHandleObjectException(this);
     }

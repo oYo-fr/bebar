@@ -35,7 +35,7 @@ export class Bebar {
       this.data = Converter.toDatasets(plainObject.data);
       this.partials = Converter.toPartialsets(plainObject.partials);
       this.helpers = Converter.toHelpersets(plainObject.helpers);
-      this.imports = Converter.toImports(plainObject.helpers);
+      this.imports = Converter.toImports(plainObject.imports);
       if (plainObject.templates) {
         if (Array.isArray(plainObject.templates)) {
           for (let i = 0; i < plainObject.templates.length; i++) {

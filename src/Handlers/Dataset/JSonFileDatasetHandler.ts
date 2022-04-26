@@ -5,8 +5,7 @@ import {FileDatasetHandler} from './FileDatasetHandler';
 /**
  * Dataset that can handle JSon files
  */
-export class JSonFileDatasetHandler
-  extends FileDatasetHandler {
+export class JSonFileDatasetHandler extends FileDatasetHandler {
   /**
    * Indicates if this handler can handle the described Dataset object
    * @param {Dataset} dataset Object that will be transformed as a
@@ -24,6 +23,6 @@ export class JSonFileDatasetHandler
    */
   async load(ctx: BebarHandlerContext): Promise<any> {
     this.parser = JSON.parse;
-    return await super.loadData(ctx, undefined);
+    return await this.loadData(ctx, undefined);
   }
 };

@@ -1,5 +1,8 @@
 import Handlebars from 'handlebars';
 
+/**
+ * Context handler class to hold paths, settings, ...
+ */
 export class BebarHandlerContext {
   /**
    * Constructor.

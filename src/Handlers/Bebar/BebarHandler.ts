@@ -16,6 +16,11 @@ import {DiagnosticBag} from './../../Diagnostics/DiagnosticBag';
 import {DiagnosticSeverity} from './../../Diagnostics/DiagnosticSeverity';
 import {BebarHandlerContext} from './BebarHandlerContext';
 import Handlebars from 'handlebars';
+const glob = require('glob');
+import util from 'util';
+import fs from 'fs';
+const readFile = util.promisify(fs.readFile);
+import {Logger} from './../../Logging/Logger';
 
 /**
  * A bebar handler is reponsible for loading everything that migh be
@@ -26,8 +31,9 @@ export class BebarHandler {
   public partialsetHandlers: PartialsetHandler[] = [];
   public helpersetHandlers: HelpersetHandler[] = [];
   public templateHandlers: TemplateHandler[] = [];
-  private allData: any = {};
+  public allData: any = {};
   public keyToDataset: any | undefined = undefined;
+  public importedBebarHandlers: BebarHandler[] = [];
 
   /**
    * Constructor.
@@ -41,10 +47,57 @@ export class BebarHandler {
   }
 
   /**
+   * Creates handlers based on a filename pattern
+   * @param {string} filenamePattern The filename pattern to match
+   * @param {BebarHandlerContext} ctx The loading context
+   * @return {BebarHandler[]} The handlers that match the pattern
+   */
+  public static async create(filenamePattern: string, ctx: BebarHandlerContext) : Promise<BebarHandler[]> {
+    const result: BebarHandler[] = [];
+    const files = glob.sync(path.join(ctx.rootPath, filenamePattern));
+
+    for (let i = 0; i < files.length; i++) {
+      const file = path.resolve(files[i]);
+      const rootPath = path.resolve(path.dirname(file));
+      Logger.info(this, `Loading bebar file ${file}`, '🚀');
+      const bebarFileContent = await readFile(file, 'utf-8');
+
+      let plainObject: any | undefined;
+      try {
+        plainObject = YAML.parse(bebarFileContent);
+      } catch (ex) {
+        DiagnosticBag.addByPosition(
+            bebarFileContent,
+            (ex as any).source.range.start,
+            (ex as any).source.range.end,
+            'Failed parsing bebar file: ' + (ex as any).message,
+            DiagnosticSeverity.Error,
+            file);
+      }
+      if (plainObject) {
+        const bebar = new Bebar(plainObject);
+        if (bebar) {
+          const newCtx = new BebarHandlerContext(
+              rootPath,
+              file,
+              ctx.cachePath.length === 0 ? rootPath : ctx.cachePath,
+              ctx.cachePath.length === 0 ? rootPath : ctx.cachePath);
+          const handler = new BebarHandler(bebar, newCtx);
+          result.push(handler);
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
   * Reads data from the source
   * @return {any} The data extracted from the source
   */
   async load(): Promise<any> {
+    this.allData = {};
+    this.keyToDataset = {};
+    await this.loadImports();
     await this.loadDatasets();
     await this.compileData();
     await this.loadHelpers();
@@ -52,9 +105,35 @@ export class BebarHandler {
     await this.loadTemplates();
   }
 
+  /** Loads imported files */
+  private async loadImports() {
+    if (this.bebar.imports) {
+      for (let i = 0; i < this.bebar.imports.length; i++) {
+        const importFile = this.bebar.imports[i];
+        const ctx = new BebarHandlerContext(
+            this.ctx.rootPath,
+            importFile.file!,
+            this.ctx.cachePath,
+            this.ctx.outputPath);
+        this.importedBebarHandlers = await BebarHandler.create(importFile.file!, ctx);
+        for (let i = 0; i < this.importedBebarHandlers.length; i++) {
+          try {
+            const handler = this.importedBebarHandlers[i];
+            await handler.load();
+          } catch (ex) {
+            DiagnosticBag.add(
+                0, 0, 0, 0,
+                'Failed parsing bebar file: ' + (ex as any).message,
+                DiagnosticSeverity.Error,
+                importFile.file ?? importFile.url!);
+          }
+        }
+      }
+    }
+  }
+
   /** Loads datasets */
   private async loadDatasets() {
-    this.datasetHandlers = [];
     if (this.bebar.data) {
       for (let i = 0; i < this.bebar.data.length; i++) {
         const data = this.bebar.data[i];
@@ -62,11 +141,10 @@ export class BebarHandler {
         factory.load(this.ctx);
         if (factory.handler) {
           try {
-            await factory.handler.load(this.ctx);
+            const handler = factory.handler;
+            await handler.load(this.ctx);
+            this.datasetHandlers.push(handler);
           } catch { }
-          if (factory.handler) {
-            this.datasetHandlers.push(factory.handler as DatasetHandler);
-          }
         }
       };
     }
@@ -74,8 +152,22 @@ export class BebarHandler {
 
   /** Compiles data to be used by templates */
   private async compileData() {
-    this.allData = {};
+    let importsData = {};
     this.keyToDataset = {};
+    for (let c = 0; c < this.importedBebarHandlers.length; c++) {
+      const subHandler = this.importedBebarHandlers[c];
+      importsData = {
+        ...importsData,
+        ...subHandler.allData,
+      };
+      this.keyToDataset = {
+        ...this.keyToDataset,
+        ...subHandler.keyToDataset,
+      };
+    }
+    this.allData = {
+      ...importsData,
+    };
     for (let i = 0; i < this.datasetHandlers.length; i++) {
       const handler = this.datasetHandlers[i];
       this.allData = {
@@ -96,7 +188,6 @@ export class BebarHandler {
 
   /** Loads helpers */
   private async loadHelpers() {
-    this.helpersetHandlers = [];
     if (this.bebar.helpers) {
       for (let i = 0; i < this.bebar.helpers.length; i++) {
         const helper = this.bebar.helpers[i];
@@ -109,7 +200,6 @@ export class BebarHandler {
 
   /** Loads partials */
   private async loadPartials() {
-    this.partialsetHandlers = [];
     if (this.bebar.partials) {
       for (let i = 0; i < this.bebar.partials.length; i++) {
         const partial = this.bebar.partials[i];
@@ -122,7 +212,27 @@ export class BebarHandler {
 
   /** Loads templates */
   private async loadTemplates() {
-    this.templateHandlers = [];
+    for (let c = 0; c < this.importedBebarHandlers.length; c++) {
+      const subHandler = this.importedBebarHandlers[c];
+      if (subHandler.templateHandlers) {
+        for (let h = 0; h < subHandler.templateHandlers.length; h++) {
+          const handler = subHandler.templateHandlers[h];
+          handler.loadHelpersAndPartials(subHandler.ctx);
+        }
+      }
+      if (subHandler.helpersetHandlers) {
+        for (let h = 0; h < subHandler.helpersetHandlers.length; h++) {
+          const handler = subHandler.helpersetHandlers[h];
+          handler.registerHelpers(this.ctx.bebarHandlebarsContext);
+        }
+      }
+      if (subHandler.partialsetHandlers) {
+        for (let h = 0; h < subHandler.partialsetHandlers.length; h++) {
+          const handler = subHandler.partialsetHandlers[h];
+          handler.registerPartials(this.ctx.bebarHandlebarsContext);
+        }
+      }
+    }
     if (this.bebar.templates) {
       for (let i = 0; i < this.bebar.templates.length; i++) {
         const template = this.bebar.templates[i];
@@ -164,8 +274,14 @@ export class BebarHandler {
    * Handles a file change, a file content changed, ...
    * @param {RefreshContext} refreshContext The refresh context
    */
-  public async handleRefresh(refreshContext: RefreshContext) {
+  public async handleRefresh(refreshContext: RefreshContext): Promise<boolean> {
     DiagnosticBag.clear();
+
+    let refreshOnImports = false;
+    for (let c = 0; c < this.importedBebarHandlers.length; c++) {
+      refreshOnImports = (await this.importedBebarHandlers[c].handleRefresh(refreshContext)) || refreshOnImports;
+    }
+
     if (refreshContext.refreshType === RefreshType.FileContentChanged &&
       await this.handleFileContentChanged(refreshContext)) {
       refreshContext.refreshedObjects.push(this);
@@ -232,7 +348,7 @@ export class BebarHandler {
         }
       }
     }
-    if (refreshOnData) {
+    if (refreshOnImports || refreshOnData) {
       await this.compileData();
     }
 
@@ -245,14 +361,14 @@ export class BebarHandler {
       templateHandler.bebarKeyToDataset = {
         ...this.keyToDataset,
       };
-      if (await templateHandler.handleRefresh(refreshContext, refreshOnPartials || refreshOnHelpers || refreshOnData)) {
+      if (await templateHandler.handleRefresh(refreshContext, refreshOnImports || refreshOnPartials || refreshOnHelpers || refreshOnData)) {
         refreshOnTemplates = true;
         if (!refreshOnPartials && !refreshOnHelpers && !refreshOnData) {
           refreshContext.refreshedObjects.push(this);
         }
       }
     }
-    return refreshOnPartials || refreshOnHelpers || refreshOnData || refreshOnTemplates;
+    return refreshOnImports || refreshOnPartials || refreshOnHelpers || refreshOnData || refreshOnTemplates;
   }
 
   /**
@@ -280,6 +396,13 @@ export class BebarHandler {
 
       const newBebar = new Bebar(plainObject);
 
+      if (!deepEqual(this.bebar.imports, newBebar.imports)) {
+        result = true;
+        this.bebar.imports = newBebar.imports;
+        this.importedBebarHandlers = [];
+        await this.loadImports();
+      }
+
       if (!deepEqual(this.bebar.helpers, newBebar.helpers)) {
         result = true;
         for (let i = 0; i < this.helpersetHandlers.length; i++) {
@@ -288,6 +411,7 @@ export class BebarHandler {
           }
         }
         this.bebar.helpers = newBebar.helpers;
+        this.helpersetHandlers = [];
         await this.loadHelpers();
       }
 
@@ -299,12 +423,14 @@ export class BebarHandler {
           }
         }
         this.bebar.partials = newBebar.partials;
+        this.partialsetHandlers = [];
         await this.loadPartials();
       }
 
       if (!deepEqual(this.bebar.data, newBebar.data)) {
         result = true;
         this.bebar.data = newBebar.data;
+        this.datasetHandlers = [];
         await this.loadDatasets();
         await this.compileData();
       }
@@ -315,6 +441,7 @@ export class BebarHandler {
           await this.templateHandlers[i].unload();
         }
         this.bebar.templates = newBebar.templates;
+        this.templateHandlers = [];
         await this.loadTemplates();
       }
 

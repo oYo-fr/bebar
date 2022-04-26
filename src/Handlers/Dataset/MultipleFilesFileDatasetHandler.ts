@@ -7,7 +7,7 @@ import {RefreshContext} from './../../Refresh/RefreshContext';
 import {RefreshType} from './../../Refresh/RefreshType';
 import {PathUtils} from '../../Utils/PathUtils';
 import {FileDatasetHandler} from './FileDatasetHandler';
-import { BebarHandlerContext } from '../Bebar/BebarHandlerContext';
+import {BebarHandlerContext} from '../Bebar/BebarHandlerContext';
 
 /**
  * Dataset that can handle JS files

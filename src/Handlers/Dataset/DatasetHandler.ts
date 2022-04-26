@@ -41,5 +41,5 @@ export abstract class DatasetHandler {
    * Load method to override
    * @param {string} _ctx The bebar execution context
    * */
-  public load(_ctx: BebarHandlerContext) {}
+  public async load(_ctx: BebarHandlerContext) {}
 };

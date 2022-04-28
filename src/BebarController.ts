@@ -8,7 +8,7 @@ const writeFile = util.promisify(fs.writeFile);
 import {DiagnosticBag} from './Diagnostics/DiagnosticBag';
 import {BebarHandlerContext} from './Handlers/Bebar/BebarHandlerContext';
 import {DiagnosticSeverity} from './Diagnostics/DiagnosticSeverity';
-import { BebarLoopLoadingException } from './Exceptions/BebarLoopLoadingException';
+import {BebarLoopLoadingException} from './Exceptions/BebarLoopLoadingException';
 
 /**
  * Main class for command line call
@@ -36,7 +36,7 @@ export class BebarController {
         if ((ex as any).importsCallStack) {
           DiagnosticBag.add(
               0, 0, 0, 0,
-              'Imports loop detected: ' + (ex as BebarLoopLoadingException).importsCallStack.join(" --> "),
+              'Imports loop detected: ' + (ex as BebarLoopLoadingException).importsCallStack.join(' --> '),
               DiagnosticSeverity.Error,
               this.handlers[i].ctx.filename);
         }

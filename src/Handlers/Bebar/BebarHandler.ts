@@ -69,7 +69,7 @@ export class BebarHandler {
 
     for (let i = 0; i < files.length; i++) {
       const file = path.resolve(files[i]);
-      if (importsCallStack.some(f => f === file)) {
+      if (importsCallStack.some((f) => f === file)) {
         throw new BebarLoopLoadingException(this, undefined, importsCallStack);
       }
       const rootPath = path.resolve(path.dirname(file));

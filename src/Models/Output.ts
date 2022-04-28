@@ -18,7 +18,7 @@ export class Output {
 
   /**
    * Constructor.
-   * @param {IOutput | undefined} plainObject A plain object containing
+   * @param {IOutput | undefined} plainObject A plain object containing required properties
    */
   constructor(plainObject: IOutput | undefined) {
     if (plainObject) {

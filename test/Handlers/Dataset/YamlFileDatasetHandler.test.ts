@@ -1,4 +1,5 @@
 import {BebarException} from '../../../src/Exceptions/BebarException';
+import {BebarHandlerContext} from '../../../src/Handlers/Bebar/BebarHandlerContext';
 import {YamlFileDatasetHandler}
   from '../../../src/Handlers/Dataset/YamlFileDatasetHandler';
 import {Dataset} from '../../../src/Models/Dataset';
@@ -46,7 +47,7 @@ describe('YamlFileDatasetHandler', () => {
           },
         }),
     );
-    const data = await handler.load('.');
+    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar'));
     expect(data).toBeDefined();
     expect(data['schools']).toBe(handler.content['schools']);
     expect(data['schools'].length).toBe(10);
@@ -60,7 +61,7 @@ describe('YamlFileDatasetHandler', () => {
           encoding: 'utf16le',
         }),
     );
-    const data = await handler.load('.');
+    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar'));
     expect(data).toBeDefined();
     expect(data['schools']).toBe(handler.content['schools']);
     expect(data['schools'].length).toBe(10);
@@ -74,7 +75,7 @@ describe('YamlFileDatasetHandler', () => {
         }),
     );
     try {
-      await handler.load('.');
+      await handler.load(new BebarHandlerContext('.', 'do.bebar'));
       expect(false).toBeTruthy(); // We should never reach this point
     } catch (e) {
       expect((e as BebarException).inner).toBeDefined();
@@ -94,7 +95,7 @@ describe('YamlFileDatasetHandler', () => {
         prettyErrors: false,
       },
     }));
-    const data = await handler.load('.');
+    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar'));
     expect(data).toBeDefined();
     expect(data['schools']).toBe(handler.content['schools']);
     expect(data['schools'].length).toBe(10);

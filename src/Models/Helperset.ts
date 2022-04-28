@@ -23,7 +23,7 @@ export class Helperset {
 
   /**
    * Constructor.
-   * @param {IHelperset | undefined} plainObject A plain object containing
+   * @param {IHelperset | undefined} plainObject A plain object containing required properties
    */
   constructor(plainObject: IHelperset | undefined) {
     if (plainObject) {

@@ -8,10 +8,9 @@ export class App {
 
   /**
    * Constructor
-   * @param {string} workdir Working directory
    */
-  public constructor(public workdir: string) {
-    this.bebarController = new BebarController(workdir);
+  public constructor() {
+    this.bebarController = new BebarController();
   }
 
   /**

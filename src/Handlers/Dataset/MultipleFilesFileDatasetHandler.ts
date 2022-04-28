@@ -7,6 +7,7 @@ import {RefreshContext} from './../../Refresh/RefreshContext';
 import {RefreshType} from './../../Refresh/RefreshType';
 import {PathUtils} from '../../Utils/PathUtils';
 import {FileDatasetHandler} from './FileDatasetHandler';
+import {BebarHandlerContext} from '../Bebar/BebarHandlerContext';
 
 /**
  * Dataset that can handle JS files
@@ -15,28 +16,28 @@ export class MultipleFilesFileDatasetHandler extends DatasetHandler {
   /**
    * Indicates if this handler can handle the described Dataset object
    * @param {Dataset} dataset Object that will be transformed as a JSFileDataset
-   * @param {string} rootPath The folder where the bebar file is
+   * @param {BebarHandlerContext} ctx The bebar execution context
    * @return {boolean} True if this handler can handle the provided object
    */
-  static canHandle(dataset: Dataset, rootPath: string): boolean {
+  static canHandle(dataset: Dataset, ctx: BebarHandlerContext): boolean {
     if (!dataset || !dataset.file) return false;
     return (glob.sync(
         path.resolve(
-            rootPath,
+            ctx.rootPath,
             dataset.file!))).length > 1;
   }
 
   /**
    * Reads data from the source
-   * @param {string} rootPath The folder where the bebar file is
+   * @param {BebarHandlerContext} ctx The bebar execution context
    * @return {any} The data extracted from the source
    */
-  async load(rootPath: string): Promise<any> {
-    const handlerFiles = glob.sync(path.resolve('.', this.dataset.file!));
+  async load(ctx: BebarHandlerContext): Promise<any> {
+    const handlerFiles = glob.sync(path.resolve(ctx.rootPath, this.dataset.file!));
     this.datasetHandlers = handlerFiles.map((f: string) => {
       const factory = new FileDatasetFactory(
           new Dataset({file: f}));
-      factory.load(rootPath);
+      factory.load(ctx);
       return factory.handler;
     })
         .filter((e: any | undefined) => e && e != undefined);
@@ -44,7 +45,7 @@ export class MultipleFilesFileDatasetHandler extends DatasetHandler {
     for (let i = 0; i < this.datasetHandlers.length; i++) {
       const handler = this.datasetHandlers[i];
       if (handler) {
-        await handler.load(rootPath);
+        await handler.load(ctx);
       }
     }
 
@@ -127,7 +128,7 @@ export class MultipleFilesFileDatasetHandler extends DatasetHandler {
    */
   private async handleFileCreated(refreshContext: RefreshContext): Promise<boolean> {
     let result = false;
-    const globResults = glob.sync(path.resolve(refreshContext.rootPath, this.dataset.file!));
+    const globResults = glob.sync(path.resolve(refreshContext.ctx.rootPath, this.dataset.file!));
     for (let i = 0; i< globResults.length; i++) {
       const globResult = globResults[i];
 
@@ -135,10 +136,10 @@ export class MultipleFilesFileDatasetHandler extends DatasetHandler {
         result = true;
         const factory = new FileDatasetFactory(
             new Dataset({file: globResult}));
-        factory.load(refreshContext.rootPath);
+        factory.load(refreshContext.ctx);
 
         if (factory.handler) {
-          await factory.handler.load(refreshContext.rootPath);
+          await factory.handler.load(refreshContext.ctx);
           this.datasetHandlers.push(factory.handler);
         }
       }
@@ -154,7 +155,7 @@ export class MultipleFilesFileDatasetHandler extends DatasetHandler {
   private async handleFileDeleted(refreshContext: RefreshContext): Promise<boolean> {
     for (let i = 0; i < this.datasetHandlers.length; i++) {
       const handler = this.datasetHandlers[i];
-      if (PathUtils.pathsAreEqual(path.resolve(refreshContext.rootPath, handler.dataset.file!), refreshContext.oldFilePath!)) {
+      if (PathUtils.pathsAreEqual(path.resolve(refreshContext.ctx.rootPath, handler.dataset.file!), refreshContext.oldFilePath!)) {
         this.datasetHandlers.splice(i, 1);
         return true;
       }

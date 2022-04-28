@@ -1,11 +1,13 @@
 import {Dataset} from './../Models/Dataset';
 import {Helperset} from './../Models/Helperset';
+import {Import} from './../Models/Import';
 import {Partialset} from './../Models/Partialset';
 import {Template} from './../Models/Template';
 import {Iterator} from './../Models/Iterator';
 
 import {IDataset} from './../Models/Interfaces/IDataset';
 import {IHelperset} from './../Models/Interfaces/IHelperset';
+import {IImport} from './../Models/Interfaces/IImport';
 import {IPartialset} from './../Models/Interfaces/IPartialset';
 import {ITemplate} from './../Models/Interfaces/ITemplate';
 import {IIterator} from './../Models/Interfaces/IIterator';
@@ -66,6 +68,24 @@ export class Converter {
       new Helperset({file: o}) :
       new Helperset(o)) :
       [new Helperset(obj)];
+  }
+
+  /**
+   * Transforms a plain object into an array of instances of Import
+   * @param {(IImport | string)[] | IImport | string | undefined} obj
+   *  The object to transform
+   * @return {Import[]} An array of Import object instances
+   */
+  public static toImports(
+      obj: (IImport | string)[] | IImport | string | undefined):
+    Import[] {
+    if (!obj) return [];
+    if (typeof(obj) === 'string') return [new Import({file: obj})];
+    return Array.isArray(obj) ?
+      obj.map((o: any) => typeof(o) === 'string' ?
+      new Import({file: o}) :
+      new Import(o)) :
+      [new Import(obj)];
   }
 
   /**

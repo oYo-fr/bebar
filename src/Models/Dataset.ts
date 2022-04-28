@@ -45,8 +45,7 @@ export class Dataset {
 
   /**
    * Constructor.
-   * @param {Dataset | undefined} plainObject A plain object containing
-   *  required properties
+   * @param {Dataset | undefined} plainObject A plain object containing required properties
    */
   constructor(plainObject: IDataset | undefined) {
     if (plainObject) {

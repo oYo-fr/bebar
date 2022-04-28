@@ -1,13 +1,13 @@
 data:
   -
-    file: ./Assets/Datasets/schools.yaml
+    file: ./../Datasets/schools.yaml
 partials:
-  - ./Assets/Partials/school.hbs
+  - ./../Partials/school.hbs
 helpers:
-  - ./Assets/Helpers/*.js
+  - ./../Helpers/*.js
 templates:
   -
-    file: ./Assets/Templates/list_of_schools.hbs
-    output: ./Assets/TestOutputs/scools.md
+    file: ./../Templates/list_of_schools.hbs
+    output: ./../TestOutputs/scools.md
     prettify:
       parser: markdown

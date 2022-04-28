@@ -1,3 +1,4 @@
+import {BebarHandlerContext} from '../../../src/Handlers/Bebar/BebarHandlerContext';
 import {RawFileDatasetHandler}
   from '../../../src/Handlers/Dataset/RawFileDatasetHandler';
 import {Dataset} from '../../../src/Models/Dataset';
@@ -36,7 +37,7 @@ describe('RawFileDatasetHandler', () => {
           file: './test/Assets/Datasets/schools.html',
           parseAs: 'raw',
         }));
-    const data = await handler.load('.');
+    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar'));
     expect(data).toBeDefined();
     expect(data['schools']).toBeDefined();
     expect(data['schools'].length).toBeGreaterThan(0);
@@ -51,7 +52,7 @@ describe('RawFileDatasetHandler', () => {
       url: 'schools.html',
       parseAs: 'raw',
     }));
-    const data = await handler.load('.');
+    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar'));
     expect(data).toBeDefined();
     expect(data['schools']).toBeDefined();
     expect(data['schools'].length).toBeGreaterThan(0);

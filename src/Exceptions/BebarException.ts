@@ -8,6 +8,7 @@
 export abstract class BebarException {
   /**
    * Constructor
+   * @param {any} sender The sender of the exception
    * @param {any} inner The original exception
    */
   constructor(public sender: any, public inner: any = undefined) {

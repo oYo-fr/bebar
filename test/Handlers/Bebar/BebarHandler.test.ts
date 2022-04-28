@@ -5,6 +5,7 @@ import {RefreshType} from '../../../src/Refresh/RefreshType';
 import path from 'path';
 import fs from 'fs';
 import {PathUtils} from '../../../src/Utils/PathUtils';
+import {BebarHandlerContext} from '../../../src/Handlers/Bebar/BebarHandlerContext';
 const YAML = require('yaml');
 
 describe('BebarHandler', () => {
@@ -14,7 +15,7 @@ describe('BebarHandler', () => {
       partials: [{file: './test/Assets/Partials/*.hbs'}],
       helpers: [{file: './test/Assets/Helpers/*.js'}],
       templates: [{file: './test/Assets/Templates/list_of_schools.hbs'}],
-    }), '.', 'sample.bebar');
+    }), new BebarHandlerContext('.', 'sample.bebar'));
     await handler.load();
     expect(handler.templateHandlers[0].outputs.length).toBeGreaterThan(0);
     expect(handler.templateHandlers[0].outputs[0].data).toBeDefined();
@@ -28,7 +29,7 @@ describe('BebarHandler', () => {
       partials: ['./test/Assets/Partials/*.hbs'],
       helpers: ['./test/Assets/Helpers/*.js'],
       templates: [{file: './test/Assets/Templates/list_of_schools.hbs'}],
-    }), '.', 'sample.bebar');
+    }), new BebarHandlerContext('.', 'sample.bebar'));
     await handler.load();
     expect(handler.templateHandlers[0].outputs.length).toBeGreaterThan(0);
     expect(handler.templateHandlers[0].outputs[0].data).toBeDefined();
@@ -42,7 +43,7 @@ describe('BebarHandler', () => {
       partials: './test/Assets/Partials/*.hbs',
       helpers: './test/Assets/Helpers/*.js',
       templates: [{file: './test/Assets/Templates/list_of_schools.hbs'}],
-    }), '.', 'sample.bebar');
+    }), new BebarHandlerContext('.', 'sample.bebar'));
     await handler.load();
     expect(handler.templateHandlers[0].outputs.length).toBeGreaterThan(0);
     expect(handler.templateHandlers[0].outputs[0].data).toBeDefined();
@@ -58,7 +59,7 @@ describe('BebarHandler', () => {
           helpers: './test/Assets/Helpers/stringHelpers.js',
           templates: [
             {file: './test/Assets/Templates/list_of_schools_html_list.hbs'}],
-        }), '.', 'sample.bebar');
+        }), new BebarHandlerContext('.', 'sample.bebar'));
         await handler.load();
         expect(handler.templateHandlers[0].outputs[0].data).toBeDefined();
         expect(handler.templateHandlers[0].outputs.length).toBeGreaterThan(0);
@@ -69,17 +70,18 @@ describe('BebarHandler', () => {
 
   it('should refresh outputs properly',
       async () => {
+        const ctx = new BebarHandlerContext('.', 'do.bebar');
         const handler = new BebarHandler(new Bebar({
           data: './test/Assets/Datasets/*.yaml',
           partials: './test/Assets/Partials/*.hbs',
           helpers: './test/Assets/Helpers/*.js',
           templates: [
             {file: './test/Assets/Templates/list_of_schools.hbs', output: 'test.md'}],
-        }), '.', 'sample.bebar');
+        }), new BebarHandlerContext('.', 'sample.bebar'));
         await handler.load();
         for (let testcase = 0; testcase < 2; testcase++) {
           if (testcase === 1) {
-            await handler.handleRefresh(new RefreshContext(RefreshType.FileContentChanged, '.', undefined, 'sample.bebar', YAML.stringify(
+            await handler.handleRefresh(new RefreshContext(RefreshType.FileContentChanged, ctx, undefined, 'sample.bebar', YAML.stringify(
                 {
                   templates: [
                     {file: './test/Assets/Templates/list_of_schools.hbs', output: 'test.md',
@@ -97,7 +99,7 @@ describe('BebarHandler', () => {
           await handler.handleRefresh(
               new RefreshContext(
                   RefreshType.FileContentChanged,
-                  '.',
+                  ctx,
                   undefined,
                   path.resolve('./test/Assets/Partials/school.hbs'),
                   '{{school.id}}. {{bold school.name}} PARTIAL UPDATED'));
@@ -105,7 +107,7 @@ describe('BebarHandler', () => {
           await handler.handleRefresh(
               new RefreshContext(
                   RefreshType.FileContentChanged,
-                  '.',
+                  ctx,
                   undefined,
                   path.resolve('./test/Assets/Datasets/schools.yaml'),
                   YAML.stringify([{id: 1, name: 'Paris - La Sorbonne'}])));
@@ -115,7 +117,7 @@ describe('BebarHandler', () => {
           const jsPath = path.resolve('./test/Assets/Helpers/stringHelpers.js');
           await handler.handleRefresh(
               new RefreshContext(
-                  RefreshType.FileContentChanged, '.', undefined, jsPath, newHelpersCode));
+                  RefreshType.FileContentChanged, ctx, undefined, jsPath, newHelpersCode));
           expect(handler.templateHandlers[0].outputs[0].content.includes('__Paris')).toBeTruthy();
           const helpersetHandlers = testcase === 0 ? handler.helpersetHandlers[0] : handler.templateHandlers[0].helpersetHandlers[0];
           const newHelpersForFile = helpersetHandlers.helpers.filter(
@@ -124,7 +126,7 @@ describe('BebarHandler', () => {
           await handler.handleRefresh(
               new RefreshContext(
                   RefreshType.FileContentChanged,
-                  '.',
+                  ctx,
                   undefined,
                   path.resolve('./test/Assets/Templates/list_of_schools.hbs'),
                   handler.templateHandlers[0].template.content + 'TEMPLATE UPDATED'));
@@ -134,10 +136,10 @@ describe('BebarHandler', () => {
           expect(handler.templateHandlers[0].outputs[0].data['schools']).toBeDefined();
           expect(handler.templateHandlers[0].outputs[0].data['schools_utf-16']).toBeDefined();
           await handler.handleRefresh(
-              new RefreshContext(RefreshType.FileDeleted, '.', path.resolve('./test/Assets/Datasets/schools_utf-16.yaml'), undefined, undefined));
+              new RefreshContext(RefreshType.FileDeleted, ctx, path.resolve('./test/Assets/Datasets/schools_utf-16.yaml'), undefined, undefined));
           expect(handler.templateHandlers[0].outputs[0].data['schools_utf-16']).toBeUndefined();
           await handler.handleRefresh(
-              new RefreshContext(RefreshType.FileCreated, '.', undefined, path.resolve('./test/Assets/Datasets/schools_utf-16.yaml'), undefined));
+              new RefreshContext(RefreshType.FileCreated, ctx, undefined, path.resolve('./test/Assets/Datasets/schools_utf-16.yaml'), undefined));
           expect(handler.templateHandlers[0].outputs[0].data['schools_utf-16']).toBeDefined();
           expect(Object.keys(handler.templateHandlers[0].outputs[0].keyToDataset).length).toBeGreaterThan(0);
 
@@ -145,18 +147,18 @@ describe('BebarHandler', () => {
           let helpersCount = helpersHandler.helpers.length;
           await handler.handleRefresh(
               new RefreshContext(
-                  RefreshType.FileDeleted, '.', path.resolve('./test/Assets/Helpers/vscode-colors-to-css-vars-helpers.js'), undefined, undefined));
+                  RefreshType.FileDeleted, ctx, path.resolve('./test/Assets/Helpers/vscode-colors-to-css-vars-helpers.js'), undefined, undefined));
           expect(helpersHandler.helpers.length).toBeLessThan(helpersCount);
           helpersCount = helpersHandler.helpers.length;
           await handler.handleRefresh(
               new RefreshContext(
-                  RefreshType.FileCreated, '.', undefined, path.resolve('./test/Assets/Helpers/vscode-colors-to-css-vars-helpers.js'), undefined));
+                  RefreshType.FileCreated, ctx, undefined, path.resolve('./test/Assets/Helpers/vscode-colors-to-css-vars-helpers.js'), undefined));
           expect(helpersHandler.helpers.length).toBeGreaterThan(helpersCount);
           helpersCount = helpersHandler.helpers.length;
           await handler.handleRefresh(
               new RefreshContext(
                   RefreshType.FileMovedOrRenamed,
-                  '.',
+                  ctx,
                   path.resolve('./test/Assets/Helpers/vscode-colors-to-css-vars-helpers.js'),
                   path.resolve('./test/Assets/Helpers/none'),
                   undefined));
@@ -164,14 +166,14 @@ describe('BebarHandler', () => {
           await handler.handleRefresh(
               new RefreshContext(
                   RefreshType.FileMovedOrRenamed,
-                  '.',
+                  ctx,
                   path.resolve('./test/Assets/Helpers/none'),
                   path.resolve('./test/Assets/Helpers/vscode-colors-to-css-vars-helpers.js'),
                   undefined));
           await handler.handleRefresh(
               new RefreshContext(
                   RefreshType.FileMovedOrRenamed,
-                  '.',
+                  ctx,
                   path.resolve('./test/Assets/Helpers/none'),
                   path.resolve('./test/Assets/Helpers/vscode-helpers.js'),
                   undefined));
@@ -179,17 +181,17 @@ describe('BebarHandler', () => {
           const partialsHandler = testcase === 0 ? handler.partialsetHandlers[0] : handler.templateHandlers[0].partialsetHandlers[0];
           let partialsCount = partialsHandler.partials.length;
           await handler.handleRefresh(
-              new RefreshContext(RefreshType.FileDeleted, '.', path.resolve('./test/Assets/Partials/school_html.hbs'), undefined, undefined));
+              new RefreshContext(RefreshType.FileDeleted, ctx, path.resolve('./test/Assets/Partials/school_html.hbs'), undefined, undefined));
           expect(partialsHandler.partials.length).toBeLessThan(partialsCount);
           partialsCount = partialsHandler.partials.length;
           await handler.handleRefresh(
-              new RefreshContext(RefreshType.FileCreated, '.', undefined, path.resolve('./test/Assets/Partials/school_html.hbs'), undefined));
+              new RefreshContext(RefreshType.FileCreated, ctx, undefined, path.resolve('./test/Assets/Partials/school_html.hbs'), undefined));
           expect(partialsHandler.partials.length).toBeGreaterThan(partialsCount);
           partialsCount = partialsHandler.partials.length;
           await handler.handleRefresh(
               new RefreshContext(
                   RefreshType.FileMovedOrRenamed,
-                  '.',
+                  ctx,
                   path.resolve('./test/Assets/Partials/school_html.hbs'),
                   path.resolve('./test/Assets/Partials/school_html.mustache'),
                   undefined));
@@ -197,7 +199,7 @@ describe('BebarHandler', () => {
           await handler.handleRefresh(
               new RefreshContext(
                   RefreshType.FileMovedOrRenamed,
-                  '.',
+                  ctx,
                   path.resolve('./test/Assets/Partials/school_html.mustache'),
                   path.resolve('./test/Assets/Partials/school_html.hbs'),
                   undefined));
@@ -205,7 +207,7 @@ describe('BebarHandler', () => {
           await handler.handleRefresh(
               new RefreshContext(
                   RefreshType.FileMovedOrRenamed,
-                  '.',
+                  ctx,
                   path.resolve('./test/Assets/Partials/school_html.hbs'),
                   path.resolve('./test/Assets/Partials/school_html2.hbs'),
                   undefined));

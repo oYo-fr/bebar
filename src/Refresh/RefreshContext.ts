@@ -1,3 +1,4 @@
+import {BebarHandlerContext} from '../Handlers/Bebar/BebarHandlerContext';
 import {RefreshType} from './RefreshType';
 
 /**
@@ -10,7 +11,7 @@ export class RefreshContext {
   /**
    * Constructor
    * @param {RefreshType} refreshType Indicates what kind of changed has occured
-   * @param {string} rootPath The folder where the bebar file is
+   * @param {BebarHandlerContext} ctx The bebar execution context
    * @param {string} oldFilePath The old file path. Should be undefined if the
    *  file has been created.
    * @param {string} newFilePath The new file path. Should be undefined if the
@@ -18,7 +19,7 @@ export class RefreshContext {
    */
   constructor(
     public refreshType: RefreshType,
-    public rootPath: string,
+    public ctx: BebarHandlerContext,
     public oldFilePath: string | undefined,
     public newFilePath: string | undefined,
     public newFileContent: string | undefined) {

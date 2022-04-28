@@ -29,7 +29,7 @@ export abstract class DatasetCache {
       file: dataset.file,
       httpOptions: dataset.httpOptions,
     }));
-    const cacheDirectory = path.resolve(path.join(callbackOptions.rootPath, DatasetCache.Directory));
+    const cacheDirectory = path.resolve(path.join(callbackOptions.ctx.cachePath, DatasetCache.Directory));
     const cacheFilePath = path.resolve(path.join(cacheDirectory, key));
     if (fs.existsSync(cacheFilePath)) {
       if (!dataset.cache.ttl) {

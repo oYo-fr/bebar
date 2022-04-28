@@ -56,7 +56,7 @@ export class Template {
   public prettify?: any | undefined;
   /**
    * Constructor.
-   * @param {ITemplate | undefined} plainObject A plain object containing
+   * @param {ITemplate | undefined} plainObject A plain object containing required properties
    */
   constructor(plainObject: ITemplate | undefined) {
     if (plainObject) {

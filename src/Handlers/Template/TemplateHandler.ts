@@ -21,6 +21,7 @@ import {MultipleFilesFileDatasetHandler} from '../Dataset/MultipleFilesFileDatas
 import {PathUtils} from '../../Utils/PathUtils';
 import {DiagnosticBag} from './../../Diagnostics/DiagnosticBag';
 import {DiagnosticSeverity} from './../../Diagnostics/DiagnosticSeverity';
+import {BebarHandlerContext} from '../Bebar/BebarHandlerContext';
 
 /**
  * A template handler is reponsible for reading and returning data
@@ -50,26 +51,26 @@ export class TemplateHandler {
 
   /**
   * Reads data from the source
-  * @param {string} rootPath The folder where the bebar file is
+  * @param {BebarHandlerContext} ctx The bebar execution context
   * @return {any} The data extracted from the source
   */
-  async load(rootPath: string): Promise<any> {
-    await this.handleTemplate(rootPath);
-    await this.handleData(rootPath);
-    await this.generateOutputs(rootPath);
+  async load(ctx: BebarHandlerContext): Promise<any> {
+    await this.handleTemplate(ctx);
+    await this.handleData(ctx);
+    await this.generateOutputs(ctx);
   }
 
   /**
    * Compiles data & templates to produce outputs
-   * @param {string} rootPath The folder where the bebar file is
+   * @param {BebarHandlerContext} ctx The bebar execution context
    */
-  private async generateOutputs(rootPath: string) {
+  private async generateOutputs(ctx: BebarHandlerContext) {
     this.outputs = [];
     await this.compileData();
     try {
-      await this.handleIterators(rootPath);
+      await this.handleIterators(ctx);
     } catch {}
-    await this.handlePrettifier(rootPath);
+    await this.handlePrettifier(ctx);
   }
 
   /**
@@ -86,9 +87,9 @@ export class TemplateHandler {
 
   /**
   * Template management function
-  * @param {string} rootPath The folder where the bebar file is
+  * @param {BebarHandlerContext} ctx The bebar execution context
   */
-  private async handleTemplate(rootPath: string) {
+  private async handleTemplate(ctx: BebarHandlerContext) {
     const templatename = ` ${this.template.name}`;
     if (this.template.content) {
       await this.registerHandlebarTemplate(this.template.content);
@@ -96,7 +97,7 @@ export class TemplateHandler {
       try {
         Logger.info(this, `Loading template${templatename} from ${this.template.file}`, '📰');
         const filepath = path.resolve(
-            rootPath,
+            ctx.rootPath,
             this.template.file);
         const fileContent =
         fs.readFileSync(filepath, this.template.encoding as BufferEncoding);
@@ -124,16 +125,16 @@ export class TemplateHandler {
 
   /**
    * Loads helpers & partials
-   * @param {string} rootPath The folder where the bebar file is
+   * @param {BebarHandlerContext} ctx The bebar execution context
    */
-  public async loadHelpersAndPartials(rootPath: string) {
+  public async loadHelpersAndPartials(ctx: BebarHandlerContext) {
     if (this.template.helpers) {
       for (let i = 0; i < this.template.helpers.length; i++) {
         const helper = this.template.helpers[i];
         const helperHandler = new HelpersetHandler(
             helper,
             this.handlebars);
-        await helperHandler.load(rootPath);
+        await helperHandler.load(ctx);
         this.helpersetHandlers.push(helperHandler);
       }
     }
@@ -143,7 +144,7 @@ export class TemplateHandler {
         const partialHandler = new PartialsetHandler(
             partial,
             this.handlebars);
-        await partialHandler.load(rootPath);
+        await partialHandler.load(ctx);
         this.partialsetHandlers.push(partialHandler);
       }
     }
@@ -166,25 +167,25 @@ export class TemplateHandler {
 
   /**
    * Data management function
-  * @param {string} rootPath The folder where the bebar file is
+   * @param {BebarHandlerContext} ctx The bebar execution context
    */
-  private async handleData(rootPath: string) {
+  private async handleData(ctx: BebarHandlerContext) {
     if (this.template.data) {
       this.templateData = {};
       for (let i = 0; i < this.template.data.length; i++) {
         const data = this.template.data[i];
         const factory = new DatasetFactory(data);
-        factory.load(rootPath);
+        factory.load(ctx);
         if (factory.handler) {
           try {
-            await factory.handler.load(rootPath);
+            await factory.handler.load(ctx);
           } catch (e) {
             const error = (e as any).message ?? (e as any).toString();
             DiagnosticBag.add(
                 0, 0, 0, 0,
                 'Failed loading data: ' + error,
                 DiagnosticSeverity.Error,
-              this.template.file ? path.resolve(rootPath, this.template.file) : this.template.url!);
+              this.template.file ? path.resolve(ctx.rootPath, this.template.file) : this.template.url!);
           }
           if (factory.handler) {
             this.datasetHandlers.push(factory.handler as DatasetHandler);
@@ -223,9 +224,9 @@ export class TemplateHandler {
 
   /**
    * Iterators management function
-   * @param {string} rootPath The folder where the bebar file is
+   * @param {BebarHandlerContext} ctx The bebar execution context
    */
-  private async handleIterators(rootPath: string) {
+  private async handleIterators(ctx: BebarHandlerContext) {
     if (this.template.iterators.length > 0) {
       await this.iterate(
           this.template.iterators,
@@ -235,17 +236,17 @@ export class TemplateHandler {
           this.bebarData,
           this.template.output,
           this.template.iterationValueName,
-          rootPath);
+          ctx);
     } else {
-      await this.produceOutput(this.bebarData, this.template.output, rootPath);
+      await this.produceOutput(this.bebarData, this.template.output, ctx);
     }
   }
 
   /**
    * Pretifier management function
-   * @param {string} rootPath The folder where the bebar file is
+   * @param {BebarHandlerContext} ctx The bebar execution context
    */
-  private async handlePrettifier(rootPath: string) {
+  private async handlePrettifier(ctx: BebarHandlerContext) {
     return new Promise((resolve) => {
       const exceptions: Array<any> = [];
       if (this.template.prettify) {
@@ -260,7 +261,7 @@ export class TemplateHandler {
                 0, 0, 0, 0,
                 'Failed applying prerrifier: ' + (e as any).toString(),
                 DiagnosticSeverity.Error,
-              this.template.file ? path.resolve(rootPath, this.template.file) : this.template.url!);
+              this.template.file ? path.resolve(ctx.rootPath, this.template.file) : this.template.url!);
             exceptions.push(e);
           }
         }
@@ -278,10 +279,10 @@ export class TemplateHandler {
    * @param {any} originalData The original template data
    * @param {string | undefined} output Where the iteration data will go to
    * @param {string | undefined} iterationValueName Indicates the name of the
-   * @param {string} rootPath The folder where the bebar file is
    *  property where the current iteration will be found within the data. If not
    *  set, iteration values will be pushed at the root of the data passed to the
    *  template
+   * @param {BebarHandlerContext} ctx The bebar execution context
    */
   private async iterate(
       iterators: Iterator[],
@@ -291,7 +292,7 @@ export class TemplateHandler {
       originalData: any,
       output: string | undefined,
       iterationValueName: string | undefined,
-      rootPath: string) {
+      ctx: BebarHandlerContext) {
     const currentIterator = iterators[iteratorIndex];
     const currentArray: any[] = currentIterator.array ?
         data[currentIterator.array] :
@@ -310,7 +311,7 @@ export class TemplateHandler {
             originalData,
             output,
             iterationValueName,
-            rootPath);
+            ctx);
       } else {
         const outputData = iterationValueName ?
         {
@@ -321,7 +322,7 @@ export class TemplateHandler {
           ...originalData,
           ...currentData,
         };
-        await this.produceOutput(outputData, output, rootPath);
+        await this.produceOutput(outputData, output, ctx);
       }
     }
   }
@@ -330,9 +331,9 @@ export class TemplateHandler {
    * Produces a output an add it to the outputs list
    * @param {any} data The data that should be used to produce the output
    * @param {string} output The name of the file that should be produced
-   * @param {string} rootPath The folder where the bebar file is
+   * @param {BebarHandlerContext} ctx The bebar execution context
    */
-  private async produceOutput(data: any, output: string | undefined, rootPath: string) {
+  private async produceOutput(data: any, output: string | undefined, ctx: BebarHandlerContext) {
     try {
       let processedOutputFilename = output;
       if (output) {
@@ -361,7 +362,7 @@ export class TemplateHandler {
           0, 0, 0, 0,
           'Failed producing output: ' + (e as any).message,
           DiagnosticSeverity.Error,
-          this.template.file ? path.resolve(rootPath, this.template.file) : this.template.url!);
+          this.template.file ? path.resolve(ctx.rootPath, this.template.file) : this.template.url!);
       const ex = new TemplateExecutionException(this, e);
       Logger.error(this, 'Failed producing output content', ex);
       throw ex;
@@ -438,7 +439,7 @@ export class TemplateHandler {
     }
 
     if (refreshOnTemplate || refreshOnHelpers || refreshOnData || refreshOnTemplate || refreshOutputs) {
-      await this.generateOutputs(refreshContext.rootPath);
+      await this.generateOutputs(refreshContext.ctx);
       refreshContext.refreshedObjects.push(this);
       return true;
     }
@@ -451,7 +452,7 @@ export class TemplateHandler {
    * @return {boolean} Returns true if the changed occurred in one of the partial files
    */
   private async handleFileContentChanged(refreshContext: RefreshContext): Promise<boolean> {
-    if (PathUtils.pathsAreEqual(path.resolve(refreshContext.rootPath, this.template.file!), refreshContext.newFilePath!)) {
+    if (PathUtils.pathsAreEqual(path.resolve(refreshContext.ctx.rootPath, this.template.file!), refreshContext.newFilePath!)) {
       this.compiledTemplate = await this.handlebars.compile(refreshContext.newFileContent);
       return true;
     }

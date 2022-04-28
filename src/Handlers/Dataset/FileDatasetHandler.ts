@@ -15,6 +15,8 @@ import {PathUtils} from '../../Utils/PathUtils';
 import {DiagnosticBag} from './../../Diagnostics/DiagnosticBag';
 import {DiagnosticSeverity} from './../../Diagnostics/DiagnosticSeverity';
 import {DatasetCache} from './../../Caching/DatasetCache';
+import {BebarHandlerContext} from '../Bebar/BebarHandlerContext';
+const glob = require('glob');
 
 type ParserFunction = (
   data: string, options?: any, context?: any, rootPath?: string)
@@ -30,20 +32,30 @@ export abstract class FileDatasetHandler extends DatasetHandler {
 
   /**
    * Reads data from the source
-   * @param {string} rootPath The folder where the bebar file is
+   * @param {BebarHandlerContext} ctx The bebar execution context
    * @param {string} fileContent The content of the file (undefined to read from disc or url)
    * @return {any} The data extracted from the source
    */
-  async loadData(rootPath: string, fileContent: string | undefined): Promise<any> {
+  async loadData(ctx: BebarHandlerContext, fileContent: string | undefined): Promise<any> {
     try {
-      this.content = await DatasetCache.get(this.dataset, this.fetchAndParseData, {rootPath: rootPath, fileContent: fileContent, instance: this});
+      if (this.dataset.file) {
+        if (glob.hasMagic(path.resolve(ctx.rootPath, this.dataset.file!))) {
+          const globResult = glob.sync(path.resolve(ctx.rootPath, this.dataset.file!));
+          if (globResult && globResult.length > 0) {
+            this.dataset.file = globResult[0];
+            this.dataset.setDefaults();
+          }
+        }
+      }
+
+      this.content = await DatasetCache.get(this.dataset, this.fetchAndParseData, {ctx: ctx, fileContent: fileContent, instance: this});
     } catch (e) {
       const error = (e as any).message ?? (e as any).toString();
       DiagnosticBag.add(
           0, 0, 0, 0,
           'Failed loading data: ' + error,
           DiagnosticSeverity.Error,
-          this.dataset.file ? path.resolve(rootPath, this.dataset.file) : this.dataset.url!);
+          this.dataset.file ? path.resolve(ctx.rootPath, this.dataset.file) : this.dataset.url!);
       const ex = new DatasetLoadingException(this, e);
       Logger.error(this, 'Failed loading data', ex);
       throw ex;
@@ -58,7 +70,7 @@ export abstract class FileDatasetHandler extends DatasetHandler {
    */
   private async fetchAndParseData(options: any): Promise<any> {
     const content = options.fileContent ?? (options.instance.dataset.file ?
-      await FileDatasetHandler.readFromFile(options.instance, options.rootPath) :
+      await FileDatasetHandler.readFromFile(options.instance, options.ctx) :
       await FileDatasetHandler.readFromUrl(options.instance));
     options.instance.key = options.instance.dataset.name as string;
 
@@ -93,12 +105,12 @@ export abstract class FileDatasetHandler extends DatasetHandler {
   * Reads the file content
   * @param {FileDatasetHandler} instance The instance of the handler that contains information
   * on how to load data
-  * @param {string} rootPath The folder where the bebar file is
+  * @param {BebarHandlerContext} ctx The bebar execution context
   * @return {any} The content of the file
   */
-  private static async readFromFile(instance: FileDatasetHandler, rootPath: string): Promise<any> {
+  private static async readFromFile(instance: FileDatasetHandler, ctx: BebarHandlerContext): Promise<any> {
     const filepath = path.resolve(
-        rootPath,
+        ctx.rootPath,
         instance.dataset.file!);
     Logger.info(this, `Loading data from ${filepath}`, '📈');
     const encoding: string = instance.dataset.encoding!;
@@ -151,11 +163,11 @@ export abstract class FileDatasetHandler extends DatasetHandler {
       return false;
     }
     if (refreshContext.newFilePath &&
-        !PathUtils.pathsAreEqual(path.resolve(refreshContext.rootPath, this.dataset.file), refreshContext.newFilePath!)) {
+        !PathUtils.pathsAreEqual(path.resolve(refreshContext.ctx.rootPath, this.dataset.file), refreshContext.newFilePath!)) {
       return false;
     }
     try {
-      await this.loadData(refreshContext.rootPath, refreshContext.newFileContent);
+      await this.loadData(refreshContext.ctx, refreshContext.newFileContent);
     } catch {}
     refreshContext.refreshedObjects.push(this);
     return true;

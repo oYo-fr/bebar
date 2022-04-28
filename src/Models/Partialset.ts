@@ -27,7 +27,7 @@ export class Partialset {
   public content?: string | undefined;
   /**
    * Constructor.
-   * @param {IPartialset | undefined} plainObject A plain object containing
+   * @param {IPartialset | undefined} plainObject A plain object containing required properties
    */
   constructor(plainObject: IPartialset | undefined) {
     if (plainObject) {

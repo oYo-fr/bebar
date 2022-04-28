@@ -12,8 +12,7 @@ export class CachingOptions {
 
   /**
    * Constructor.
-   * @param {IBebar | undefined} plainObject A plain object containing
-   *  required properties
+   * @param {IBebar | undefined} plainObject A plain object containing required properties
    */
   constructor(plainObject: ICachingOptions | undefined) {
     if (plainObject) {

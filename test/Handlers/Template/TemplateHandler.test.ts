@@ -4,6 +4,7 @@ import {ITemplate} from '../../../src/Models/Interfaces/ITemplate';
 import {MockAxios} from '../../Utils/MockAxios';
 import Handlebars from 'handlebars';
 import {TemplateFactory} from '../../../src/Factories/TemplateFactory';
+import {BebarHandlerContext} from '../../../src/Handlers/Bebar/BebarHandlerContext';
 
 describe('TemplateHandler', () => {
   it('load method should not crash', async () => {
@@ -11,7 +12,7 @@ describe('TemplateHandler', () => {
         TemplateFactory.create({
           file: './test/Assets/Templates/list_of_schools.hbs',
         }), Handlebars.create());
-    await handler.load('.');
+    await handler.load(new BebarHandlerContext('.', 'do.bebar'));
   });
 
   it('load method should not crash loading direct content', async () => {
@@ -21,7 +22,7 @@ describe('TemplateHandler', () => {
           {{>school school=.}}
           {{/each}}`,
         }), Handlebars.create());
-    await handler.load('.');
+    await handler.load(new BebarHandlerContext('.', 'do.bebar'));
   });
 
   it('load from HTTP method should not crash', async () => {
@@ -31,7 +32,7 @@ describe('TemplateHandler', () => {
     const handler = new TemplateHandler(TemplateFactory.create({
       url: '/list_of_schools.hbs',
     }), Handlebars.create());
-    await handler.load('.');
+    await handler.load(new BebarHandlerContext('.', 'do.bebar'));
   });
 
   it('load method with data should not crash', async () => {
@@ -48,7 +49,7 @@ describe('TemplateHandler', () => {
     };
     const handler = new TemplateHandler(
         TemplateFactory.create(itemplate), Handlebars.create());
-    await handler.load('.');
+    await handler.load(new BebarHandlerContext('.', 'do.bebar'));
     expect(handler.outputs[0].content === '').toBeFalsy();
   });
 
@@ -117,7 +118,7 @@ describe('TemplateHandler', () => {
             },
           ],
         }), Handlebars.create());
-    await handler.load('.');
+    await handler.load(new BebarHandlerContext('.', 'do.bebar'));
     expect(handler.outputs.length).toBe(8);
     expect(handler.outputs[0].file).toBe('Queen/Freddie Mercury.txt');
     expect(handler.outputs[0].content).toBe('Freddie Mercury (Queen) - https://www.wikiwand.com/en/Freddie_Mercury');
@@ -148,7 +149,7 @@ describe('TemplateHandler', () => {
           ],
           iterationValueName: 'cur',
         }), Handlebars.create());
-    await handler.load('.');
+    await handler.load(new BebarHandlerContext('.', 'do.bebar'));
     expect(handler.outputs.length).toBe(8);
     expect(handler.outputs[0].file).toBe('Queen/Freddie Mercury.txt');
     expect(handler.outputs[0].content).toBe('Freddie Mercury (Queen) - https://www.wikiwand.com/en/Freddie_Mercury');
@@ -178,7 +179,7 @@ describe('TemplateHandler', () => {
             },
           ],
         }), Handlebars.create());
-    await handler.load('.');
+    await handler.load(new BebarHandlerContext('.', 'do.bebar'));
     expect(handler.outputs.length).toBe(4);
     expect(handler.outputs[0].file).toBe('Border terrier.txt');
     expect(handler.outputs[0].content).toBe('Border terrier');
@@ -204,8 +205,8 @@ describe('TemplateHandler', () => {
             parser: 'markdown',
           },
         }), Handlebars.create());
-    await handlerWithoutPrettify.load('.');
-    await handlerWithPrettify.load('.');
+    await handlerWithoutPrettify.load(new BebarHandlerContext('.', 'do.bebar'));
+    await handlerWithPrettify.load(new BebarHandlerContext('.', 'do.bebar'));
     expect(handlerWithoutPrettify.outputs[0].content !==
       handlerWithPrettify.outputs[0].content).toBeTruthy();
   });
@@ -228,7 +229,7 @@ describe('TemplateHandler', () => {
             parser: 'unknown',
           },
         }), Handlebars.create());
-    await handler.load('.');
+    await handler.load(new BebarHandlerContext('.', 'do.bebar'));
     expect(handler.outputs[0].content).toBeDefined();
   });
 });

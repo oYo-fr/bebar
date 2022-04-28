@@ -1,10 +1,10 @@
 helpers:
-  - ./Assets/Helpers/vscode-colors-to-css-vars-helpers.js
+  - ./../Helpers/vscode-colors-to-css-vars-helpers.js
 
 templates:
   -
-    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
-    output: ./Assets/TestOutputs/vs-code-monokai-color-theme.css
+    file: ./../Templates/vscode-colors-to-css-vars.hbs
+    output: ./../TestOutputs/vs-code-monokai-color-theme.css
     prettify:
       parser: css
     data:
@@ -13,8 +13,8 @@ templates:
         name: theme
         parseAs: raw
   -
-    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
-    output: ./Assets/TestOutputs/vs-code-abyss-color-theme.css
+    file: ./../Templates/vscode-colors-to-css-vars.hbs
+    output: ./../TestOutputs/vs-code-abyss-color-theme.css
     prettify:
       parser: css
     data:
@@ -23,8 +23,8 @@ templates:
         name: theme
         parseAs: raw
 #  -
-#    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
-#    output: ./Assets/TestOutputs/vs-code-light_vs.css
+#    file: ./../Templates/vscode-colors-to-css-vars.hbs
+#    output: ./../TestOutputs/vs-code-light_vs.css
 #    prettify:
 #      parser: css
 #    data:
@@ -33,8 +33,8 @@ templates:
 #        name: theme
 #        parseAs: raw
 #  -
-#    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
-#    output: ./Assets/TestOutputs/vs-code-dark_plus.css
+#    file: ./../Templates/vscode-colors-to-css-vars.hbs
+#    output: ./../TestOutputs/vs-code-dark_plus.css
 #    prettify:
 #      parser: css
 #    data:
@@ -43,8 +43,8 @@ templates:
 #        name: theme
 #        parseAs: raw
 #  -
-#    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
-#    output: ./Assets/TestOutputs/vs-code-dark_vs.css
+#    file: ./../Templates/vscode-colors-to-css-vars.hbs
+#    output: ./../TestOutputs/vs-code-dark_vs.css
 #    prettify:
 #      parser: css
 #    data:
@@ -53,8 +53,8 @@ templates:
 #        name: theme
 #        parseAs: raw
 #  -
-#    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
-#    output: ./Assets/TestOutputs/vs-code-hc_black.css
+#    file: ./../Templates/vscode-colors-to-css-vars.hbs
+#    output: ./../TestOutputs/vs-code-hc_black.css
 #    prettify:
 #      parser: css
 #    data:
@@ -63,8 +63,8 @@ templates:
 #        name: theme
 #        parseAs: raw
 #   -
-#     file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
-#     output: ./Assets/TestOutputs/vs-code-hc_light.css
+#     file: ./../Templates/vscode-colors-to-css-vars.hbs
+#     output: ./../TestOutputs/vs-code-hc_light.css
 #     prettify:
 #       parser: css
 #     data:
@@ -73,8 +73,8 @@ templates:
 #         name: theme
 #         parseAs: raw
 #  -
-#    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
-#    output: ./Assets/TestOutputs/vs-code-light_plus.css
+#    file: ./../Templates/vscode-colors-to-css-vars.hbs
+#    output: ./../TestOutputs/vs-code-light_plus.css
 #    prettify:
 #      parser: css
 #    data:
@@ -83,8 +83,8 @@ templates:
 #        name: theme
 #        parseAs: raw
   -
-    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
-    output: ./Assets/TestOutputs/vs-code-kimbie-dark-color-theme.css
+    file: ./../Templates/vscode-colors-to-css-vars.hbs
+    output: ./../TestOutputs/vs-code-kimbie-dark-color-theme.css
     prettify:
       parser: css
     data:
@@ -93,8 +93,8 @@ templates:
         name: theme
         parseAs: raw
 #  -
-#    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
-#    output: ./Assets/TestOutputs/vs-code-dimmed-monokai-color-theme.css
+#    file: ./../Templates/vscode-colors-to-css-vars.hbs
+#    output: ./../TestOutputs/vs-code-dimmed-monokai-color-theme.css
 #    prettify:
 #      parser: css
 #    data:
@@ -103,8 +103,8 @@ templates:
 #        name: theme
 #        parseAs: raw
 #  -
-#    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
-#    output: ./Assets/TestOutputs/vs-code-quietlight-color-theme.css
+#    file: ./../Templates/vscode-colors-to-css-vars.hbs
+#    output: ./../TestOutputs/vs-code-quietlight-color-theme.css
 #    prettify:
 #      parser: css
 #    data:
@@ -113,8 +113,8 @@ templates:
 #        name: theme
 #        parseAs: raw
 #  -
-#    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
-#    output: ./Assets/TestOutputs/vs-code-Red-color-theme.css
+#    file: ./../Templates/vscode-colors-to-css-vars.hbs
+#    output: ./../TestOutputs/vs-code-Red-color-theme.css
 #    prettify:
 #      parser: css
 #    data:
@@ -123,8 +123,8 @@ templates:
 #        name: theme
 #        parseAs: raw
   -
-    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
-    output: ./Assets/TestOutputs/vs-code-solarized-dark-color-theme.css
+    file: ./../Templates/vscode-colors-to-css-vars.hbs
+    output: ./../TestOutputs/vs-code-solarized-dark-color-theme.css
     prettify:
       parser: css
     data:
@@ -133,8 +133,8 @@ templates:
         name: theme
         parseAs: raw
   -
-    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
-    output: ./Assets/TestOutputs/vs-code-solarized-light-color-theme.css
+    file: ./../Templates/vscode-colors-to-css-vars.hbs
+    output: ./../TestOutputs/vs-code-solarized-light-color-theme.css
     prettify:
       parser: css
     data:
@@ -143,8 +143,8 @@ templates:
         name: theme
         parseAs: raw
   -
-    file: ./Assets/Templates/vscode-colors-to-css-vars.hbs
-    output: ./Assets/TestOutputs/vs-code-tomorrow-night-blue-color-theme.css
+    file: ./../Templates/vscode-colors-to-css-vars.hbs
+    output: ./../TestOutputs/vs-code-tomorrow-night-blue-color-theme.css
     prettify:
       parser: css
     data:

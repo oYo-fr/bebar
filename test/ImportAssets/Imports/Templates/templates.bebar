@@ -1,0 +1,7 @@
+
+templates:
+  -
+    file: ./list_of_schools.hbs
+    output: ./TestOutputs/scools_using_imports.md
+    prettify:
+      parser: markdown

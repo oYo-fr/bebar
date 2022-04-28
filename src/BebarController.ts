@@ -7,6 +7,8 @@ import fs from 'fs';
 const writeFile = util.promisify(fs.writeFile);
 import {DiagnosticBag} from './Diagnostics/DiagnosticBag';
 import {BebarHandlerContext} from './Handlers/Bebar/BebarHandlerContext';
+import {DiagnosticSeverity} from './Diagnostics/DiagnosticSeverity';
+import { BebarLoopLoadingException } from './Exceptions/BebarLoopLoadingException';
 
 /**
  * Main class for command line call
@@ -28,7 +30,18 @@ export class BebarController {
     DiagnosticBag.clear();
     this.handlers = await BebarHandler.create(filenamePattern, new BebarHandlerContext('', ''));
     for (let i = 0; i < this.handlers.length; i++) {
-      await this.handlers[i].load();
+      try {
+        await this.handlers[i].load();
+      } catch (ex) {
+        if ((ex as any).importsCallStack) {
+          DiagnosticBag.add(
+              0, 0, 0, 0,
+              'Imports loop detected: ' + (ex as BebarLoopLoadingException).importsCallStack.join(" --> "),
+              DiagnosticSeverity.Error,
+              this.handlers[i].ctx.filename);
+        }
+        throw ex;
+      }
     }
   }
 

@@ -21,6 +21,7 @@ import util from 'util';
 import fs from 'fs';
 const readFile = util.promisify(fs.readFile);
 import {Logger} from './../../Logging/Logger';
+import {BebarLoopLoadingException} from '../../Exceptions/BebarLoopLoadingException';
 
 /**
  * A bebar handler is reponsible for loading everything that migh be
@@ -39,25 +40,38 @@ export class BebarHandler {
    * Constructor.
    * @param {Bebar} Bebar Object that describes where to get the
    * @param {BebarHandlerContext} ctx The bebar execution context
-   *  partials from
+   * @param {string[]} importsCallStack The list of bebar files that imported the currently created handlers
    */
   constructor(
     public bebar: Bebar,
-    public ctx: BebarHandlerContext) {
+    public ctx: BebarHandlerContext,
+    public importsCallStack: string[] = []) {
   }
 
   /**
    * Creates handlers based on a filename pattern
    * @param {string} filenamePattern The filename pattern to match
    * @param {BebarHandlerContext} ctx The loading context
+   * @param {string[]} importsCallStack The list of bebar files that imported the currently created handlers
    * @return {BebarHandler[]} The handlers that match the pattern
    */
-  public static async create(filenamePattern: string, ctx: BebarHandlerContext) : Promise<BebarHandler[]> {
+  public static async create(filenamePattern: string, ctx: BebarHandlerContext, importsCallStack: string[] = []) : Promise<BebarHandler[]> {
     const result: BebarHandler[] = [];
     const files = glob.sync(path.join(ctx.rootPath, filenamePattern));
 
+    if (files.length === 0) {
+      DiagnosticBag.add(
+          0, 0, 0, 0,
+          `No files found parsing pattern : ${filenamePattern}`,
+          DiagnosticSeverity.Warning,
+          ctx.filename);
+    }
+
     for (let i = 0; i < files.length; i++) {
       const file = path.resolve(files[i]);
+      if (importsCallStack.some(f => f === file)) {
+        throw new BebarLoopLoadingException(this, undefined, importsCallStack);
+      }
       const rootPath = path.resolve(path.dirname(file));
       Logger.info(this, `Loading bebar file ${file}`, '🚀');
       const bebarFileContent = await readFile(file, 'utf-8');
@@ -82,7 +96,7 @@ export class BebarHandler {
               file,
               ctx.cachePath.length === 0 ? rootPath : ctx.cachePath,
               ctx.cachePath.length === 0 ? rootPath : ctx.cachePath);
-          const handler = new BebarHandler(bebar, newCtx);
+          const handler = new BebarHandler(bebar, newCtx, importsCallStack);
           result.push(handler);
         }
       }
@@ -115,7 +129,7 @@ export class BebarHandler {
             importFile.file!,
             this.ctx.cachePath,
             this.ctx.outputPath);
-        this.importedBebarHandlers = await BebarHandler.create(importFile.file!, ctx);
+        this.importedBebarHandlers = await BebarHandler.create(importFile.file!, ctx, this.importsCallStack.concat([this.ctx.filename]));
         for (let i = 0; i < this.importedBebarHandlers.length; i++) {
           try {
             const handler = this.importedBebarHandlers[i];
@@ -126,6 +140,7 @@ export class BebarHandler {
                 'Failed parsing bebar file: ' + (ex as any).message,
                 DiagnosticSeverity.Error,
                 importFile.file ?? importFile.url!);
+            throw ex;
           }
         }
       }

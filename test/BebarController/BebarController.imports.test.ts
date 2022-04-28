@@ -14,4 +14,32 @@ describe('BebarController - imports', () => {
     expect(rootHandler.importedBebarHandlers[3].templateHandlers.length).toBeGreaterThan(0);
     expect(rootHandler.allData.schools).toBeDefined();
   });
+
+  it('should crash when a bebar file references itself', async () => {
+    const controller = new BebarController();
+    let success = false;
+    try {
+      await controller.load('./test/ImportAssets/self_loop.bebar');
+      success = true;
+    } catch (ex) {
+      expect((ex as any).importsCallStack.length).toBe(1);
+    }
+    expect(success).toBeFalsy();
+    const diagnostics = DiagnosticBag.Diagnostics;
+    expect(diagnostics.length).toBeGreaterThan(0);
+  });
+
+  it('should crash when bebar file references each others in a loop', async () => {
+    const controller = new BebarController();
+    let success = false;
+    try {
+      await controller.load('./test/ImportAssets/loopA.bebar');
+      success = true;
+    } catch (ex) {
+      expect((ex as any).importsCallStack.length).toBe(2);
+    }
+    const diagnostics = DiagnosticBag.Diagnostics;
+    expect(success).toBeFalsy();
+    expect(diagnostics.length).toBeGreaterThan(0);
+  });
 });

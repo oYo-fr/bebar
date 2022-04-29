@@ -1,0 +1,7 @@
+helpers: ./helpers/*.js
+partials: ./partials/*.hbs
+data: ./../Assets/Factorio/*.json
+templates:
+  -
+    file: ./factorio_list_of_recepies.hbs
+    output: ./out/factorio_list_of_recepies.md

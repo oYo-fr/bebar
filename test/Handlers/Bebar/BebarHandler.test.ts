@@ -7,6 +7,7 @@ import fs from 'fs';
 import {PathUtils} from '../../../src/Utils/PathUtils';
 import {BebarHandlerContext} from '../../../src/Handlers/Bebar/BebarHandlerContext';
 const YAML = require('yaml');
+import Handlebars from 'handlebars';
 
 describe('BebarHandler', () => {
   it('load method should not crash', async () => {
@@ -15,7 +16,7 @@ describe('BebarHandler', () => {
       partials: [{file: './test/Assets/Partials/*.hbs'}],
       helpers: [{file: './test/Assets/Helpers/*.js'}],
       templates: [{file: './test/Assets/Templates/list_of_schools.hbs'}],
-    }), new BebarHandlerContext('.', 'sample.bebar'));
+    }), new BebarHandlerContext('.', 'sample.bebar', Handlebars.create()));
     await handler.load();
     expect(handler.templateHandlers[0].outputs.length).toBeGreaterThan(0);
     expect(handler.templateHandlers[0].outputs[0].data).toBeDefined();
@@ -29,7 +30,7 @@ describe('BebarHandler', () => {
       partials: ['./test/Assets/Partials/*.hbs'],
       helpers: ['./test/Assets/Helpers/*.js'],
       templates: [{file: './test/Assets/Templates/list_of_schools.hbs'}],
-    }), new BebarHandlerContext('.', 'sample.bebar'));
+    }), new BebarHandlerContext('.', 'sample.bebar', Handlebars.create()));
     await handler.load();
     expect(handler.templateHandlers[0].outputs.length).toBeGreaterThan(0);
     expect(handler.templateHandlers[0].outputs[0].data).toBeDefined();
@@ -43,7 +44,7 @@ describe('BebarHandler', () => {
       partials: './test/Assets/Partials/*.hbs',
       helpers: './test/Assets/Helpers/*.js',
       templates: [{file: './test/Assets/Templates/list_of_schools.hbs'}],
-    }), new BebarHandlerContext('.', 'sample.bebar'));
+    }), new BebarHandlerContext('.', 'sample.bebar', Handlebars.create()));
     await handler.load();
     expect(handler.templateHandlers[0].outputs.length).toBeGreaterThan(0);
     expect(handler.templateHandlers[0].outputs[0].data).toBeDefined();
@@ -59,7 +60,7 @@ describe('BebarHandler', () => {
           helpers: './test/Assets/Helpers/stringHelpers.js',
           templates: [
             {file: './test/Assets/Templates/list_of_schools_html_list.hbs'}],
-        }), new BebarHandlerContext('.', 'sample.bebar'));
+        }), new BebarHandlerContext('.', 'sample.bebar', Handlebars.create()));
         await handler.load();
         expect(handler.templateHandlers[0].outputs[0].data).toBeDefined();
         expect(handler.templateHandlers[0].outputs.length).toBeGreaterThan(0);
@@ -70,14 +71,14 @@ describe('BebarHandler', () => {
 
   it('should refresh outputs properly',
       async () => {
-        const ctx = new BebarHandlerContext('.', 'do.bebar');
+        const ctx = new BebarHandlerContext('.', 'do.bebar', Handlebars.create());
         const handler = new BebarHandler(new Bebar({
           data: './test/Assets/Datasets/*.yaml',
           partials: './test/Assets/Partials/*.hbs',
           helpers: './test/Assets/Helpers/*.js',
           templates: [
             {file: './test/Assets/Templates/list_of_schools.hbs', output: 'test.md'}],
-        }), new BebarHandlerContext('.', 'sample.bebar'));
+        }), new BebarHandlerContext('.', 'sample.bebar', Handlebars.create()));
         await handler.load();
         for (let testcase = 0; testcase < 2; testcase++) {
           if (testcase === 1) {

@@ -4,6 +4,7 @@ import {YamlFileDatasetHandler}
   from '../../../src/Handlers/Dataset/YamlFileDatasetHandler';
 import {Dataset} from '../../../src/Models/Dataset';
 import {MockAxios} from '../../Utils/MockAxios';
+import Handlebars from 'handlebars';
 
 describe('YamlFileDatasetHandler', () => {
   it('canHandle method should return true', () => {
@@ -47,7 +48,7 @@ describe('YamlFileDatasetHandler', () => {
           },
         }),
     );
-    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar'));
+    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar', Handlebars.create()));
     expect(data).toBeDefined();
     expect(data['schools']).toBe(handler.content['schools']);
     expect(data['schools'].length).toBe(10);
@@ -61,7 +62,7 @@ describe('YamlFileDatasetHandler', () => {
           encoding: 'utf16le',
         }),
     );
-    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar'));
+    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar', Handlebars.create()));
     expect(data).toBeDefined();
     expect(data['schools']).toBe(handler.content['schools']);
     expect(data['schools'].length).toBe(10);
@@ -75,7 +76,7 @@ describe('YamlFileDatasetHandler', () => {
         }),
     );
     try {
-      await handler.load(new BebarHandlerContext('.', 'do.bebar'));
+      await handler.load(new BebarHandlerContext('.', 'do.bebar', Handlebars.create()));
       expect(false).toBeTruthy(); // We should never reach this point
     } catch (e) {
       expect((e as BebarException).inner).toBeDefined();
@@ -95,7 +96,7 @@ describe('YamlFileDatasetHandler', () => {
         prettyErrors: false,
       },
     }));
-    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar'));
+    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar', Handlebars.create()));
     expect(data).toBeDefined();
     expect(data['schools']).toBe(handler.content['schools']);
     expect(data['schools'].length).toBe(10);

@@ -2,6 +2,7 @@ import {MockAxios} from '../Utils/MockAxios';
 import {YamlFileDatasetHandler} from '../../src/Handlers/Dataset/YamlFileDatasetHandler';
 import {Dataset} from '../../src/Models/Dataset';
 import {BebarHandlerContext} from '../../src/Handlers/Bebar/BebarHandlerContext';
+import Handlebars from 'handlebars';
 
 describe('DatasetCache', () => {
   it('getData should return data from cache', async () => {
@@ -19,7 +20,7 @@ describe('DatasetCache', () => {
           },
         }),
     );
-    let data = await handler.load(new BebarHandlerContext('.', 'do.bebar'));
+    let data = await handler.load(new BebarHandlerContext('.', 'do.bebar', Handlebars.create()));
     expect(data).toBeDefined();
     expect(data['schools']).toBe(handler.content['schools']);
     expect(data['schools'].length).toBe(10);
@@ -28,13 +29,13 @@ describe('DatasetCache', () => {
     await MockAxios.mockUrl(
         '/schools_cache.yaml',
         './test/Assets/Datasets/school_single.yaml');
-    data = await handler.load(new BebarHandlerContext('.', 'do.bebar'));
+    data = await handler.load(new BebarHandlerContext('.', 'do.bebar', Handlebars.create()));
     expect(data).toBeDefined();
     expect(data['schools']).toBe(handler.content['schools']);
     expect(data['schools'].length).toBe(10); // Data should be in file cache, so loading should not crash and still return 10 (not 1)
 
     await new Promise((f) => setTimeout(f, 3000)); // Sleep 4s for the cache to expire
-    data = await handler.load(new BebarHandlerContext('.', 'do.bebar'));
+    data = await handler.load(new BebarHandlerContext('.', 'do.bebar', Handlebars.create()));
     expect(data).toBeDefined();
     expect(data['schools']).toBe(handler.content['schools']);
     expect(data['schools'].length).toBe(1);

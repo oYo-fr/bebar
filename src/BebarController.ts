@@ -9,6 +9,7 @@ import {DiagnosticBag} from './Diagnostics/DiagnosticBag';
 import {BebarHandlerContext} from './Handlers/Bebar/BebarHandlerContext';
 import {DiagnosticSeverity} from './Diagnostics/DiagnosticSeverity';
 import {BebarLoopLoadingException} from './Exceptions/BebarLoopLoadingException';
+import Handlebars from 'handlebars';
 
 /**
  * Main class for command line call
@@ -28,7 +29,7 @@ export class BebarController {
    */
   public async load(filenamePattern: string) {
     DiagnosticBag.clear();
-    this.handlers = await BebarHandler.create(filenamePattern, new BebarHandlerContext('', ''));
+    this.handlers = await BebarHandler.create(filenamePattern, new BebarHandlerContext('', '', Handlebars.create()));
     for (let i = 0; i < this.handlers.length; i++) {
       try {
         await this.handlers[i].load();

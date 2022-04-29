@@ -4,6 +4,7 @@ import {XmlFileDatasetHandler}
   from '../../../src/Handlers/Dataset/XmlFileDatasetHandler';
 import {Dataset} from '../../../src/Models/Dataset';
 import {MockAxios} from '../../Utils/MockAxios';
+import Handlebars from 'handlebars';
 
 describe('XmlFileDatasetHandler', () => {
   it('canHandle method should return true', () => {
@@ -35,7 +36,7 @@ describe('XmlFileDatasetHandler', () => {
           name: 'schools',
           file: './test/Assets/Datasets/schools.xml',
         }));
-    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar'));
+    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar', Handlebars.create()));
     expect(data).toBeDefined();
     expect(data['schools'].root.row).toBe(handler.content['schools'].root.row);
     expect(data['schools'].root.row.length).toBe(10);
@@ -48,7 +49,7 @@ describe('XmlFileDatasetHandler', () => {
           file: './test/Assets/Datasets/missing_file.xml',
         }));
     try {
-      await handler.load(new BebarHandlerContext('.', 'do.bebar'));
+      await handler.load(new BebarHandlerContext('.', 'do.bebar', Handlebars.create()));
       expect(false).toBeTruthy(); // We should never reach this point
     } catch (e) {
       expect((e as BebarException).inner).toBeDefined();
@@ -65,7 +66,7 @@ describe('XmlFileDatasetHandler', () => {
       parseAs: 'xml',
       url: '/schools.xml',
     }));
-    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar'));
+    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar', Handlebars.create()));
     expect(data).toBeDefined();
     expect(data['schools'].root.row).toBe(handler.content['schools'].root.row);
     expect(data['schools'].root.row.length).toBe(10);

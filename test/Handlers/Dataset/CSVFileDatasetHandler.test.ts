@@ -4,6 +4,7 @@ import {CSVFileDatasetHandler}
   from '../../../src/Handlers/Dataset/CSVFileDatasetHandler';
 import {Dataset} from '../../../src/Models/Dataset';
 import {MockAxios} from '../../Utils/MockAxios';
+import Handlebars from 'handlebars';
 
 describe('CSVFileDatasetHandler', () => {
   it('canHandle method should return true', () => {
@@ -33,7 +34,7 @@ describe('CSVFileDatasetHandler', () => {
         separator: ';',
       },
     }));
-    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar'));
+    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar', Handlebars.create()));
     expect(data).toBeDefined();
     expect(data['schools']).toBe(handler.content['schools']);
     expect(data['schools'].length).toBe(10);
@@ -48,7 +49,7 @@ describe('CSVFileDatasetHandler', () => {
       },
     }));
     try {
-      await handler.load(new BebarHandlerContext('.', 'do.bebar'));
+      await handler.load(new BebarHandlerContext('.', 'do.bebar', Handlebars.create()));
       expect(false).toBeTruthy(); // We should never reach this point
     } catch (e) {
       expect((e as BebarException).inner).toBeDefined();
@@ -69,7 +70,7 @@ describe('CSVFileDatasetHandler', () => {
           },
         }),
     );
-    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar'));
+    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar', Handlebars.create()));
     expect(data).toBeDefined();
     expect(data['schools']).toBe(handler.content['schools']);
     expect(data['schools'].length).toBe(10);

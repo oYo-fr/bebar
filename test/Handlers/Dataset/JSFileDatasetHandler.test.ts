@@ -5,6 +5,7 @@ import {JSFileDatasetHandler}
   from '../../../src/Handlers/Dataset/JSFileDatasetHandler';
 import {Dataset} from '../../../src/Models/Dataset';
 import {MockAxios} from '../../Utils/MockAxios';
+import Handlebars from 'handlebars';
 
 describe('JSFileDatasetHandler', () => {
   it('canHandle method should return true', () => {
@@ -36,7 +37,7 @@ describe('JSFileDatasetHandler', () => {
           },
         }),
     );
-    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar'));
+    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar', Handlebars.create()));
     expect(data).toBeDefined();
     expect(data['schools']).toBe(handler.content['schools']);
     expect(data['schools'].length).toBe(10);
@@ -52,7 +53,7 @@ describe('JSFileDatasetHandler', () => {
           },
         }),
     );
-    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar'));
+    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar', Handlebars.create()));
     expect(data).toBeDefined();
     expect(data['schools']).toBe(handler.content['schools']);
     expect(data['schools'].length).toBe(10);
@@ -66,7 +67,7 @@ describe('JSFileDatasetHandler', () => {
         }),
     );
     try {
-      await handler.load(new BebarHandlerContext('.', 'do.bebar'));
+      await handler.load(new BebarHandlerContext('.', 'do.bebar', Handlebars.create()));
       expect(false).toBeTruthy(); // We should never reach this point
     } catch (e) {
       expect(e).toBeInstanceOf(DatasetLoadingException);
@@ -89,7 +90,7 @@ describe('JSFileDatasetHandler', () => {
           },
         }),
     );
-    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar'));
+    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar', Handlebars.create()));
     expect(data).toBeDefined();
     expect(data['schools']).toBe(handler.content['schools']);
     expect(data['schools'].length).toBe(10);

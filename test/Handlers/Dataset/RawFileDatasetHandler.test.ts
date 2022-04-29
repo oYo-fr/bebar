@@ -3,6 +3,7 @@ import {RawFileDatasetHandler}
   from '../../../src/Handlers/Dataset/RawFileDatasetHandler';
 import {Dataset} from '../../../src/Models/Dataset';
 import {MockAxios} from '../../Utils/MockAxios';
+import Handlebars from 'handlebars';
 
 describe('RawFileDatasetHandler', () => {
   it('canHandle method should return true', () => {
@@ -37,7 +38,7 @@ describe('RawFileDatasetHandler', () => {
           file: './test/Assets/Datasets/schools.html',
           parseAs: 'raw',
         }));
-    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar'));
+    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar', Handlebars.create()));
     expect(data).toBeDefined();
     expect(data['schools']).toBeDefined();
     expect(data['schools'].length).toBeGreaterThan(0);
@@ -52,7 +53,7 @@ describe('RawFileDatasetHandler', () => {
       url: 'schools.html',
       parseAs: 'raw',
     }));
-    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar'));
+    const data = await handler.load(new BebarHandlerContext('.', 'do.bebar', Handlebars.create()));
     expect(data).toBeDefined();
     expect(data['schools']).toBeDefined();
     expect(data['schools'].length).toBeGreaterThan(0);

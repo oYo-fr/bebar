@@ -10,7 +10,7 @@ describe('HelpersetHandler - error handling', () => {
     const handler = new HelpersetHandler(new Helperset({
       file: './test/BuggyAssets/Helpers/buggy.js',
     }), Handlebars.create());
-    await handler.load(new BebarHandlerContext('.', 'do.bebar'));
+    await handler.load(new BebarHandlerContext('.', 'do.bebar', Handlebars.create()));
     expect(DiagnosticBag.Diagnostics.length).toBe(1);
   });
 });

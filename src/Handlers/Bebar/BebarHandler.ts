@@ -94,6 +94,7 @@ export class BebarHandler {
           const newCtx = new BebarHandlerContext(
               rootPath,
               file,
+              Handlebars.create(),
               ctx.cachePath.length === 0 ? rootPath : ctx.cachePath,
               ctx.cachePath.length === 0 ? rootPath : ctx.cachePath);
           const handler = new BebarHandler(bebar, newCtx, importsCallStack);
@@ -127,6 +128,7 @@ export class BebarHandler {
         const ctx = new BebarHandlerContext(
             this.ctx.rootPath,
             importFile.file!,
+            Handlebars.create(),
             this.ctx.cachePath,
             this.ctx.outputPath);
         this.importedBebarHandlers = await BebarHandler.create(importFile.file!, ctx, this.importsCallStack.concat([this.ctx.filename]));

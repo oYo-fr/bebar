@@ -51,23 +51,37 @@ export class BebarController {
   public async writeFiles() {
     for (let i = 0; i < this.handlers.length; i++) {
       const bebarhandler = this.handlers[i];
-      for (let j = 0; j < bebarhandler.templateHandlers.length; j++) {
-        const templateHandler = bebarhandler.templateHandlers[j];
-        for (let o = 0; o < templateHandler.outputs.length; o++) {
-          const output = templateHandler.outputs[o];
-          if (output.file) {
-            const p = bebarhandler.ctx.outputPath ?
-              path.resolve(bebarhandler.ctx.outputPath, output.file) :
-              output.file;
-            Logger.info(this, `Writing result file ${p}`, '🖊️ ');
-            try {
-              fs.mkdirSync(path.dirname(p), {recursive: true});
-              await writeFile(p, output.content);
-            } catch (e) {
-              const ex = new OutputWritingException(this, e);
-              Logger.error(this, 'Failed writing output file', ex);
-              throw ex;
-            }
+      await BebarController.writeFilesForHandler(bebarhandler);
+    }
+  }
+
+  /**
+   * Writes all output files for one bebar handler
+   * @param {BebarHandler} bebarhandler Bebar handler to write files for
+   */
+  private static async writeFilesForHandler(bebarhandler: BebarHandler) {
+    if (bebarhandler.importedBebarHandlers) {
+      for (let i = 0; i < bebarhandler.importedBebarHandlers.length; i++) {
+        const subHandler = bebarhandler.importedBebarHandlers[i];
+        await BebarController.writeFilesForHandler(subHandler);
+      }
+    }
+    for (let j = 0; j < bebarhandler.templateHandlers.length; j++) {
+      const templateHandler = bebarhandler.templateHandlers[j];
+      for (let o = 0; o < templateHandler.outputs.length; o++) {
+        const output = templateHandler.outputs[o];
+        if (output.file) {
+          const p = bebarhandler.ctx.outputPath ?
+            path.resolve(bebarhandler.ctx.outputPath, output.file) :
+            output.file;
+          Logger.info(this, `Writing result file ${p}`, '🖊️ ');
+          try {
+            fs.mkdirSync(path.dirname(p), {recursive: true});
+            await writeFile(p, output.content);
+          } catch (e) {
+            const ex = new OutputWritingException(this, e);
+            Logger.error(this, 'Failed writing output file', ex);
+            throw ex;
           }
         }
       }

@@ -245,29 +245,28 @@ export class TemplateHandler {
   /**
    * Pretifier management function
    * @param {BebarHandlerContext} ctx The bebar execution context
+   * @return {Array<any>} The prettfy exceptions, if any
    */
-  private async handlePrettifier(ctx: BebarHandlerContext) {
-    return new Promise((resolve) => {
-      const exceptions: Array<any> = [];
-      if (this.template.prettify) {
-        for (let i = 0; i < this.outputs.length; i++) {
-          const output = this.outputs[i];
-          try {
-            output.content = prettier.format(
-                output.content,
-                this.template.prettify);
-          } catch (e) {
-            DiagnosticBag.add(
-                0, 0, 0, 0,
-                'Failed applying prerrifier: ' + (e as any).toString(),
-                DiagnosticSeverity.Error,
-              this.template.file ? path.resolve(ctx.rootPath, this.template.file) : this.template.url!);
-            exceptions.push(e);
-          }
+  private async handlePrettifier(ctx: BebarHandlerContext): Promise<Array<any>> {
+    const exceptions: Array<any> = [];
+    if (this.template.prettify) {
+      for (let i = 0; i < this.outputs.length; i++) {
+        const output = this.outputs[i];
+        try {
+          output.content = prettier.format(
+              output.content,
+              this.template.prettify);
+        } catch (e) {
+          DiagnosticBag.add(
+              0, 0, 0, 0,
+              'Failed applying prerrifier: ' + (e as any).toString(),
+              DiagnosticSeverity.Error,
+            this.template.file ? path.resolve(ctx.rootPath, this.template.file) : this.template.url!);
+          exceptions.push(e);
         }
       }
-      resolve(exceptions);
-    });
+    }
+    return exceptions;
   }
 
   /**
